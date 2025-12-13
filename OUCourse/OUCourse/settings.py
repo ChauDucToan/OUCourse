@@ -11,8 +11,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
-from django.conf.global_settings import AUTH_USER_MODEL
-import cloudinary.api
+from dotenv import load_dotenv
+load_dotenv()
 import os
 import pymysql
 
@@ -32,7 +32,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-AUTH_USER_MODEL = "Course.User"
 
 # Application definition
 
@@ -44,12 +43,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'ckeditor',
-    'ckeditor_uploader',
     'drf_yasg',
     'oauth2_provider',
-    'api.authentication',
-    'api.course',
+    'api.course.apps.CourseConfig',
+    'api.authentication.apps.AuthenticationConfig'
 ]
+AUTH_USER_MODEL = "authentication.User"
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -96,7 +95,7 @@ DATABASES = {
         'NAME': os.getenv("DB_NAME"),
         'USER': os.getenv("DB_USER"),
         'PASSWORD':os.getenv("DB_PASSWORD") ,
-        'HOST': os.getenv("DB_HOST")  # mặc định localhost
+        'HOST': os.getenv("DB_HOST", "127.0.0.1")  # mặc định localhost
     }
 }
 # Password validation

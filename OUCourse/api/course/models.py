@@ -1,8 +1,11 @@
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.contrib.auth import get_user_model
 from ckeditor.fields import RichTextField
 from cloudinary.models import CloudinaryField
-from ..Authentication.models import User
+
+UserModel = get_user_model()
 
 class BaseModel(models.Model):
     active = models.BooleanField(default=True)
@@ -18,23 +21,27 @@ class Category(BaseModel):
     def __str__(self):
         return self.name
 
-def validate_instructor(instructor):
-    if instructor.role != User.Role.INSTRUCTOR:
-        raise ValidationError({"user": "must be intructor"})
-
 class Course(BaseModel):
-    instructor = models.ForeignKey(User, on_delete=models.RESTRICT, related_name='owned_courses', validators=[validate_instructor])
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='courses')
+    instructor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.RESTRICT,
+        related_name="owned_courses",
+    )
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="courses")
 
     subject = models.CharField(max_length=255)
     description = models.TextField(null=False)
     image = CloudinaryField(null=True, blank=True)
-    video = CloudinaryField(null=True, blank=True) # Introduction Course
+    video = CloudinaryField(null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    def clean(self):
+        super().clean()
+        if self.instructor and getattr(self.instructor, "role", None) != UserModel.Role.INSTRUCTOR:
+            raise ValidationError({"instructor": "must be instructor"})
 
     def __str__(self):
         return self.subject
-
 
 class Lesson(BaseModel):
     subject = models.CharField(max_length=255)
@@ -51,12 +58,12 @@ class ManageCourse(models.Model):
         COMPLETED = "COMPLETED"
 
     student = models.ForeignKey(
-        to="User",
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="managed_courses"
+        related_name="managed_courses",
     )
     course = models.ForeignKey(
-        to="Course",
+        "course.Course",
         on_delete=models.CASCADE,
-        related_name="managed_students"
+        related_name="managed_students",
     )
