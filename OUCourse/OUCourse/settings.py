@@ -46,7 +46,9 @@ INSTALLED_APPS = [
     'ckeditor',
     'ckeditor_uploader',
     'drf_yasg',
-    'oauth2_provider'
+    'oauth2_provider',
+    'api.authentication',
+    'api.course',
 ]
 
 REST_FRAMEWORK = {
