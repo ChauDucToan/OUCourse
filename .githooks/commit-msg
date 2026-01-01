@@ -7,7 +7,7 @@ MSG="$(cat "$MSG_FILE")"
 # 1) Cấu hình type + scope bạn muốn
 ALLOWED_TYPES="feat|fix|docs|refactor|test|chore"
 # Các folder scope chính (đổi theo repo bạn)
-ALLOWED_SCOPES=("frontend" "backend" "mobile" "infra" "root" "multi")
+ALLOWED_SCOPES=("oucourse" "infra" "root" "multi")
 
 # 2) Kiểm tra format type(scope): message
 PATTERN="^(${ALLOWED_TYPES})\(([a-z0-9_-]+)\): .+"
