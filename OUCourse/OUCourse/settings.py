@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 from dotenv import load_dotenv
-load_dotenv()
 import os
 import pymysql
 
@@ -32,6 +31,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+load_dotenv(BASE_DIR.parent / '.env')
 
 # Application definition
 
