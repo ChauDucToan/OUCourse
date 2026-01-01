@@ -14,7 +14,7 @@ jobs:
         run: |
           commits=$(git log origin/main..HEAD --pretty=format:%s)
 
-          pattern="^(feat|fix|docs|refactor|test|chore)\((frontend|backend|infra|root)\): .+"
+          pattern="^(feat|fix|docs|refactor|test|chore)\((frontend|oucourse|infra|root)\): .+"
 
           echo "$commits" | while read line; do
             echo "Checking: $line"
