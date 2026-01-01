@@ -1,0 +1,25 @@
+name: Commit message check
+
+on: [pull_request]
+
+jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check commit messages
+        run: |
+          commits=$(git log origin/main..HEAD --pretty=format:%s)
+
+          pattern="^(feat|fix|docs|refactor|test|chore)\((frontend|backend|mobile|root)\): .+"
+
+          echo "$commits" | while read line; do
+            echo "Checking: $line"
+            if ! echo "$line" | grep -Eq "$pattern"; then
+              echo "❌ Commit message sai format!"
+              exit 1
+            fi
+          done
