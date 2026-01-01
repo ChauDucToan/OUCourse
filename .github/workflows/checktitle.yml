@@ -1,0 +1,30 @@
+name: Commit message check
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  check-title:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate PR Title
+        run: |
+          # Lấy tiêu đề PR từ context của GitHub
+          TITLE="${{ github.event.pull_request.title }}"
+          
+          # Regex của bạn
+          PATTERN="^(feat|fix|docs|refactor|test|chore)\((frontend|oucourse|infra|root)\): .+"
+          
+          echo "Checking PR Title: $TITLE"
+          
+          # Kiểm tra regex
+          if [[ ! "$TITLE" =~ $PATTERN ]]; then
+            echo "❌ Lỗi: Tiêu đề PR không đúng chuẩn Semantic Commit!"
+            echo "👉 Format yêu cầu: type(scope): description"
+            echo "👉 Ví dụ đúng: feat(frontend): add login screen"
+            echo "👉 Scope cho phép: frontend, oucourse, infra, root"
+            exit 1
+          else
+            echo "✅ Tiêu đề hợp lệ!"
+          fi
