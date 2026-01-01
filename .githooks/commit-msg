@@ -51,7 +51,12 @@ TOP_DIRS="$(echo "$CHANGED_FILES" | awk -F/ '{print $1}' | sort -u)"
 # Ta chuẩn hoá: nếu dòng top-dir không phải là thư mục thật trong repo => root
 NORMALIZED_DIRS=()
 while IFS= read -r d; do
-  if [[ -d "$d" ]]; then
+  dl="$(echo "$d" | tr '[:upper:]' '[:lower:]')"
+  if [[ "$dl" == "oucourse" ]]; then
+    NORMALIZED_DIRS+=("oucourse")
+  elif [[ "$d" == ".github" || "$d" == ".githooks" ]]; then
+    NORMALIZED_DIRS+=("infra")
+  elif [[ -d "$d" ]]; then
     NORMALIZED_DIRS+=("$d")
   else
     NORMALIZED_DIRS+=("root")
