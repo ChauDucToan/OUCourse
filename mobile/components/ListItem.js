@@ -10,9 +10,9 @@ const ListItem = ({ mapJson, navigation, header }) => {
         {header}
       </List.Subheader>
       {mapJson &&
-        mapJson.map((item) => (
+        mapJson.map((item, index) => (
           <List.Item
-            key={item.key}
+            key={item.id ? item.id.toString() : index.toString()}
             className={jsonStyle["list-item"]}
             title={() => <TextCustom.TextMuted text={item.title} />}
             description={item.description}

@@ -10,11 +10,11 @@ import { Card, Icon } from "react-native-paper";
 import { useContext } from "react";
 import colors from "tailwindcss/colors";
 
-import User from "./screens/User/User";
 import Appearance from "./screens/Setting/Appearance";
 import Setting from "./screens/Setting/Setting";
 import AccountScreen from "./screens/Account/Account";
-import Auth from "./screens/User/Auth";
+import Login from "./screens/User/Login";
+import Register from "./screens/User/Register";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -43,7 +43,8 @@ const StackAccountNavigator = () => {
     >
       <Stack.Screen name="AccountScreen" component={AccountScreen} />
       <Stack.Screen name="Setting" component={Setting} />
-      <Stack.Screen name="Auth" component={Auth} />
+      <Stack.Screen name="Login" component={Login} />
+      <Stack.Screen name="Register" component={Register} />
       <Stack.Screen name="Apperance" component={Appearance} />
     </Stack.Navigator>
   );

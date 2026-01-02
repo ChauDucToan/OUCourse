@@ -16,7 +16,7 @@ const AccountScreen = ({ navigation }) => {
       console.error("Lỗi đăng xuất:", error);
     }
   };
-
+  console.log("user ne", user);
   return (
     <ScrollView className="flex-1 bg-slate-50">
       {user && (
@@ -25,15 +25,15 @@ const AccountScreen = ({ navigation }) => {
             <View>
               <Avatar.Image
                 size={80}
-                source={{ uri: user.avatar }}
+                source={{ uri: user.image }}
                 className="bg-slate-200"
               />
             </View>
             <View>
               <Text className="text-xl font-bold text-slate-800 mt-3">
-                {user.name}
+                {user.first_name + user.last_name}
               </Text>
-              <Text className="text-slate-500">{user.email}</Text>
+              <Text className="text-slate-500">{user.username}</Text>
               <Pressable
                 onPress={() => console.log("Click me!")}
                 className="mt-3 p-2 rounded-xl shadow-sm bg-slate-600 active:bg-slate-700 active:opacity-90"
@@ -84,14 +84,12 @@ const AccountScreen = ({ navigation }) => {
           </View>
           <View className="p-4 mt-2 mb-8">
             <Pressable
-              onPress={() => navigation.navigate("Auth")}
+              onPress={() => navigation.navigate("Login")}
               className="flex-row items-center justify-center p-3 bg-white border border-slate-200 rounded-xl shadow-sm active:bg-slate-50 mt-4"
             >
               <List.Icon icon="login" color={colors.slate[500]} />
 
-              <Text className="font-bold text-slate-500 ml-1">
-                Đăng nhập ngay
-              </Text>
+              <Text className="font-bold text-slate-500 ml-1">Đăng nhập</Text>
             </Pressable>
           </View>
           <Text className="text-center text-slate-400 text-xs mt-4">
