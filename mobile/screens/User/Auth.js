@@ -1,10 +1,14 @@
 import { useState } from "react";
-import { View, Text } from "react-native";
-import { Button, TextInput } from "react-native-paper";
+import { Pressable } from "react-native";
+import { View, Button } from "react-native";
+import { List, TextInput } from "react-native-paper";
 import colors from "tailwindcss/colors";
+import TextCustom from "../../components/TextCustom";
 
 const Auth = () => {
   const jsonData = require("../../mock/data.config.register.json");
+  const jsonStyle = require("../../mock/data.styles.json");
+
   const [isLogin, setIsLogin] = useState(true);
   const fieldsRender = isLogin
     ? jsonData.info.filter(
@@ -23,17 +27,38 @@ const Auth = () => {
           mode="outlined"
         />
       ))}
-      <View className="flex mb-2 flex-row-reverse gap-3 mt-2">
-        <Button className="border-2 bg-slate-500 ">
-          <Text className="text-white">
-            {isLogin ? "ĐĂNG NHẬP" : "ĐĂNG KÝ"}
-          </Text>
-        </Button>
-        <Button className="border-2 ">
-          <Text className="text-black">
-            {isLogin ? "Đăng ký" : "Đăng nhập"}
-          </Text>
-        </Button>
+      <View className="flex mb-2 flex-row-reverse gap-5 mt-3">
+        {isLogin ? (
+          <Pressable
+            onPress={() => setIsLogin(true)}
+            className={jsonStyle["pressable-focus"]}
+          >
+            <TextCustom.TextFocus text="ĐĂNG NHẬP" />
+          </Pressable>
+        ) : (
+          <Pressable
+            onPress={() => setIsLogin(true)}
+            className={jsonStyle["pressable-no-focus"]}
+          >
+            <List.Icon color={colors.slate[500]} icon="chevron-left" />
+          </Pressable>
+        )}
+
+        {!isLogin ? (
+          <Pressable
+            onPress={() => setIsLogin(false)}
+            className={jsonStyle["pressable-focus"]}
+          >
+            <TextCustom.TextFocus text="ĐĂNG KÝ" />
+          </Pressable>
+        ) : (
+          <Pressable
+            onPress={() => setIsLogin(false)}
+            className={jsonStyle["pressable-no-focus"]}
+          >
+            <TextCustom.TextNoFocus text="ĐĂNG KÝ" />
+          </Pressable>
+        )}
       </View>
     </View>
   );
