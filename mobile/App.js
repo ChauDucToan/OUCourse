@@ -106,18 +106,6 @@ const TabNavigator = () => {
           tabBarInactiveTintColor: colors.gray[400],
         }}
       />
-      {user && (
-        <Tab.Screen
-          name="Profile"
-          component={AccountScreen}
-          options={{
-            title: "Profile",
-            tabBarIcon: () => (
-              <Icon color={colors.slate[500]} source="account" size={30} />
-            ),
-          }}
-        />
-      )}
     </Tab.Navigator>
   );
 };

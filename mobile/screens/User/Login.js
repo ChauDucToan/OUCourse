@@ -63,10 +63,9 @@ const Login = () => {
             payload: user.data,
           });
           console.log("duoc-6");
-
-          const next = route.params?.next;
-          if (next) {
-            navigation.navigate(next);
+          if (navigation.canGoBack()) {
+            navigation.goBack();
+            navigation.navigate("Home");
           } else {
             navigation.navigate("Home");
           }

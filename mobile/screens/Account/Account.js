@@ -4,6 +4,7 @@ import ListItem from "../../components/ListItem";
 import colors from "tailwindcss/colors";
 import { useContext } from "react";
 import { MyUserContext } from "../../utils/contexts/MyContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const AccountScreen = ({ navigation }) => {
   const jsonAccountData = require("../../mock/data.config.account.json");
