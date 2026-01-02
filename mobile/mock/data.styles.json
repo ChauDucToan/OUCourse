@@ -1,0 +1,10 @@
+{
+  "text-slate": "text-slate-800 font-bold text-base",
+  "text-muted": "text-slate-400 font-bold text-base",
+  "list-item": "m-2 rounded-xl border-2 p-4  border-slate-500 bg-slate-200 ",
+  "list-header": "flex-1 bg-white p-2",
+  "text-focus": "text-slate-700 font-bold text-base",
+  "text-no-focus": "text-white   font-bold text-base",
+  "pressable-focus": "bg-slate-600 border border-slate-300 p-3 rounded-xl items-center",
+  "pressable-no-focus": "border border-slate-300 p-3 rounded-xl items-center active:bg-slate-200"
+}
