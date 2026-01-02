@@ -37,6 +37,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username', 'email', 'role', 'avatar', 'password']
+        ref_name = None # Only show UserSerializer in docs
 
         extra_kwargs = {
             'password': {'write_only': True}
