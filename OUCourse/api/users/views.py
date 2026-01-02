@@ -6,10 +6,11 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 
 # Create your views here.
-class UserView(viewsets.ViewSet, generics.CreateAPIView):
+class UserView(viewsets.ViewSet, generics.ListAPIView):
     queryset = User.objects.filter(is_active=True)
     serializer_class = UserSerializer
-    parser_classes = [parsers.MultiPartParser]
+    parser_classes = [parsers.MultiPartParser, parsers.FormParser]
+    permission_classes = [permissions.IsAdminUser]
 
     @action(methods=['get', 'patch'], url_path='current-user', \
             detail=False, permission_classes=[permissions.IsAuthenticated])
