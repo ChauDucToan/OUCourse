@@ -1,0 +1,48 @@
+{
+  "personal": [
+    {
+      "title": "Hồ sơ cá nhân",
+      "description": "Thông tin, mật khẩu, bảo mật",
+      "iconLeft": "account-circle-outline",
+      "iconColor": "#2563eb",
+      "navUrl": "ProfileDetail"
+    },
+    {
+      "title": "Khóa học của tôi",
+      "description": "",
+      "iconLeft": "book-open-variant",
+      "iconColor": "#2563eb",
+      "navUrl": "MyCourses"
+    },
+    {
+      "title": "Thành tích & Chứng chỉ",
+      "description": "",
+      "iconLeft": "trophy-outline",
+      "iconColor": "#fbbf24",
+      "navUrl": "Certificates"
+    }
+  ],
+  "system": [
+    {
+      "title": "Gói dịch vụ",
+      "description": "Lịch sử thanh toán, gia hạn",
+      "iconLeft": "credit-card-outline",
+      "iconColor": "#475569",
+      "navUrl": "SubscriptionHistory"
+    },
+    {
+      "title": "Điều khoản & Quy định",
+      "description": "",
+      "iconLeft": "file-document-outline",
+      "iconColor": "#475569",
+      "navUrl": "Terms"
+    },
+    {
+      "title": "Trợ giúp & Phản hồi",
+      "description": "",
+      "iconLeft": "help-circle-outline",
+      "iconColor": "#475569",
+      "navUrl": "Help"
+    }
+  ]
+}

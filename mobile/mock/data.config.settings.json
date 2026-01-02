@@ -1,0 +1,14 @@
+{
+  "menu-setting": [
+    {
+      "title": "Tài khoản",
+      "icon-left": "account",
+      "url-navigate": "Auth"
+    },
+    {
+      "title": "Giao diện",
+      "icon-left": "theme-light-dark",
+      "url-navigate": "Apperance"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "info": [
+    {
+      "title": "Tên",
+      "field": "first_name",
+      "icon": "text"
+    },
+    {
+      "title": "Họ và tên lót",
+      "field": "last_name",
+      "icon": "text"
+    },
+    {
+      "title": "Tên đăng nhập",
+      "field": "username",
+      "icon": "account"
+    },
+    {
+      "title": "Mật khẩu",
+      "field": "password",
+      "icon": "eye",
+      "secureTextEntry": true
+    },
+    {
+      "title": "Xác nhận mật khẩu",
+      "field": "confirm",
+      "icon": "eye",
+      "secureTextEntry": true
+    }
+  ]
+}
