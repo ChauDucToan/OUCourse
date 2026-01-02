@@ -53,9 +53,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'drf_yasg',
     'rest_framework',
     'ckeditor',
-    'drf_yasg',
     'oauth2_provider',
     'api.course.apps.CourseConfig',
     'api.users.apps.UsersConfig'

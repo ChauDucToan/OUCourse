@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets, generics, status, parsers, permissions
 from .models import User
-from .serializers import UserSerializer
+from .serializers import UserSerializer, UserCreateSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import action
 
@@ -11,6 +11,11 @@ class UserView(viewsets.ViewSet, generics.CreateAPIView):
     serializer_class = UserSerializer
     parser_classes = [parsers.MultiPartParser]
     permission_classes = [permissions.IsAdminUser]
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return UserCreateSerializer
+        return UserSerializer
 
     @action(methods=['get', 'patch'], url_path='current-user', \
             detail=False, permission_classes=[permissions.IsAuthenticated])
