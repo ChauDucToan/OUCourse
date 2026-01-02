@@ -10,10 +10,11 @@ import { Card, Icon } from "react-native-paper";
 import { useContext } from "react";
 import colors from "tailwindcss/colors";
 
-import Auth from "./screens/User/Auth";
 import User from "./screens/User/User";
 import Appearance from "./screens/Setting/Appearance";
 import Setting from "./screens/Setting/Setting";
+import AccountScreen from "./screens/Account/Account";
+import Auth from "./screens/User/Auth";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -34,17 +35,14 @@ const StackHomeNavigator = () => {
     </Stack.Navigator>
   );
 };
-const StackSettingNavigator = () => {
+const StackAccountNavigator = () => {
   return (
     <Stack.Navigator
-      initialRouteName="Setting"
+      initialRouteName="AccountScreen"
       screenOptions={{ headerShown: false }}
     >
-      <Stack.Screen
-        name="Setting"
-        component={Setting}
-        options={{ title: "Cài đặt" }}
-      />
+      <Stack.Screen name="AccountScreen" component={AccountScreen} />
+      <Stack.Screen name="Setting" component={Setting} />
       <Stack.Screen name="Auth" component={Auth} />
       <Stack.Screen name="Apperance" component={Appearance} />
     </Stack.Navigator>
@@ -63,24 +61,54 @@ const TabNavigator = () => {
           tabBarIcon: () => (
             <Icon color={colors.slate[500]} source="home" size={30} />
           ),
-          tabBarActiveTintColor: colors.gray[500],
+          tabBarActiveTintColor: colors.gray[900],
+          tabBarInactiveTintColor: colors.gray[400],
         }}
       />
       <Tab.Screen
-        name={"Setting"}
-        component={StackSettingNavigator}
+        name="Search"
+        component={StackHomeNavigator}
         options={{
-          title: "Cài đặt",
+          title: "Tìm kiếm",
           tabBarIcon: () => (
-            <Icon color={colors.slate[500]} source="cog-outline" size={30} />
+            <Icon color={colors.slate[500]} source="magnify" size={30} />
           ),
-          tabBarActiveTintColor: colors.gray[500],
+          tabBarActiveTintColor: colors.gray[900],
+          tabBarInactiveTintColor: colors.gray[400],
+        }}
+      />
+      <Tab.Screen
+        name="Learning"
+        component={StackHomeNavigator}
+        options={{
+          title: "Học nào",
+          tabBarIcon: () => (
+            <Icon
+              color={colors.slate[500]}
+              source="play-circle-outline"
+              size={30}
+            />
+          ),
+          tabBarActiveTintColor: colors.gray[900],
+          tabBarInactiveTintColor: colors.gray[400],
+        }}
+      />
+      <Tab.Screen
+        name={"Account"}
+        component={StackAccountNavigator}
+        options={{
+          title: "Tài khoản",
+          tabBarIcon: () => (
+            <Icon color={colors.slate[500]} source="account" size={30} />
+          ),
+          tabBarActiveTintColor: colors.gray[900],
+          tabBarInactiveTintColor: colors.gray[400],
         }}
       />
       {user && (
         <Tab.Screen
           name="Profile"
-          component={User}
+          component={AccountScreen}
           options={{
             title: "Profile",
             tabBarIcon: () => (
