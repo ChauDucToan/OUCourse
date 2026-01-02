@@ -14,6 +14,9 @@ from pathlib import Path
 from dotenv import load_dotenv
 import os
 import pymysql
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
 pymysql.install_as_MySQLdb()
 
@@ -35,6 +38,12 @@ ALLOWED_HOSTS = []
 
 load_dotenv(BASE_DIR.parent / '.env')
 
+cloudinary.config( 
+  	cloud_name = os.getenv("CLOUDINARY_CLOUD_NAME"),
+  	api_key = os.getenv("CLOUDINARY_API_KEY"),
+  	api_secret = os.getenv("CLOUDINARY_SECRET_KEY")
+)
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -44,13 +53,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'ckeditor',
     'drf_yasg',
     'oauth2_provider',
     'api.course.apps.CourseConfig',
-    'api.authentication.apps.AuthenticationConfig'
+    'api.users.apps.UsersConfig'
 ]
-AUTH_USER_MODEL = "authentication.User"
+AUTH_USER_MODEL = "users.User"
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (

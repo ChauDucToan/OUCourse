@@ -1,6 +1,6 @@
 from django.urls import path, include # Nhớ include
 
 urlpatterns = [
-    path('auth/', include('api.authentication.urls')),
-    path('courses/', include('api.courses.urls')),
+    path('users/', include('api.users.urls')),
+    # path('course/', include('api.course.urls')),
 ]
