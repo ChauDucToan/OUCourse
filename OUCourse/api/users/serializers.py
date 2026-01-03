@@ -48,6 +48,11 @@ class UserCreateSerializer(serializers.ModelSerializer):
         data['avatar'] = instance.avatar.url if instance.avatar else ''
         data['role'] = instance.role
         return data
+    
+    def validate_role(self, role):
+        if role == User.Role.INSTRUCTOR:
+            self.Meta.model.active = False # Manualy approve instructors
+        return role
 
     def validate_password(self, password):
         validate_password(password)
