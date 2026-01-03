@@ -14,6 +14,9 @@ from pathlib import Path
 from dotenv import load_dotenv
 import os
 import pymysql
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
 pymysql.install_as_MySQLdb()
 
@@ -21,6 +24,10 @@ pymysql.install_as_MySQLdb()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 MEDIA_ROOT = '%s/courses/static/' % BASE_DIR
+
+LOGIN_REDIRECT_URL = "home"
+
+LOGOUT_REDIRECT_URL = "home"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -35,6 +42,12 @@ ALLOWED_HOSTS = []
 
 load_dotenv(BASE_DIR.parent / '.env')
 
+cloudinary.config( 
+  	cloud_name = os.getenv("CLOUDINARY_CLOUD_NAME"),
+  	api_key = os.getenv("CLOUDINARY_API_KEY"),
+  	api_secret = os.getenv("CLOUDINARY_SECRET_KEY")
+)
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -44,17 +57,19 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'ckeditor',
     'drf_yasg',
+    'rest_framework',
+    'ckeditor',
     'oauth2_provider',
-    'api.course.apps.CourseConfig',
-    'api.authentication.apps.AuthenticationConfig'
+    'api.courses.apps.CoursesConfig',
+    'api.users.apps.UsersConfig'
 ]
-AUTH_USER_MODEL = "authentication.User"
+AUTH_USER_MODEL = "users.User"
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+        'rest_framework.authentication.SessionAuthentication',
     )
 }
 
@@ -73,7 +88,9 @@ ROOT_URLCONF = 'OUCourse.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
