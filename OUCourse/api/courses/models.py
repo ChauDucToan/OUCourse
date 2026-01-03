@@ -39,6 +39,7 @@ class Course(BaseModel):
     description = models.TextField(null=False)
     image = CloudinaryField(null=True, blank=True)
     video = models.URLField(null=True, blank=True)
+    duration = models.PositiveIntegerField(default=0)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     def clean(self):

@@ -32,3 +32,19 @@ class CourseSerializer(ImageSerializer):
         data['price'] = str(instance.price)
         data['category'] = instance.category.name
         return data
+    
+class LessonSerializer(ImageSerializer):
+    class Meta:
+        model = Lesson
+        fields = ['id', 'subject', 'content', 'video', 'image', 'course', 'tags', 'order']
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['id'] = instance.id
+        data['subject'] = instance.subject
+        data['content'] = instance.content
+        data['video'] = instance.video if instance.video else ''
+        data['course'] = instance.course.subject
+        data['tags'] = [tag.name for tag in instance.tags.all()]
+        data['order'] = instance.order
+        return data

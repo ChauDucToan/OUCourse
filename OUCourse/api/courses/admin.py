@@ -1,13 +1,8 @@
 from django.contrib import admin
-from .models import Course, Category, Tag
+from .models import Course, Category, Tag, Lesson
 from django.utils.safestring import mark_safe
 
-# Register your models here.
-class CourseAdmin(admin.ModelAdmin):
-    list_display = ('instructor', 'subject', 'price', 'active', 'created_date')
-    search_fields = ('instructor', 'subject', 'price')
-
-    list_filter = ['category']
+class ImageVideoViewMixin(admin.ModelAdmin):
     readonly_fields = ['image_view', 'video_view']
 
     def image_view(self, course):
@@ -35,6 +30,20 @@ class CourseAdmin(admin.ModelAdmin):
                         ''')
         return ""
 
+# Register your models here.
+class CourseAdmin(ImageVideoViewMixin):
+    list_display = ('instructor', 'subject', 'price', 'category', 'active', 'created_date')
+    search_fields = ('instructor', 'subject', 'price')
+
+    list_filter = ['category']
+    
+    
+class LessonAdmin(ImageVideoViewMixin):
+    list_display = ('subject', 'course', 'order', 'active', 'video', 'created_date')
+    search_fields = ('subject', 'course__subject')
+
+    list_filter = ['course']
+
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'active', 'created_date')
     search_fields = ('name',)
@@ -46,3 +55,4 @@ class TagAdmin(admin.ModelAdmin):
 admin.site.register(Course, CourseAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Tag, TagAdmin)
+admin.site.register(Lesson, LessonAdmin)
