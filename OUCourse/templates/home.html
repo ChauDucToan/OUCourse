@@ -3,14 +3,52 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-{% if user.is_authenticated %}
-Hi {{ user.username }}!
-<form action="{% url 'logout' %}" method="post">
-  {% csrf_token %}
-  <button type="submit">Log Out</button>
-</form>
-{% else %}
-<p>You are not logged in</p>
-<a href="{% url 'login' %}">Log In</a>
-{% endif %}
+
+<div class="flex flex-col items-center justify-center w-full min-h-[70vh]">
+
+    <div class="w-full max-w-md p-8 space-y-6 text-center 
+                bg-white/50 backdrop-blur-xl 
+                border border-white/60 rounded-2xl shadow-xl">
+        
+        {% if user.is_authenticated %}
+            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
+                <svg class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+            </div>
+
+            <h1 class="text-3xl font-extrabold text-gray-800 tracking-tight">
+                Xin chào, {{ user.username }}!
+            </h1>
+            
+            <p class="text-gray-600">
+                Bạn đã đăng nhập thành công vào hệ thống.
+            </p>
+
+            <div class="mt-8">
+                <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" 
+                            class="px-8 py-3 rounded-xl font-bold text-white transition-all duration-300 transform
+                                   bg-red-500 
+                                   hover:bg-red-600 
+                                   hover:shadow-lg hover:shadow-red-500/50 
+                                   hover:-translate-y-1 hover:scale-105
+                                   focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                        Đăng xuất
+                    </button>
+                </form>
+            </div>
+
+        {% else %}
+            <h1 class="text-2xl font-bold text-gray-700">Bạn chưa đăng nhập</h1>
+            <div class="mt-6">
+                <a href="{% url 'login' %}" class="text-blue-600 hover:underline">Đi tới trang đăng nhập</a>
+            </div>
+        {% endif %}
+
+    </div>
+
+</div>
+
 {% endblock %}
