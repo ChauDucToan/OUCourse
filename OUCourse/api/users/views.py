@@ -10,7 +10,7 @@ class UserView(viewsets.ViewSet, generics.CreateAPIView):
     queryset = User.objects.filter(is_active=True)
     serializer_class = UserSerializer
     parser_classes = [parsers.MultiPartParser]
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.AllowAny]
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -29,3 +29,8 @@ class UserView(viewsets.ViewSet, generics.CreateAPIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(UserSerializer(u).data, status=status.HTTP_200_OK)
+    
+    @action(methods=['post'], url_path='login', detail=False, \
+            permission_classes=[permissions.AllowAny])
+    def login(self, request):
+        return Response({"detail": "Use OAuth2 to login"}, status=status.HTTP_200_OK)

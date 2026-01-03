@@ -38,7 +38,16 @@ SECRET_KEY = 'django-insecure-p4ylr@%qf6mhp=pq*q__#(%*krvh7$*^t)pv61e_xi_pu8b*ed
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'paleological-pachydermatously-linnie.ngrok-free.dev',
+    '127.0.0.1',
+]
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://paleological-pachydermatously-linnie.ngrok-free.dev',
+]
 
 load_dotenv(BASE_DIR.parent / '.env')
 
@@ -47,6 +56,8 @@ cloudinary.config(
   	api_key = os.getenv("CLOUDINARY_API_KEY"),
   	api_secret = os.getenv("CLOUDINARY_SECRET_KEY")
 )
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Application definition
 
@@ -60,6 +71,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'rest_framework',
     'ckeditor',
+    'corsheaders',
     'oauth2_provider',
     'api.courses.apps.CoursesConfig',
     'api.users.apps.UsersConfig'
@@ -81,6 +93,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'OUCourse.urls'

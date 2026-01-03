@@ -62,7 +62,7 @@ class CourseView(viewsets.ModelViewSet):
         course = self.get_object()
         u = request.user
 
-        manage_course, created = ManageCourse.objects.get_or_create(
+        _, created = ManageCourse.objects.get_or_create(
             student=u,
             course=course,
             defaults={'status': ManageCourse.Status.ENROLLED}
