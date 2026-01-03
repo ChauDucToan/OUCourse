@@ -37,7 +37,6 @@ class CourseAdmin(ImageVideoViewMixin):
 
     list_filter = ['category']
     
-    
 class LessonAdmin(ImageVideoViewMixin):
     list_display = ('subject', 'course', 'order', 'active', 'video', 'created_date')
     search_fields = ('subject', 'course__subject')

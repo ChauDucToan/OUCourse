@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include, re_path
+from django.views.generic.base import TemplateView
 
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
@@ -35,6 +36,8 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path("accounts/", include("django.contrib.auth.urls")),
+    path("", TemplateView.as_view(template_name="home.html"), name="home"),
     path('api/', include('api.urls')),
     path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     re_path(r'^swagger(?P<format>\.json|\.yaml)$', \
