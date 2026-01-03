@@ -57,7 +57,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'ckeditor',
     'oauth2_provider',
-    'api.course.apps.CourseConfig',
+    'api.courses.apps.CoursesConfig',
     'api.users.apps.UsersConfig'
 ]
 AUTH_USER_MODEL = "users.User"

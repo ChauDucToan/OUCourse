@@ -32,7 +32,6 @@ class Course(BaseModel):
     subject = models.CharField(max_length=255)
     description = models.TextField(null=False)
     image = CloudinaryField(null=True, blank=True)
-    video = CloudinaryField(null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     def clean(self):
@@ -47,6 +46,7 @@ class Lesson(BaseModel):
     subject = models.CharField(max_length=255)
     content = RichTextField(null=False)
     image = CloudinaryField(null=True)
+    video = models.URLField(null=True, blank=True)
     course = models.ForeignKey(Course, on_delete=models.RESTRICT)
 
     def __str__(self):
