@@ -68,7 +68,7 @@ class Lesson(BaseModel):
 
 class ManageCourse(models.Model):
     class Status(models.TextChoices):
-        UNENROLED = "UNENROLLED"
+        UNENROLLED = "UNENROLLED"
         ENROLLED = "ENROLLED"
         COMPLETED = "COMPLETED"
 
