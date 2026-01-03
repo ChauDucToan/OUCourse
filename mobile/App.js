@@ -9,17 +9,24 @@ import colors from "tailwindcss/colors";
 
 import AccountStack from "./navigation/AccountStack";
 import HomeStack from "./navigation/HomeStack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import SearchStack from "./navigation/SearchStack";
 
+const Tab = createBottomTabNavigator();
 
 const TabNavigator = () => {
   const [user] = useContext(MyUserContext);
   return (
-    <Tab.Navigator>
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false, // ẩn header của tab
+      }}
+    >
       <Tab.Screen
         name={"Home"}
         component={HomeStack}
+        screenO
         options={{
-          title: "Trang chủ",
           tabBarIcon: () => (
             <Icon color={colors.slate[500]} source="home" size={30} />
           ),
@@ -29,7 +36,7 @@ const TabNavigator = () => {
       />
       <Tab.Screen
         name="Search"
-        component={StackHomeNavigator}
+        component={SearchStack}
         options={{
           title: "Tìm kiếm",
           tabBarIcon: () => (
@@ -41,7 +48,7 @@ const TabNavigator = () => {
       />
       <Tab.Screen
         name="Learning"
-        component={StackHomeNavigator}
+        component={HomeStack}
         options={{
           title: "Học nào",
           tabBarIcon: () => (
