@@ -68,14 +68,22 @@ class Lesson(BaseModel):
 
 class ManageCourse(models.Model):
     class Status(models.TextChoices):
+        UNENROLED = "UNENROLLED"
         ENROLLED = "ENROLLED"
         COMPLETED = "COMPLETED"
+
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.UNENROLLED,
+    )
 
     student = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="managed_courses",
     )
+
     course = models.ForeignKey(
         "courses.Course",
         on_delete=models.CASCADE,
