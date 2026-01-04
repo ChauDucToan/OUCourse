@@ -1,7 +1,11 @@
 from rest_framework import viewsets, generics, permissions, status
 from . import serializers, paginators, models, perms
+from django.contrib.auth import get_user_model
+from django.db.models import Q
 from rest_framework.decorators import action
 from rest_framework.response import Response
+
+UserModel = get_user_model()
 
 # Create your views here.
 class CategoryView(viewsets.ViewSet, generics.ListAPIView):
@@ -34,6 +38,23 @@ class CourseView(viewsets.ModelViewSet):
         q = self.request.query_params.get('q')
         if q:
             query = query.filter(subject__icontains=q)
+
+        instructor_name = self.request.query_params.get('instructor')
+        if instructor_name:
+            query = query.filter(
+                Q(instructor__username__icontains=instructor_name) |
+                Q(instructor__first_name__icontains=instructor_name) |
+                Q(instructor__last_name__icontains=instructor_name),
+                instructor__role=UserModel.Role.INSTRUCTOR
+        )
+            
+        price_min = self.request.query_params.get('price_min')
+        if price_min:
+            query = query.filter(price__gte=price_min)
+        
+        price_max = self.request.query_params.get('price_max')
+        if price_max:
+            query = query.filter(price__lte=price_max)
 
         cate_id = self.request.query_params.get('category_id')
         if cate_id:
