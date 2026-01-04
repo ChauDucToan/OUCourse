@@ -1,4 +1,4 @@
-from rest_framework import viewsets, generics, permissions, status
+from rest_framework import viewsets, generics, permissions, status, parsers
 from .. import perms
 from . import serializers, paginators, models
 from django.contrib.auth import get_user_model
@@ -15,6 +15,7 @@ class CategoryView(viewsets.ViewSet, generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
 class CourseView(viewsets.ModelViewSet):
+    parser_classes = [parsers.MultiPartParser, parsers.FormParser]
     queryset = models.Course.objects.filter(active=True)
     serializer_class = serializers.CourseSerializer
     pagination_class = paginators.CoursePaginator
@@ -23,7 +24,7 @@ class CourseView(viewsets.ModelViewSet):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             return [perms.IsNotStudent()]
         
-        return [permissions.IsAuthenticated()]
+        return [permissions.AllowAny()]
 
     def get_queryset(self):
         query = self.queryset
@@ -54,8 +55,15 @@ class CourseView(viewsets.ModelViewSet):
             query = query.filter(category_id=cate_id)
 
         return query
+    
+    @action(methods=['get'], url_path='lessons', detail=True)
+    def get_lessons(self, request, pk):
+        lessons = self.get_object().lesson_set.filter(active=True)
 
-    @action(methods=['post'], permission_classes=[permissions.IsAuthenticated], url_path='enroll', detail=True)
+        return Response(serializers.LessonSerializer(lessons, many=True).data, status=status.HTTP_200_OK)
+
+    @action(methods=['post'], permission_classes=[permissions.IsAuthenticated], url_path='enroll',
+             detail=True)
     def enroll(self, request):
         course = self.get_object()
         u = request.user

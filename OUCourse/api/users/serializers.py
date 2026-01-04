@@ -45,22 +45,22 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        data['avatar'] = instance.avatar.url if instance.avatar else ''
-        data['role'] = instance.role
+        if instance.avatar:
+            data['avatar'] = instance.avatar.url
+        if instance.role:
+            data['role'] = instance.role
         return data
-    
-    def validate_role(self, role):
-        if role == User.Role.INSTRUCTOR:
-            self.Meta.model.active = False # Manualy approve instructors
-        return role
 
     def validate_password(self, password):
         validate_password(password)
         return password
 
     def create(self, validated_data):
-        password = validated_data.pop('password')
         user = self.Meta.model(**validated_data)
-        user.set_password(password)
+        user.set_password(user.password)
+
+        if user.role == User.Role.INSTRUCTOR:
+            user.is_active = False
+
         user.save()
         return user

@@ -11,13 +11,10 @@ class TagView(viewsets.ViewSet, generics.ListAPIView):
     serializer_class = serializers.TagSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-class LessonView(viewsets.ModelViewSet):
+class LessonView(viewsets.ViewSet, generics.RetrieveUpdateDestroyAPIView
+                 , generics.CreateAPIView):
     pagination_class = paginators.LessonPaginator
-
-    def get_serializer_class(self):
-        if self.action in ['create', 'update', 'partial_update', 'retrieve']:
-            return serializers.LessonDetailSerializer
-        return serializers.LessonSerializer
+    serializer_class = serializers.LessonDetailSerializer
 
     def get_queryset(self):
         course_id = self.request.query_params.get('course_id')
