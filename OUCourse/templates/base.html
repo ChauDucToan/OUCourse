@@ -1,16 +1,69 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  
   <title>{% block title %}Django Auth Tutorial{% endblock %}</title>
-</head>
+  
+  <link href="{% static 'css/output.css' %}" rel="stylesheet">
+  
+  </head>
 
-<body>
-  <main>
+<body class="flex flex-col min-h-screen bg-gray-50 text-gray-800 font-sans">
+
+  <nav class="bg-white shadow-sm border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16">
+        <div class="flex items-center">
+          <a href="/" class="text-2xl font-bold text-blue-600 hover:text-blue-700">
+            OUCourse
+          </a>
+        </div>
+
+        <div class="flex items-center space-x-4">
+          <a href="/" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 hover:text-blue-600 transition">
+            Home
+          </a>
+          <a href="/admin" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 hover:text-blue-600 transition">
+            Admin
+          </a>
+          <a href="/swagger" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100 hover:text-blue-600 transition">
+            Swagger
+          </a>
+          
+          {% if user.is_authenticated %}
+            <span class="text-sm text-gray-500">Xin chào, {{ user.username }}</span>
+            <form action="{% url 'logout' %}" method="post" class="inline"> 
+                {% csrf_token %}
+                <button type="submit" class="ml-2 px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-500 hover:bg-red-600 focus:outline-none">
+                  Logout
+                </button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
     {% block content %}
     {% endblock %}
   </main>
-</body>
 
+  <footer class="bg-gray-800 text-gray-300 py-6 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
+      <div class="mb-4 md:mb-0">
+        <p class="text-sm">&copy; {% now "Y" %} OUCourse. All rights reserved.</p>
+      </div>
+      <div class="flex space-x-6">
+        <a href="https://github.com/ChauDucToan" class="text-sm hover:text-white transition">Oslamelon</a>
+        <a href="https://github.com/khaquachtrong74" class="text-sm hover:text-white transition">Khat</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
 </html>

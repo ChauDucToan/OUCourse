@@ -23,7 +23,11 @@ pymysql.install_as_MySQLdb()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-MEDIA_ROOT = '%s/courses/static/' % BASE_DIR
+MEDIA_ROOT = '%s/static/' % BASE_DIR
+
+LOGIN_REDIRECT_URL = "home"
+
+LOGOUT_REDIRECT_URL = "home"
 
 LOGIN_REDIRECT_URL = "home"
 
@@ -38,7 +42,17 @@ SECRET_KEY = 'django-insecure-p4ylr@%qf6mhp=pq*q__#(%*krvh7$*^t)pv61e_xi_pu8b*ed
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'paleological-pachydermatously-linnie.ngrok-free.dev',
+    '127.0.0.1',
+    'localhost',
+]
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://paleological-pachydermatously-linnie.ngrok-free.dev',
+]
 
 load_dotenv(BASE_DIR.parent / '.env')
 
@@ -47,6 +61,8 @@ cloudinary.config(
   	api_key = os.getenv("CLOUDINARY_API_KEY"),
   	api_secret = os.getenv("CLOUDINARY_SECRET_KEY")
 )
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Application definition
 
@@ -60,6 +76,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'rest_framework',
     'ckeditor',
+    'corsheaders',
     'oauth2_provider',
     'api.courses.apps.CoursesConfig',
     'api.users.apps.UsersConfig'
@@ -81,6 +98,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'OUCourse.urls'
@@ -151,7 +169,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

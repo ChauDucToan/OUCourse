@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include, re_path
 from django.views.generic.base import TemplateView
+from django.contrib.auth import logout
+from django.shortcuts import redirect
 
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
@@ -24,20 +26,25 @@ from drf_yasg import openapi
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Course API",
+        title="OUCourse API",
         default_version='v1',
-        description="APIs for CourseApp",
-        contact=openapi.Contact(email="thanh.dh@ou.edu.vn"),
-        license=openapi.License(name="Dương Hữu Thành@2025"),
+        description="APIs for e-learning course management system",
+        contact=openapi.Contact(url="https://github.com/ChauDucToan/OUCourse"),
+        license=openapi.License(name="OUCourse@2026"),
     ),
     public=True,
     permission_classes=(permissions.AllowAny,),
 )
 
+def logout_view(request):
+    logout(request)
+    return redirect(request.GET.get('next', '/'))
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("accounts/", include("django.contrib.auth.urls")),
-    path("", TemplateView.as_view(template_name="home.html"), name="home"),
+    path('accounts/logout/', logout_view, name='logout'),
+    path('accounts/', include("django.contrib.auth.urls")),
+    path('', TemplateView.as_view(template_name="home.html"), name="home"),
     path('api/', include('api.urls')),
     path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     re_path(r'^swagger(?P<format>\.json|\.yaml)$', \
