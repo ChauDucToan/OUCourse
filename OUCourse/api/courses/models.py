@@ -1,19 +1,12 @@
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from ..models import BaseModel
 from django.contrib.auth import get_user_model
 from ckeditor.fields import RichTextField
 from cloudinary.models import CloudinaryField
 
 UserModel = get_user_model()
-
-class BaseModel(models.Model):
-    active = models.BooleanField(default=True)
-    created_date = models.DateTimeField(auto_now_add=True)
-    updated_date = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        abstract = True
 
 class Category(BaseModel):
     name = models.CharField(max_length=50, unique=True)

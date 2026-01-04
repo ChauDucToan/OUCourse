@@ -1,8 +1,5 @@
 from django.db import models
-from ..courses.models import BaseModel
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.conf import settings
+from ..models import BaseModel
 from ckeditor.fields import RichTextField
 from cloudinary.models import CloudinaryField
 
@@ -36,60 +33,3 @@ class Lesson(BaseModel):
 
     def __str__(self):
         return self.subject
-
-class Interaction(BaseModel):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        null=False
-    )
-
-    lesson = models.ForeignKey(
-        Lesson,
-        on_delete=models.CASCADE,
-        null=False
-    )
-
-    class Meta:
-        abstract = True
-
-class Comment(Interaction):
-    content = models.TextField(null=False, blank=False)
-
-    def __str__(self):
-        return self.content
-
-class Emotion(BaseModel):
-    class EmotionType(models.TextChoices):
-        LIKE = "LIKE"
-        LOVE = "LOVE"
-        FUNNY = "FUNNY"
-        SAD = "SAD"
-
-    type = models.CharField(
-        max_length=10,
-        choices=EmotionType.choices,
-        null=False
-    )
-
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        null=False
-    )
-
-    content_type = models.ForeignKey(
-        ContentType, 
-        on_delete=models.CASCADE,
-        null=False,
-    )
-
-    object_id = models.PositiveIntegerField(null=False)
-
-    content_object = GenericForeignKey('content_type', 'object_id')
-
-    class Meta:
-        unique_together = ('user', 'content_type', 'object_id')
-
-    def __str__(self):
-        return f"{self.user.username} {self.type} {self.content_object}"

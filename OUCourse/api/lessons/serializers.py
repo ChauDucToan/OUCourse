@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from .models import Lesson, Comment, Tag
-from ..users.serializers import UserSerializer
+from .models import Lesson, Tag
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
@@ -24,20 +23,3 @@ class LessonDetailSerializer(LessonSerializer):
 
     def get_tags(self, obj):
         return [tag.name for tag in obj.tags.all()]
-
-class CommentSerializer(serializers.ModelSerializer):
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-
-        data['user'] = UserSerializer(instance.user).data
-
-        return data
-
-    class Meta:
-        model = Comment
-        fields = ['id', 'content', 'created_date', 'user', 'lesson']
-        extra_kwargs = {
-            'lesson': {
-                'write_only': "True"
-            }
-        }

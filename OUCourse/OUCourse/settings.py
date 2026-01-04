@@ -81,6 +81,7 @@ INSTALLED_APPS = [
     'api.courses.apps.CoursesConfig',
     'api.users.apps.UsersConfig',
     'api.lessons.apps.LessonsConfig',
+    'api.comments.apps.CommentsConfig',
 ]
 AUTH_USER_MODEL = "users.User"
 

@@ -49,8 +49,3 @@ class LessonView(viewsets.ModelViewSet):
 
         comments = self.get_object().comment_set.select_related('user').filter(active=True)
         return Response(serializers.CommentSerializer(comments, many=True).data, status=status.HTTP_200_OK)
-
-class CommentView(viewsets.ViewSet, generics.DestroyAPIView):
-    serializer_class = serializers.CommentSerializer
-    pagination_class = paginators.CommentPaginator
-    permission_classes = [permissions.IsAuthenticated]
