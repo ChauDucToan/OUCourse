@@ -36,7 +36,7 @@ const AccountScreen = ({ navigation }) => {
               </Text>
               <Text className="text-slate-500">{user.username}</Text>
               <Pressable
-                onPress={() => console.log("Click me!")}
+                onPress={() => navigation.navigate("AccountDetailedScreen")}
                 className="mt-3 p-2 rounded-xl shadow-sm bg-slate-600 active:bg-slate-700 active:opacity-90"
               >
                 <Text className="text-white font-bold text-xs text-center">

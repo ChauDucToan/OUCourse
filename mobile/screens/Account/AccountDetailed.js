@@ -22,7 +22,7 @@ const InfoRow = ({ subject, text, icon, isEdit, onChangeText, value }) => (
         {subject}
       </Text>
       {!isEdit ? (
-        <Text className="text-base font-medium text-gray-800 ">
+        <Text className="text-base pt-2 font-medium text-gray-800 ">
           {text || "Chưa cập nhật"}
         </Text>
       ) : (
@@ -180,7 +180,7 @@ const AccountDetailedScreen = () => {
       </View>
       <Pressable
         loading={isLoading}
-        className="mt-6 bg-blue-600 py-3  items-center shadow-blue-200 shadow-lg"
+        className="mt-6 bg-slate-600 py-3  items-center shadow-blue-200 shadow-lg"
         onPress={() => {
           if (isEdit) {
             handleEditSave();
