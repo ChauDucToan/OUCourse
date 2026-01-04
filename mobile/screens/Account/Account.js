@@ -26,7 +26,7 @@ const AccountScreen = ({ navigation }) => {
             <View>
               <Avatar.Image
                 size={80}
-                source={{ uri: user.image }}
+                source={{ uri: user.avatar }}
                 className="bg-slate-200"
               />
             </View>

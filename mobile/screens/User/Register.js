@@ -1,15 +1,15 @@
 import AuthLayout from "../../components/AuthLayout";
-import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
-import { Button, HelperText, List, TextInput } from "react-native-paper";
+import { Image, Text, TouchableOpacity, View } from "react-native";
+import { List, TextInput } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
-import Apis, { endpoints } from "../../utils/Apis";
 import { useNavigation } from "@react-navigation/native";
 
 import colors from "tailwindcss/colors";
 import { Pressable } from "react-native";
 import TextCustom from "../../components/TextCustom";
 import { ActivityIndicator } from "react-native";
+import { registerApi } from "../../api/registerApi";
 const Register = () => {
   const jsonData = require("../../mock/data.config.register.json");
   const fieldsRender = jsonData.info;
@@ -40,33 +40,50 @@ const Register = () => {
     setErr(false);
     return true;
   };
+  const getMimeType = (fileUri) => {
+    // 1. Lấy đuôi file (extension) từ URI (ví dụ: .jpeg, .png)
+    const extension = fileUri.split(".").pop().toLowerCase();
 
+    // 2. Check và trả về type chuẩn
+    switch (extension) {
+      case "jpg":
+      case "jpeg":
+        return "image/jpeg";
+      case "png":
+        return "image/png";
+      case "gif":
+        return "image/gif";
+      case "heic": // Định dạng ảnh của iPhone
+        return "image/heic";
+      default:
+        return "image/jpeg"; // Mặc định an toàn nhất là jpeg
+    }
+  };
   const register = async () => {
     if (validate() === true) {
+      setLoading(true);
+
       try {
-        setLoading(true);
         let form = new FormData();
         for (let key in user)
           if (key !== "confirm") {
             if (key === "avatar") {
               form.append(key, {
                 uri: user.avatar.uri,
-                name: user.avatar.fileName,
-                type: user.avatar.type || "image/jpeg",
+                name: user.avatar.uri.split("/").pop(),
+                type: getMimeType(user.avatar.type),
               });
             } else form.append(key, user[key]);
           }
         console.info(user);
-
-        let res = await Apis.post(endpoints["register"], form, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
-
+        console.log(form);
+        const res = await registerApi.register(form);
+        console.log(res.status);
         if (res.status === 201) {
           nav.navigate("Login");
         }
+        console.log("DANG KY THANH CONG");
+        nav.navigate("Login");
       } catch (ex) {
         console.error(ex);
       } finally {
@@ -102,7 +119,7 @@ const Register = () => {
       )}
       <Pressable
         onPress={register}
-        disabled={loading} //
+        disabled={loading}
         className={`mt-4 p-3 rounded-xl flex-row justify-center items-center shadow-md ${loading ? "bg-slate-400" : "bg-slate-700"} active:bg-slate-800`}
       >
         {loading ? (

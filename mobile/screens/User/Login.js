@@ -39,7 +39,10 @@ const Login = () => {
       setLoading(true);
       try {
         await authApi.login(user);
+        console.log("QUA");
+
         let userRes = await axiosClient.get(endpoints["current_user"]);
+        console.log("QUA");
         dispatch({
           type: "login",
           payload: userRes.data,
