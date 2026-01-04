@@ -8,15 +8,16 @@ const axiosClient = axios.create({
   baseURL: BASE_URL,
   headers: {
     "Content-Type": "application/json",
+    "ngrok-skip-browser-warning": "69420",
   },
 });
 
 axiosClient.interceptors.request.use(
   async (config) => {
     const tokens = await getTokens();
-    if (tokens && tokens.access_token)
+    if (tokens && tokens.access_token) {
       config.headers.Authorization = `Bearer ${tokens.access_token}`;
-
+    }
     return config;
   },
   (error) => {
@@ -30,7 +31,7 @@ axiosClient.interceptors.response.use(
   },
   async (error) => {
     const originRequest = error.config;
-    if (error.response?.status === 401 && !originRequest._retry) {
+    if (!originRequest._retry) {
       originRequest._retry = true;
       try {
         const tokens = await getTokens();
@@ -38,6 +39,7 @@ axiosClient.interceptors.response.use(
           console.log("Không có refresh token");
           throw new Error("Không có refresh token");
         }
+
         const res = await authApi.refresh(tokens.refresh_token);
         const newAccessToken = res.access_token;
         originRequest.headers.Authorization = `Bearer ${newAccessToken}`;
