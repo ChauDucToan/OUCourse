@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+MSG_FILE="${1:-}"
+MSG="$(cat "$MSG_FILE")"
+
+# 1) Cấu hình type + scope bạn muốn
+ALLOWED_TYPES="feat|fix|docs|refactor|test|chore"
+# Các folder scope chính (đổi theo repo bạn)
+ALLOWED_SCOPES=("oucourse" "infra" "root" "multi")
+
+# 2) Kiểm tra format type(scope): message
+PATTERN="^(${ALLOWED_TYPES})\(([a-z0-9_-]+)\): .+"
+
+if ! [[ "$MSG" =~ $PATTERN ]]; then
+  echo "❌ Commit message sai format!"
+  echo "👉 Format: type(scope): message"
+  echo "👉 Ví dụ: feat(frontend): add course list UI"
+  exit 1
+fi
+
+SCOPE="$(echo "$MSG" | sed -nE "s/^(${ALLOWED_TYPES})\(([a-z0-9_-]+)\): .+/\2/p")"
+
+# 3) Kiểm tra scope có nằm trong danh sách cho phép không
+allowed=false
+for s in "${ALLOWED_SCOPES[@]}"; do
+  if [[ "$SCOPE" == "$s" ]]; then
+    allowed=true
+    break
+  fi
+done
+
+if [[ "$allowed" != "true" ]]; then
+  echo "❌ Scope '$SCOPE' không được phép!"
+  echo "👉 Allowed scopes: ${ALLOWED_SCOPES[*]}"
+  exit 1
+fi
+
+# 4) Xác định folder thay đổi từ staged files
+CHANGED_FILES="$(git diff --cached --name-only)"
+
+if [[ -z "$CHANGED_FILES" ]]; then
+  # Không có file staged thì thôi (hiếm)
+  exit 0
+fi
+
+# Lấy top-level folder (vd: frontend/x/y -> frontend)
+TOP_DIRS="$(echo "$CHANGED_FILES" | awk -F/ '{print $1}' | sort -u)"
+
+# Map: nếu file ở root (không có /) thì awk sẽ trả nguyên filename -> coi là root
+# Ta chuẩn hoá: nếu dòng top-dir không phải là thư mục thật trong repo => root
+NORMALIZED_DIRS=()
+while IFS= read -r d; do
+  dl="$(echo "$d" | tr '[:upper:]' '[:lower:]')"
+  if [[ "$dl" == "oucourse" ]]; then
+    NORMALIZED_DIRS+=("oucourse")
+  elif [[ "$d" == ".github" || "$d" == ".githooks" ]]; then
+    NORMALIZED_DIRS+=("infra")
+  elif [[ -d "$d" ]]; then
+    NORMALIZED_DIRS+=("$d")
+  else
+    NORMALIZED_DIRS+=("root")
+  fi
+done <<< "$TOP_DIRS"
+
+# unique lại
+EXPECTED="$(printf "%s\n" "${NORMALIZED_DIRS[@]}" | sort -u)"
+COUNT="$(echo "$EXPECTED" | wc -l | tr -d ' ')"
+
+if [[ "$COUNT" -eq 1 ]]; then
+  EXPECTED_SCOPE="$(echo "$EXPECTED" | head -n1)"
+else
+  EXPECTED_SCOPE="multi"
+fi
+
+if [[ "$SCOPE" != "$EXPECTED_SCOPE" ]]; then
+  echo "❌ Scope commit không khớp folder thay đổi!"
+  echo "👉 Folder thay đổi: $(echo "$EXPECTED" | tr '\n' ' ')"
+  echo "👉 Scope mong đợi: $EXPECTED_SCOPE"
+  echo "👉 Commit hiện tại: $MSG"
+  exit 1
+fi
+
+exit 0
