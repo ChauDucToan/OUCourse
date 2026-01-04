@@ -1,7 +1,8 @@
 from django.contrib import admin
-from .models import Course, Category
+from .models import Tag, Lesson
 from django.utils.safestring import mark_safe
 
+# Register your models here.
 class ImageVideoViewMixin(admin.ModelAdmin):
     readonly_fields = ['image_view', 'video_view']
 
@@ -29,17 +30,16 @@ class ImageVideoViewMixin(admin.ModelAdmin):
                             </iframe>
                         ''')
         return ""
+    
+class LessonAdmin(ImageVideoViewMixin):
+    list_display = ('subject', 'course', 'order', 'active', 'video', 'created_date')
+    search_fields = ('subject', 'course__subject')
 
-# Register your models here.
-class CourseAdmin(ImageVideoViewMixin):
-    list_display = ('instructor', 'subject', 'price', 'category', 'active', 'created_date')
-    search_fields = ('instructor', 'subject', 'price')
+    list_filter = ['course']
 
-    list_filter = ['category']
-
-class CategoryAdmin(admin.ModelAdmin):
+class TagAdmin(admin.ModelAdmin):
     list_display = ('name', 'active', 'created_date')
     search_fields = ('name',)
 
-admin.site.register(Course, CourseAdmin)
-admin.site.register(Category, CategoryAdmin)
+admin.site.register(Tag, TagAdmin)
+admin.site.register(Lesson, LessonAdmin)

@@ -2,7 +2,6 @@
 
 import ckeditor.fields
 import cloudinary.models
-import django.db.models.deletion
 from django.db import migrations, models
 
 
@@ -15,39 +14,54 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Category',
+            name='Comment',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('active', models.BooleanField(default=True)),
                 ('created_date', models.DateTimeField(auto_now_add=True)),
                 ('updated_date', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(max_length=50, unique=True)),
+                ('content', models.TextField()),
             ],
             options={
                 'abstract': False,
             },
         ),
         migrations.CreateModel(
-            name='ManageCourse',
+            name='Emotion',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('status', models.CharField(choices=[('UNENROLLED', 'Unenrolled'), ('ENROLLED', 'Enrolled'), ('COMPLETED', 'Completed')], default='UNENROLLED', max_length=20)),
+                ('active', models.BooleanField(default=True)),
+                ('created_date', models.DateTimeField(auto_now_add=True)),
+                ('updated_date', models.DateTimeField(auto_now=True)),
+                ('type', models.CharField(choices=[('LIKE', 'Like'), ('LOVE', 'Love'), ('FUNNY', 'Funny'), ('SAD', 'Sad')], max_length=10)),
+                ('object_id', models.PositiveIntegerField()),
             ],
         ),
         migrations.CreateModel(
-            name='Course',
+            name='Lesson',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('active', models.BooleanField(default=True)),
                 ('created_date', models.DateTimeField(auto_now_add=True)),
                 ('updated_date', models.DateTimeField(auto_now=True)),
                 ('subject', models.CharField(max_length=255)),
-                ('description', ckeditor.fields.RichTextField()),
-                ('image', cloudinary.models.CloudinaryField(blank=True, max_length=255, null=True)),
+                ('content', ckeditor.fields.RichTextField()),
+                ('image', cloudinary.models.CloudinaryField(max_length=255, null=True)),
                 ('video', models.URLField(blank=True, null=True)),
-                ('duration', models.PositiveIntegerField(default=0)),
-                ('price', models.DecimalField(decimal_places=2, default=0, max_digits=10)),
-                ('category', models.ForeignKey(on_delete=django.db.models.deletion.RESTRICT, related_name='courses', to='courses.category')),
+                ('order', models.PositiveIntegerField(default=0)),
+            ],
+            options={
+                'ordering': ['order', 'created_date'],
+            },
+        ),
+        migrations.CreateModel(
+            name='Tag',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('active', models.BooleanField(default=True)),
+                ('created_date', models.DateTimeField(auto_now_add=True)),
+                ('updated_date', models.DateTimeField(auto_now=True)),
+                ('name', models.CharField(max_length=50, unique=True)),
             ],
             options={
                 'abstract': False,

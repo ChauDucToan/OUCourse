@@ -79,7 +79,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'oauth2_provider',
     'api.courses.apps.CoursesConfig',
-    'api.users.apps.UsersConfig'
+    'api.users.apps.UsersConfig',
+    'api.lessons.apps.LessonsConfig',
 ]
 AUTH_USER_MODEL = "users.User"
 
