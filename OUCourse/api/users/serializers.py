@@ -34,6 +34,8 @@ class UserSerializer(serializers.ModelSerializer):
     
 
 class UserCreateSerializer(serializers.ModelSerializer):
+    avatar = serializers.ImageField(required=False)
+    
     class Meta:
         model = User
         fields = ['username', 'first_name', 'last_name', 'email', 'role', 'avatar', 'password']

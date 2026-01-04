@@ -7,6 +7,9 @@ class TagSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class LessonSerializer(serializers.ModelSerializer):
+    video = serializers.FileField(required=False)
+    image = serializers.ImageField(required=False)
+
     class Meta:
         model = Lesson
         fields = ['id', 'subject', 'video', 'image']

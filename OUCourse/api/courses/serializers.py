@@ -10,6 +10,8 @@ class CategorySerializer(serializers.ModelSerializer):
 class CourseSerializer(serializers.ModelSerializer):
     instructor = serializers.CharField(source='instructor.username', read_only=True)
     category = serializers.CharField(source='category.name')
+    image = serializers.ImageField(required=False)
+    video = serializers.FileField(required=False)
     
     class Meta:
         model = Course
