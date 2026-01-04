@@ -1,16 +1,18 @@
+import { BASE_URL } from "@env";
 export const endpoints = {
-  categories: "/categories/",
+  categories: "/api/categories/",
 
-  courses: "/courses/",
-  courseDetails: (courseId) => `/courses/${courseId}/`,
-  enrollCourse: (courseId) => `/courses/${courseId}/enroll/`,
+  courses: "/api/courses/",
+  courseDetails: (courseId) => `/api/courses/${courseId}/`,
+  enrollCourse: (courseId) => `/api/courses/${courseId}/enroll/`,
 
-  lessons: () => `/lessons/`,
-  lessonDetailed: (lessonId) => `/lessons/${lessonId}`,
-  enrollLesson: (lessonId) => `/lessons/${lessonId}/enroll/`,
-  comments: (lessonId) => `/lessons/${lessonId}/comments/`,
+  lessons: () => `/api/lessons/`,
+  lessonDetailed: (lessonId) => `/api/lessons/${lessonId}`,
+  enrollLesson: (lessonId) => `/api/lessons/${lessonId}/enroll/`,
+  comments: (lessonId) => `/api/lessons/${lessonId}/comments/`,
 
-  register: "/users/",
+  register: "/api/users/",
   login: "/o/token/",
-  current_user: "/users/current-user/",
+  current_user: "/api/users/current-user/",
+  baseUrl: BASE_URL,
 };
