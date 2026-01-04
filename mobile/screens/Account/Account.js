@@ -6,7 +6,7 @@ import { useContext } from "react";
 import { MyUserContext } from "../../utils/contexts/MyContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const Account = ({ navigation }) => {
+const AccountScreen = ({ navigation }) => {
   const jsonAccountData = require("../../mock/data.config.account.json");
   const [user, dispatch] = useContext(MyUserContext);
   const handleLogout = async () => {
@@ -19,10 +19,10 @@ const Account = ({ navigation }) => {
   };
   console.log("user ne", user);
   return (
-    <ScrollView className="flex-1 bg-slate-50">
+    <ScrollView className="flex-1 bg-slate-50 mt-10">
       {user && (
         <View>
-          <View className="bg-white  p-5 flex flex-row justify-around border-b border-slate-200">
+          <View className="bg-white  p-5 flex flex-row items-center justify-around border-b border-slate-200">
             <View>
               <Avatar.Image
                 size={80}
@@ -102,4 +102,4 @@ const Account = ({ navigation }) => {
   );
 };
 
-export default Account;
+export default AccountScreen;

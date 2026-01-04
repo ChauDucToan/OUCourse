@@ -22,7 +22,7 @@ const Search = () => {
   };
 
   return (
-    <ScrollView className="flex-1 bg-white px-4 pt-6 mt-6">
+    <View className="flex-1 bg-white px-4 pt-6 mt-6">
       <Text className="font-bold mb-2 text-xl">Thanh tìm kiếm</Text>
       <TextInput
         className="border border-gray-300 rounded-xl px-3 mb-4 "
@@ -63,7 +63,7 @@ const Search = () => {
           ) : null
         }
       />
-    </ScrollView>
+    </View>
   );
 };
 export default Search;

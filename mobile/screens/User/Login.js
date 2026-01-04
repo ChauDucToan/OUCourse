@@ -1,15 +1,16 @@
 import { Pressable, View } from "react-native";
 import { ActivityIndicator, HelperText, TextInput } from "react-native-paper";
-import { CLIENT_ID, CLIENT_SECRET } from "@env";
 import colors from "tailwindcss/colors";
 import TextCustom from "../../components/TextCustom";
 import AuthLayout from "../../components/AuthLayout";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useContext } from "react";
 import { MyUserContext } from "../../utils/contexts/MyContext";
-import Apis, { authApis, endpoints } from "../../utils/Apis";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import { useState } from "react";
+import { authApi } from "../../api/authApi";
+import axiosClient from "../../api/axiosClient";
+import { endpoints } from "../../utils/Apis";
 
 const Login = () => {
   const jsonData = require("../../mock/data.config.register.json");
@@ -22,7 +23,6 @@ const Login = () => {
   const [err, setErr] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
-  const route = useRoute();
   const [, dispatch] = useContext(MyUserContext);
 
   const validate = () => {
@@ -30,47 +30,24 @@ const Login = () => {
       setErr(true);
       return false;
     }
-    console.log("duoc");
     setErr(false);
     return true;
   };
 
   const login = async () => {
     if (validate() === true) {
+      setLoading(true);
       try {
-        console.log("duoc-1");
-        setLoading(true);
-        let res = await Apis.post(endpoints["login"], {
-          ...user,
-          client_id: CLIENT_ID, // Lưu vào biến môi trường của react
-          client_secret: CLIENT_SECRET, // Lưu vào biến môi trường của react
-          grant_type: "password",
+        await authApi.login(user);
+        let userRes = await axiosClient.get(endpoints["current_user"]);
+        dispatch({
+          type: "login",
+          payload: userRes.data,
         });
-        console.log("duoc-2");
-        await AsyncStorage.setItem("token", res.data.access_token);
-        console.log("duoc-3");
-
-        setTimeout(async () => {
-          console.log(res.data.access_token);
-
-          let user = await authApis(res.data.access_token).get(
-            endpoints["current_user"],
-          );
-          console.log("duoc-5");
-
-          dispatch({
-            type: "login",
-            payload: user.data,
-          });
-          console.log("duoc-6");
-          if (navigation.canGoBack()) {
-            navigation.goBack();
-            navigation.navigate("Home");
-          } else {
-            navigation.navigate("Home");
-          }
-          console.log("token", res.data.access_token);
-        }, 500);
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Home" }],
+        });
       } catch (ex) {
         console.error(ex);
       } finally {
@@ -89,7 +66,10 @@ const Login = () => {
           key={item.field}
           label={item.title}
           value={user[item.field]}
-          onChangeText={(t) => setUser({ ...user, [item.field]: t })}
+          onChangeText={(t) => {
+            setUser({ ...user, [item.field]: t });
+            setErr(false);
+          }}
           secureTextEntry={item.secureTextEntry}
           activeOutlineColor={colors.slate[500]}
           right={<TextInput.Icon icon={item.icon} />}
