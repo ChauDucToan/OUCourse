@@ -4,13 +4,19 @@ const BASE_URL = "https://thanhduong.pythonanywhere.com/";
 
 export const endpoints = {
   categories: "/categories/",
+
   courses: "/courses/",
-  lessons: (courseId) => `/courses/${courseId}/lessons/`,
+  courseDetails: (courseId) => `/courses/${courseId}/`,
+  enrollCourse: (courseId) => `/courses/${courseId}/enroll/`,
+
+  lessons: () => `/lessons/`,
+  lessonDetailed: (lessonId) => `/lessons/${lessonId}`,
+  enrollLesson: (lessonId) => `/lessons/${lessonId}/enroll/`,
+  comments: (lessonId) => `/lessons/${lessonId}/comments/`,
+
   register: "/users/",
   login: "/o/token/",
   current_user: "/users/current-user/",
-  "lesson-details": (lessonId) => `/lessons/${lessonId}/`,
-  comments: (lessonId) => `/lessons/${lessonId}/comments/`,
 };
 
 export const authApis = (token) => {
