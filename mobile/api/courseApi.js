@@ -1,10 +1,13 @@
 import { endpoints } from "../utils/Apis";
-import request from "./fetchApi";
+import axiosClient from "./axiosClient";
 
 async function fetchCourse() {
-  const result = await request(endpoints.baseUrl + endpoints.courses);
-  console.log("RES: ", result);
-  return result ? result : null;
+  try {
+    const result = await axiosClient.get(endpoints.courses);
+    return result ? result : null;
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 export default fetchCourse;
