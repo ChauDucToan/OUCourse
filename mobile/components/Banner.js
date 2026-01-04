@@ -9,9 +9,7 @@ import {
 const Banner = ({ navigation, text, subText, item }) => {
   const { width } = Dimensions.get("window");
   return (
-    <TouchableOpacity
-      onPress={() => navigation.navigate("CourseDetail", { courseId: "123" })}
-    >
+    <TouchableOpacity onPress={() => console.log("click banner")}>
       <ImageBackground
         source={item}
         className="w-full h-52 rounded-xl"

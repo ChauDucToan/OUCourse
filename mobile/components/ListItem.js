@@ -20,7 +20,7 @@ const ListItem = ({ mapJson, navigation, header }) => {
             right={(props) => (
               <List.Icon {...props} icon="chevron-right" color="#cbd5e1" />
             )}
-            onPress={() => navigation.navigate(item.urlNavigate)}
+            onPress={() => navigation.navigate(item.navUrl)}
           />
         ))}
     </List.Section>
