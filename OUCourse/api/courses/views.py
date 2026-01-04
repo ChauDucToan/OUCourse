@@ -1,33 +1,30 @@
-from django.shortcuts import render
-from rest_framework import viewsets, generics, permissions
-from .models import Category, ManageCourse
-from . import serializers
-from .perms import IsNotStudent
+from rest_framework import viewsets, generics, permissions, status
+from . import serializers, paginators, models, perms
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework import status
 
 # Create your views here.
 class CategoryView(viewsets.ViewSet, generics.ListAPIView):
-    queryset = Category.objects.all()
+    queryset = models.Category.objects.all()
     serializer_class = serializers.CategorySerializer
     permission_classes = [permissions.IsAuthenticated]
 
 class TagView(viewsets.ViewSet, generics.ListAPIView):
-    queryset = serializers.Tag.objects.all()
+    queryset = models.Tag.objects.all()
     serializer_class = serializers.TagSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 class CourseView(viewsets.ModelViewSet):
-    queryset = serializers.Course.objects.filter(active=True)
+    queryset = models.Course.objects.filter(active=True)
     serializer_class = serializers.CourseSerializer
+    pagination_class = paginators.CoursePaginator
     
     def get_permissions(self):
         if self.action == 'lessons' and self.request.method.__eq__('POST'):
-            return [IsNotStudent()]
+            return [perms.IsNotStudent()]
         
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
-            return [IsNotStudent()]
+            return [perms.IsNotStudent()]
         
         return [permissions.IsAuthenticated()]
 
@@ -62,13 +59,13 @@ class CourseView(viewsets.ModelViewSet):
         course = self.get_object()
         u = request.user
 
-        _, created = ManageCourse.objects.get_or_create(
+        manage_course, created = models.ManageCourse.objects.get_or_create(
             student=u,
             course=course,
-            defaults={'status': ManageCourse.Status.ENROLLED}
+            defaults={'status': models.ManageCourse.Status.ENROLLED}
         )
 
         if not created:
             return Response({'detail': 'Already enrolled.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response({'detail': 'Enrolled successfully.'}, status=status.HTTP_201_CREATED)
+        return Response(serializers.ManageCourseSerializer(manage_course).data, status=status.HTTP_201_CREATED)

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Course, Category, Lesson, Tag
+from .models import Course, Category, Lesson, Tag, ManageCourse
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,3 +32,8 @@ class LessonSerializer(serializers.ModelSerializer):
 
     def get_tags(self, obj):
         return [tag.name for tag in obj.tags.all()]
+    
+class ManageCourseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ManageCourse
+        fields = '__all__'
