@@ -7,7 +7,6 @@ import { useState } from "react";
 import { useEffect } from "react";
 import fetchCourse from "../../api/courseApi";
 import CourseView from "../../components/CourseView";
-import fetchCategory from "../../api/categoryApi";
 
 const categories = require("../../mock/data.mock.categories.json");
 
@@ -23,7 +22,6 @@ const HomeScreen = () => {
   const flatListRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [courseData, setCourseData] = useState([]);
-  const [categoriesData, setCategoriesData] = useState([]);
   useEffect(() => {
     const interval = setInterval(() => {
       let nextIndex = (currentIndex + 1) % imageBanner.length;
@@ -36,11 +34,11 @@ const HomeScreen = () => {
   useEffect(() => {
     const loadData = async () => {
       const fetchData = await fetchCourse();
-      setCourseData(fetchData.results);
+      setCourseData(fetchData.data.results);
     };
     loadData();
   }, []);
-  
+
   return (
     <View className="flex-1 bg-white">
       <View className="p-5">
