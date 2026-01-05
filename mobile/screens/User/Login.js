@@ -46,10 +46,7 @@ const Login = () => {
       setLoading(true);
       try {
         await authApi.login(user);
-        console.log("QUA");
-
         let userRes = await axiosClient.get(endpoints["current_user"]);
-        console.log("QUA");
         dispatch({
           type: "login",
           payload: userRes.data,
@@ -59,7 +56,7 @@ const Login = () => {
           routes: [{ name: "Home" }],
         });
       } catch (ex) {
-        console.error(ex);
+        console.error("Login ", ex.message);
       } finally {
         setLoading(false);
       }
@@ -68,7 +65,6 @@ const Login = () => {
   const loginGoogle = async () => {
     try {
       const res = await axiosClient.get(endpoints.googleAuth);
-      console.log("Mo link nef");
       console.log(res.data);
       if (res.data && res.data.auth_url) {
         Linking.openURL(res.data.auth_url);

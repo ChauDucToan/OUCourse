@@ -1,6 +1,6 @@
 import { View } from "react-native";
 import HeaderBack from "./HeaderBack";
-import { Text } from "react-native";
+import TextCustom from "./TextCustom";
 
 const HeaderCustom = ({ text }) => {
   return (
@@ -9,7 +9,7 @@ const HeaderCustom = ({ text }) => {
         <HeaderBack />
       </View>
       <View className="flex-1 items-center  py-1">
-        <Text className="text-xl font-bold text-slate-700">{text}</Text>
+        <TextCustom.TextSection text={text} />
       </View>
       <View className="w-16"></View>
     </View>

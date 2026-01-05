@@ -14,8 +14,9 @@ const UserLearning = () => {
     };
   });
   return (
-    <View className="bg-white pt-10 flex-1">
+    <View className="bg-slate-50 pt-10 flex-1">
       <HeaderCustom text="Danh sách bài học của tôi" />
+      <View className="bg-white"></View>
     </View>
   );
 };
