@@ -3,8 +3,13 @@ from typing import Dict
 from datetime import datetime
 import json
 import google_auth_oauthlib.flow
-import google.auth.transport.requests as requests
+import google.auth.transport.requests as google_requests
+import requests
 from google.oauth2.credentials import Credentials
+import os
+from django.conf import settings
+
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 class OAuthProvider(ABC):
     def __init__(self, credential_file: str):
@@ -66,27 +71,42 @@ class OAuthProvider(ABC):
         pass
 
 class GoogleOAuthProvider(OAuthProvider):
-    def __init__(self, credential_file: str):
+    def __init__(self, credential_file: str, scopes=None):
         super().__init__(credential_file)
-        self.scopes = ["https://www.googleapis.com/auth/youtube.force-ssl"]
-        self.redirect_uri = 'http://localhost:8080/'
+
+        default_scopes = [
+            "openid",
+            "https://www.googleapis.com/auth/userinfo.email",
+            "https://www.googleapis.com/auth/userinfo.profile",
+            "https://www.googleapis.com/auth/youtube.force-ssl"
+        ]
+
+        self.scopes = scopes or default_scopes
+        self.redirect_uri = 'https://paleological-pachydermatously-linnie.ngrok-free.dev/api/auth/callback'
         self.flow = None
+
+    def _create_flow(self):
+        return google_auth_oauthlib.flow.Flow.from_client_secrets_file(
+            self.credential_file,
+            scopes=self.scopes,
+            redirect_uri=self.redirect_uri
+        )
     
     def authenticate(self) -> str:
-        self.flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(
-            self.credential_file, self.scopes)
+        self.flow = self._create_flow()
         
-        self.flow.redirect_uri = self.redirect_uri
-        
-        auth_url, _ = self.flow.authorization_url(prompt='consent', access_type='offline')
+        auth_url, _ = self.flow.authorization_url(prompt='consent', access_type='offline', state='google')
         return auth_url
     
     def fetch_token(self, callback_code: str) -> None:
         if not self.flow:
-            self.authenticate()
-
-        self.flow.fetch_token(code=callback_code)
-        self.credentials = self.flow.credentials
+            self.flow = self._create_flow()
+        
+        try:
+            self.flow.fetch_token(code=callback_code)
+            self.credentials = self.flow.credentials
+        except Exception as e:
+            raise ValueError(f"Lỗi khi đổi code lấy token: {str(e)}")
 
     def refresh_token(self, token_info: Dict) -> None:
         if not token_info.get('refresh_token'):
@@ -108,7 +128,7 @@ class GoogleOAuthProvider(OAuthProvider):
 
         try:
             creds = Credentials.from_authorized_user_info(info, self.scopes)
-            creds.refresh(requests.Request())
+            creds.refresh(google_requests.Request())
             self.credentials = creds
         except Exception as e:
             raise ValueError(f"Không thể refresh token: {str(e)}")
@@ -141,10 +161,10 @@ class GoogleOAuthProvider(OAuthProvider):
 
 class OAuthFactory:
     @staticmethod
-    def get_provider(auth_type: str) -> OAuthProvider:
+    def get_provider(auth_type: str, scopes=None) -> OAuthProvider:
         provider_type = auth_type.lower().strip()
         
         if provider_type == 'google':
-            return GoogleOAuthProvider('../secret/google.json')
+            return GoogleOAuthProvider(os.path.join(settings.BASE_DIR, 'services' ,'secret', 'google.json'), scopes=scopes)        
         else:
             raise ValueError(f"Hệ thống chưa hỗ trợ provider: {auth_type}")

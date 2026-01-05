@@ -54,6 +54,14 @@ class CourseView(viewsets.ModelViewSet):
         if cate_id:
             query = query.filter(category_id=cate_id)
 
+        status = self.request.query_params.get('status')
+        if status and self.request.user.is_authenticated:
+            manage_courses = models.ManageCourse.objects.filter(
+                student=self.request.user,
+                status=status
+            ).values_list('course_id', flat=True)
+            query = query.filter(id__in=manage_courses)
+
         return query
     
     @action(methods=['get'], url_path='lessons', detail=True)
@@ -77,4 +85,5 @@ class CourseView(viewsets.ModelViewSet):
         if not created:
             return Response({'detail': 'Already enrolled.'}, status=status.HTTP_400_BAD_REQUEST)
 
+        manage_course.save()
         return Response(serializers.ManageCourseSerializer(manage_course).data, status=status.HTTP_201_CREATED)
