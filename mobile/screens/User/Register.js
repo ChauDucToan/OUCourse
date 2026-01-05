@@ -16,6 +16,8 @@ const Register = () => {
 
   const [user, setUser] = useState({});
   const [err, setErr] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPass, setShowConfirmPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const nav = useNavigation();
 
@@ -93,18 +95,38 @@ const Register = () => {
   };
   return (
     <AuthLayout title="ĐĂNG KÝ NGƯỜI DÙNG">
-      {fieldsRender.map((item) => (
-        <TextInput
-          key={item.field}
-          value={user[item.field]}
-          onChangeText={(t) => setUser({ ...user, [item.field]: t })}
-          label={item.title}
-          secureTextEntry={item.secureTextEntry}
-          activeOutlineColor={colors.slate[500]}
-          right={<TextInput.Icon icon={item.icon} />}
-          mode="outlined"
-        />
-      ))}
+      {fieldsRender.map((item) => {
+        const isPasswordField =
+          item.field === "password" || item.field === "confirm";
+
+        const isVisible =
+          item.field === "password" ? showPassword : showConfirmPass;
+        const toggleVisibility = () => {
+          if (item.field === "password") setShowPassword(!showPassword);
+          else setShowConfirmPass(!showConfirmPass);
+        };
+        return (
+          <TextInput
+            key={item.field}
+            value={user[item.field]}
+            onChangeText={(t) => setUser({ ...user, [item.field]: t })}
+            label={item.title}
+            secureTextEntry={isPasswordField ? !isVisible : false}
+            activeOutlineColor={colors.slate[500]}
+            right={
+              isPasswordField ? (
+                <TextInput.Icon
+                  icon={isVisible ? "eye-off" : "eye"}
+                  onPress={toggleVisibility}
+                />
+              ) : (
+                <TextInput.Icon icon={item.icon} />
+              )
+            }
+            mode="outlined"
+          />
+        );
+      })}
       <TouchableOpacity
         className="border-2 p-2  rounded-md mt-2 border-slate-500"
         onPress={pickImage}
