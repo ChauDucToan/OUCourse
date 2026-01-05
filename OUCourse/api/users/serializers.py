@@ -9,7 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = ['username', 'role']
 
         extra_kwargs = {
-            'password': {'write_only': True}
+            'password': {'write_only': True, 'required': False}
         }
 
     def to_representation(self, instance):

@@ -7,7 +7,7 @@ import { MyUserContext } from "../../utils/contexts/MyContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import HeaderBack from "../../components/HeaderBack";
 
-const AccountScreen = ({ navigation }) => {
+const Account = ({ navigation }) => {
   const jsonAccountData = require("../../mock/data.config.account.json");
   const [user, dispatch] = useContext(MyUserContext);
   const handleLogout = async () => {
@@ -110,4 +110,4 @@ const AccountScreen = ({ navigation }) => {
   );
 };
 
-export default AccountScreen;
+export default Account;

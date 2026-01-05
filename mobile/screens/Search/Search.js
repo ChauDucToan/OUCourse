@@ -1,13 +1,19 @@
+<<<<<<< HEAD
 import { useEffect } from "react";
+=======
+>>>>>>> 9371c906eb323960f6cc838b74faaf7cd0d160e3
 import { useState } from "react";
 import { FlatList } from "react-native";
 import { Text, TextInput, TouchableOpacity } from "react-native";
 import { View, ScrollView } from "react-native";
+<<<<<<< HEAD
 import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../../utils/Apis";
 import { useNavigation } from "@react-navigation/native";
 import HeaderBack from "../../components/HeaderBack";
 import { Icon } from "react-native-paper";
+=======
+>>>>>>> 9371c906eb323960f6cc838b74faaf7cd0d160e3
 
 const mockCourses = [
   { id: "1", title: "React Native cơ bản", teacher: "Nguyễn Văn A" },
@@ -18,6 +24,7 @@ const mockCourses = [
 const Search = () => {
   const [keyword, setKeyword] = useState("");
   const [results, setResults] = useState([]);
+<<<<<<< HEAD
   const [coursesData, setCoursesData] = useState([]);
   const nav = useNavigation();
   useEffect(() => {
@@ -41,11 +48,19 @@ const Search = () => {
     }
     const filter = coursesData.filter((course) =>
       course.subject.toLowerCase().includes(text.toLowerCase()),
+=======
+
+  const handleSearch = (text) => {
+    setKeyword(text);
+    const filter = mockCourses.filter((course) =>
+      course.title.toLowerCase().includes(text.toLowerCase()),
+>>>>>>> 9371c906eb323960f6cc838b74faaf7cd0d160e3
     );
     setResults(filter);
   };
 
   return (
+<<<<<<< HEAD
     <View className="flex-1 bg-slate-50 pt-10">
       <View className="flex-row items-center ">
         <HeaderBack />
@@ -62,6 +77,18 @@ const Search = () => {
         />
       </View>
       <View className="flex-row p-4 bg-slate-50 gap-3 border-t border-b border-slate-200 pl-2">
+=======
+    <ScrollView className="flex-1 bg-white px-4 pt-6 mt-6">
+      <Text className="font-bold mb-2 text-xl">Thanh tìm kiếm</Text>
+      <TextInput
+        className="border border-gray-300 rounded-xl px-3 mb-4 "
+        placeholder="Nhập từ khóa..."
+        value={keyword}
+        onChangeText={handleSearch}
+      />
+
+      <View className="flex-row mb-4 gap-3">
+>>>>>>> 9371c906eb323960f6cc838b74faaf7cd0d160e3
         {["React", "UX/UI", "Golang"].map((tag) => (
           <TouchableOpacity
             key={tag}
@@ -78,6 +105,7 @@ const Search = () => {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <TouchableOpacity
+<<<<<<< HEAD
             className="border-b border-gray-200 bg-white py-3"
             onPress={() =>
               nav.navigate("CourseDetailedScreen", { id: item.id })
@@ -87,6 +115,13 @@ const Search = () => {
               <Text className="text-base font-medium">{item.subject}</Text>
               <Text className="text-sm text-gray-500">{item.instructor}</Text>
             </View>
+=======
+            className="border-b border-gray-200 py-3"
+            onPress={() => console.log("Ok!")}
+          >
+            <Text className="text-base font-medium">{item.title}</Text>
+            <Text className="text-sm text-gray-500">{item.teacher}</Text>
+>>>>>>> 9371c906eb323960f6cc838b74faaf7cd0d160e3
           </TouchableOpacity>
         )}
         ListEmptyComponent={
@@ -97,7 +132,11 @@ const Search = () => {
           ) : null
         }
       />
+<<<<<<< HEAD
     </View>
+=======
+    </ScrollView>
+>>>>>>> 9371c906eb323960f6cc838b74faaf7cd0d160e3
   );
 };
 export default Search;
