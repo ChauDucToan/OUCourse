@@ -1,7 +1,16 @@
+import os
 import googleapiclient.discovery
 from ..OAuth.OAuthProviders import OAuthFactory
-from ...api.authentications.models import AuthenticationModel
+from api.authentications.models import AuthenticationModel
 from googleapiclient.http import MediaFileUpload
+import tempfile
+
+def save_temp_file(file_obj):
+    tfile = tempfile.NamedTemporaryFile(delete=False) 
+    for chunk in file_obj.chunks():
+        tfile.write(chunk)
+    tfile.close()
+    return tfile.name
 
 def get_youtube_service(user_id, scopes=None):
     try:
@@ -12,8 +21,7 @@ def get_youtube_service(user_id, scopes=None):
     token_info = {
         'token': auth.access_token,
         'refresh_token': auth.refresh_token,
-        'token_uri': auth.token_uri,
-        'client_id': auth.client_id,
+        'token_uri': "https://oauth2.googleapis.com/token",
         'expiry': auth.expires_at.isoformat() if auth.expires_at else None
     }
 
@@ -29,8 +37,13 @@ def get_youtube_service(user_id, scopes=None):
 
     return googleapiclient.discovery.build('youtube', 'v3', credentials=provider.credentials)
 
-def upload_video_to_youtube(user_id, video_file_path, title, description, tags, privacy_status='unlisted'):
-    youtube_service = get_youtube_service(user_id, scopes = ["https://www.googleapis.com/auth/youtube.upload"])
+def upload_video_to_youtube(user_id, video_file_obj, title, description, tags, privacy_status='unlisted'):
+    youtube_service = get_youtube_service(user_id, scopes = [
+        "https://www.googleapis.com/auth/youtube.upload",
+        "https://www.googleapis.com/auth/youtube.force-ssl"
+    ])
+
+    temp_file_path = save_temp_file(video_file_obj)
 
     body = {
         'snippet': {
@@ -42,20 +55,26 @@ def upload_video_to_youtube(user_id, video_file_path, title, description, tags, 
             'privacyStatus': privacy_status
         }
     }
+    try:
+        media = MediaFileUpload(temp_file_path, resumable=True)
 
-    media = MediaFileUpload(video_file_path, resumable=True)
+        request = youtube_service.videos().insert(
+            part=','.join(body.keys()),
+            body=body,
+            media_body=media
+        )
 
-    request = youtube_service.videos().insert(
-        part=','.join(body.keys()),
-        body=body,
-        media_body=media
-    )
+        response = None
+        while response is None:
+            status, response = request.next_chunk()
+            if status:
+                print(f"Uploading... {int(status.progress() * 100)}%")
 
-    response = None
-    while response is None:
-        status, response = request.next_chunk()
-        if status:
-            print(f"Uploading... {int(status.progress() * 100)}%")
-
-    print("Upload complete!")
-    return response
+        print("Upload complete!")
+        return f"https://www.youtube.com/watch?v={response['id']}"
+    
+    except Exception as e:
+        raise e
+    finally:
+        if os.path.exists(temp_file_path):
+            os.remove(temp_file_path)

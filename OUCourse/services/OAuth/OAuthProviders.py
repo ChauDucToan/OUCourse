@@ -84,11 +84,12 @@ class GoogleOAuthProvider(OAuthProvider):
             "openid",
             "https://www.googleapis.com/auth/userinfo.email",
             "https://www.googleapis.com/auth/userinfo.profile",
+            "https://www.googleapis.com/auth/youtube.upload",
             "https://www.googleapis.com/auth/youtube.force-ssl"
         ]
 
         self.scopes = scopes or default_scopes
-        self.redirect_uri = 'https://paleological-pachydermatously-linnie.ngrok-free.dev/api/auth/callback'
+        self.redirect_uri = self.client_config.get('redirect_uris', [None])[0]
         self.flow = None
 
     def _create_flow(self):
@@ -120,7 +121,7 @@ class GoogleOAuthProvider(OAuthProvider):
 
         incoming_client_id = token_info.get('client_id')
         server_client_id = self.client_config.get('client_id')
-        if server_client_id and server_client_id != incoming_client_id:
+        if incoming_client_id and server_client_id and server_client_id != incoming_client_id:
             raise ValueError("client_id không khớp giữa token và credential file")
         
         info = {

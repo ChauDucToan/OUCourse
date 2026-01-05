@@ -1,5 +1,5 @@
 from django.db import models
-from ..models import BaseModel
+from api.models import BaseModel
 
 # Create your models here.
 class AuthenticationModel(BaseModel):
