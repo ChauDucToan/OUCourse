@@ -58,7 +58,7 @@ const Search = () => {
         />
       </View>
       <View className="flex-row p-4 bg-slate-50 gap-3 border-t border-b border-slate-200 pl-2">
-        <View className="flex-row mb-4 gap-3">
+        <View className="flex-row  gap-3">
           {["React", "UX/UI", "Golang"].map((tag) => (
             <TouchableOpacity
               key={tag}
