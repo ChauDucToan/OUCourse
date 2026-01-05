@@ -1,9 +1,9 @@
 import axios from "axios";
 import { saveTokens } from "../utils/tokenUtils";
 import { endpoints } from "../utils/Apis";
-import { CLIENT_ID, CLIENT_SECRET, BASE_URL } from "@env";
+import { CLIENT_ID, CLIENT_SECRET } from "@env";
 const authAxios = axios.create({
-  baseURL: BASE_URL,
+  baseURL: endpoints.baseUrl,
   headers: {
     "Content-Type": "application/x-www-form-urlencoded",
   },

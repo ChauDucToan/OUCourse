@@ -1,18 +1,16 @@
 import { Pressable, View } from "react-native";
 import { ActivityIndicator, HelperText, TextInput } from "react-native-paper";
-import colors from "tailwindcss/colors";
+import { MyUserContext } from "../../utils/contexts/MyContext";
 import TextCustom from "../../components/TextCustom";
 import AuthLayout from "../../components/AuthLayout";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { useContext } from "react";
-import { MyUserContext } from "../../utils/contexts/MyContext";
 
 import { useState } from "react";
 import { authApi } from "../../api/authApi";
 import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../../utils/Apis";
-import HeaderBack from "../../components/HeaderBack";
-import { Text } from "react-native";
+import colors from "tailwindcss/colors";
+import { useNavigation } from "@react-navigation/native";
+import { useContext } from "react";
 
 const Login = () => {
   const jsonData = require("../../mock/data.config.register.json");

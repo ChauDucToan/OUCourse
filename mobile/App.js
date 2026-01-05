@@ -3,11 +3,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import { useReducer } from "react";
 import MyReducers from "./utils/reducers/MyReducers";
 import { MyUserContext } from "./utils/contexts/MyContext";
-<<<<<<< HEAD
 import { ActivityIndicator, Icon } from "react-native-paper";
-=======
-import { Icon } from "react-native-paper";
->>>>>>> 9371c906eb323960f6cc838b74faaf7cd0d160e3
+
 import { useContext } from "react";
 import colors from "tailwindcss/colors";
 
@@ -15,15 +12,11 @@ import AccountStack from "./navigation/AccountStack";
 import HomeStack from "./navigation/HomeStack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import SearchStack from "./navigation/SearchStack";
-<<<<<<< HEAD
 import { useEffect } from "react";
 import axiosClient from "./api/axiosClient";
 import { endpoints } from "./utils/Apis";
 import { useState } from "react";
 import { View } from "react-native";
-import { getTokens } from "./utils/tokenUtils";
-=======
->>>>>>> 9371c906eb323960f6cc838b74faaf7cd0d160e3
 
 const Tab = createBottomTabNavigator();
 

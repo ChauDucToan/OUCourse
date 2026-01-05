@@ -1,4 +1,4 @@
-import { View, ScrollView } from "react-native";
+import { View } from "react-native";
 import TextCustom from "./TextCustom";
 import HeaderBack from "./HeaderBack";
 

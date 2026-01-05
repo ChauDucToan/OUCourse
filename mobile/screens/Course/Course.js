@@ -1,7 +1,7 @@
 import { useRoute } from "@react-navigation/native";
 import { useState } from "react";
 import { useEffect } from "react";
-import { FlatList, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
 import { View } from "react-native";
 import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../../utils/Apis";

@@ -1,11 +1,10 @@
 import axios from "axios";
-
-import { BASE_URL } from "@env";
 import { getTokens, removeTokens } from "../utils/tokenUtils";
 import { authApi } from "./authApi";
+import { endpoints } from "../utils/Apis";
 
 const axiosClient = axios.create({
-  baseURL: BASE_URL,
+  baseURL: endpoints.baseUrl,
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json",
@@ -32,7 +31,7 @@ axiosClient.interceptors.response.use(
   },
   async (error) => {
     const originRequest = error.config;
-    if (!originRequest._retry) {
+    if (error.respone?.status === 401 || !originRequest._retry) {
       originRequest._retry = true;
       try {
         const tokens = await getTokens();
