@@ -1,7 +1,5 @@
 import os
-import google_auth_oauthlib.flow
 import googleapiclient.discovery
-import googleapiclient.errors
 from google.oauth2.credentials import Credentials
 
 from OAuthProviders import GoogleOAuthProvider
@@ -14,18 +12,20 @@ def main():
     api_service_name = "youtube"
     api_version = "v3"
 
-    provider = GoogleOAuthProvider('../secret/config.json')
+    provider = GoogleOAuthProvider('../secret/config2.json')
     auth_url = provider.authenticate()
     print("Please go to this URL and authorize the application:", auth_url)
     callback_code = input("Enter the authorization code: ")
     provider.fetch_token(callback_code)
-    token_info = provider.get_token()
+    token_info = provider.get_user_response()
+
+    print(token_info)
     credentials = Credentials(
-        token=token_info['access_token'],
+        token=token_info['token'],
         refresh_token=token_info.get('refresh_token'),
-        token_uri="https://oauth2.googleapis.com/token",
-        client_id=provider.credentials['installed']['client_id'],
-        client_secret=provider.credentials['installed']['client_secret'],
+        token_uri=token_info['token_uri'],
+        client_id=token_info['client_id'],
+        client_secret='secretkeyhere',
         scopes=provider.scopes
     )
     
