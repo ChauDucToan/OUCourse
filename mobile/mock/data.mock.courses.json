@@ -1,0 +1,40 @@
+{
+  "results": [
+    {
+      "id": 1,
+      "subject": "Lập trình React Native căn bản",
+      "instructor": "Nguyễn Văn A",
+      "image": "https://img.freepik.com/free-vector/mobile-app-development-concept-illustration_114360-1081.jpg",
+      "category": "Công nghệ thông tin",
+      "description": "<h3>Khóa học dành cho người mới bắt đầu</h3><p>Học cách xây dựng ứng dụng di động đa nền tảng với React Native và Expo.</p><ul><li>Cài đặt môi trường</li><li>Component cơ bản</li><li>Navigation</li></ul>",
+      "price": 500000
+    },
+    {
+      "id": 2,
+      "subject": "Thiết kế UI/UX hiện đại",
+      "instructor": "Trần Thị B",
+      "image": "https://img.freepik.com/free-vector/ui-ux-design-concept-illustration_114360-354.jpg",
+      "category": "Thiết kế",
+      "description": "<h4>Nâng cao tư duy thiết kế</h4><p>Nắm vững các nguyên lý thiết kế trải nghiệm người dùng trên thiết bị di động.</p>",
+      "price": 350000
+    },
+    {
+      "id": 3,
+      "subject": "Python cho khoa học dữ liệu",
+      "instructor": "Lê Văn C",
+      "image": "https://img.freepik.com/free-vector/data-science-concept-illustration_114360-2172.jpg",
+      "category": "Data Science",
+      "description": "<strong>Phân tích dữ liệu thực tế</strong><p>Học cách sử dụng Pandas, Numpy và Matplotlib để trực quan hóa dữ liệu.</p>",
+      "price": -1
+    },
+    {
+      "id": 4,
+      "subject": "Tiếng Anh giao tiếp công sở",
+      "instructor": "Hoàng Nam",
+      "image": "https://img.freepik.com/free-vector/english-teacher-concept-illustration_114360-7467.jpg",
+      "category": "Ngoại ngữ",
+      "description": "<p>Tự tin giao tiếp trong môi trường làm việc quốc tế.</p>",
+      "price": 200000
+    }
+  ]
+}
