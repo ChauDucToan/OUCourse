@@ -98,8 +98,7 @@ export default function App() {
           payload: res.data,
         });
       } catch (error) {
-        console.log("Vao day ne");
-        console.error(error);
+        console.error("Use effect App", error);
       } finally {
         setLoading(false);
       }
