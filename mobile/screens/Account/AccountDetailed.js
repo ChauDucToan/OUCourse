@@ -11,6 +11,10 @@ import { Pressable } from "react-native";
 import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../../utils/Apis";
 import * as ImagePicker from "expo-image-picker";
+import HeaderBack from "../../components/HeaderBack";
+import HeaderCustom from "../../components/Header";
+import { useRoute } from "@react-navigation/native";
+import { useEffect } from "react";
 
 const InfoRow = ({ subject, text, icon, isEdit, onChangeText, value }) => (
   <TouchableOpacity className="flex-row items-center py-4">
@@ -45,6 +49,14 @@ const AccountDetailedScreen = () => {
   const [isLoading, setLoading] = useState(false);
   const [selectedAvatar, setSelectedAvatar] = useState(null); // State lưu ảnh mới chọn
 
+  const route = useRoute();
+  const { isEditParam } = route.params || {};
+
+  useEffect(() => {
+    setUserFirstName(user.first_name);
+    setUserLastName(user.last_name);
+    setIsEdit(isEditParam);
+  }, []);
   const pickImage = async () => {
     let { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
@@ -56,10 +68,7 @@ const AccountDetailedScreen = () => {
     }
   };
   const getMimeType = (fileUri) => {
-    // 1. Lấy đuôi file (extension) từ URI (ví dụ: .jpeg, .png)
     const extension = fileUri.split(".").pop().toLowerCase();
-
-    // 2. Check và trả về type chuẩn
     switch (extension) {
       case "jpg":
       case "jpeg":
@@ -68,10 +77,10 @@ const AccountDetailedScreen = () => {
         return "image/png";
       case "gif":
         return "image/gif";
-      case "heic": // Định dạng ảnh của iPhone
+      case "heic":
         return "image/heic";
       default:
-        return "image/jpeg"; // Mặc định an toàn nhất là jpeg
+        return "image/jpeg";
     }
   };
   const handleEditSave = async () => {
@@ -116,12 +125,12 @@ const AccountDetailedScreen = () => {
   return (
     <ScrollView className="bg-white flex-1">
       <View className="bg-white pb-8 rounded-b-3xl shadow-sm items-center pt-12 px-5">
-        <Text className="font-bold text-xl mt-12 p-2"> HỒ SƠ NGƯỜI DÙNG</Text>
+        <HeaderCustom text={"HỒ SƠ NGƯỜI DÙNG"} />
         {!isEdit ? (
           <Avatar.Image
             size={80}
             source={{ uri: selectedAvatar ? selectedAvatar.uri : user.avatar }}
-            className="bg-slate-200 "
+            className="bg-slate-200 mt-4"
           />
         ) : (
           <Pressable onPress={pickImage}>
@@ -132,6 +141,9 @@ const AccountDetailedScreen = () => {
               }}
               className="bg-slate-200 "
             />
+            <View className="absolute bottom-0 right-0 bg-slate-600 rounded-full border-2 border-white p-1">
+              <Icon source="camera" color="white" size={16} />
+            </View>
           </Pressable>
         )}
         <Text className="text-xl font-bold">{user.username}</Text>
@@ -145,7 +157,7 @@ const AccountDetailedScreen = () => {
             subject={"Họ người dùng"}
             value={isEdit ? userFirstName : user.first_name}
             text={user.first_name}
-            icon="account"
+            icon={isEdit ? "square-edit-outline" : "account-group-outline"}
             isEdit={isEdit}
             onChangeText={setUserFirstName}
           />
@@ -155,7 +167,7 @@ const AccountDetailedScreen = () => {
             subject={"Tên người dùng"}
             value={isEdit ? userLastName : user.last_name}
             text={user.last_name}
-            icon="account"
+            icon={isEdit ? "rename-box" : "account-outline"}
             isEdit={isEdit}
             onChangeText={setUserLastName}
           />
@@ -177,39 +189,39 @@ const AccountDetailedScreen = () => {
             isEdit={false}
           />
         </View>
-      </View>
-      <Pressable
-        loading={isLoading}
-        className="mt-6 bg-slate-600 py-3  items-center shadow-blue-200 shadow-lg"
-        onPress={() => {
-          if (isEdit) {
-            handleEditSave();
-          } else {
-            setUserFirstName(user.first_name);
-            setUserLastName(user.last_name);
-            setIsEdit(true);
-          }
-        }}
-      >
-        {isLoading ? (
-          <ActivityIndicator color="white" />
-        ) : (
-          <Text className="text-white font-bold text-lg">
-            {isEdit ? "Lưu thay đổi" : "Chỉnh sửa hồ sơ"}
-          </Text>
-        )}
-      </Pressable>
-      {isEdit && !isLoading && (
-        <TouchableOpacity
-          className="mt-4 items-center"
+        <Pressable
+          loading={isLoading}
+          className="mt-6 bg-slate-600 py-3  rounded-2xl justify-end items-center shadow-blue-200 shadow-lg"
           onPress={() => {
-            setIsEdit(false);
-            setSelectedAvatar(null);
+            if (isEdit) {
+              handleEditSave();
+            } else {
+              setUserFirstName(user.first_name);
+              setUserLastName(user.last_name);
+              setIsEdit(true);
+            }
           }}
         >
-          <Text className="text-gray-500 font-semibold">Hủy bỏ</Text>
-        </TouchableOpacity>
-      )}
+          {isLoading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text className="text-white font-bold text-lg">
+              {isEdit ? "Lưu thay đổi" : "Chỉnh sửa hồ sơ"}
+            </Text>
+          )}
+        </Pressable>
+        {isEdit && !isLoading && (
+          <TouchableOpacity
+            className="mt-4 items-center"
+            onPress={() => {
+              setIsEdit(false);
+              setSelectedAvatar(null);
+            }}
+          >
+            <Text className="text-gray-500 font-semibold">Hủy bỏ</Text>
+          </TouchableOpacity>
+        )}
+      </View>
     </ScrollView>
   );
 };

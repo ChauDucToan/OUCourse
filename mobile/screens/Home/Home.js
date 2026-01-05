@@ -34,7 +34,7 @@ const HomeScreen = () => {
   useEffect(() => {
     const loadData = async () => {
       const fetchData = await fetchCourse();
-
+      console.log("FETCH", fetchData.data);
       setCourseData(fetchData.data.results);
     };
     loadData();
@@ -69,7 +69,6 @@ const HomeScreen = () => {
           )}
         />
       </View>
-
       <View className="flex-row justify-center mb-3">
         {imageBanner.map((_, index) => (
           <View
@@ -78,6 +77,23 @@ const HomeScreen = () => {
           />
         ))}
       </View>
+      <View className="p-5">
+        <Text className="text-lg font-semibold mb-2">Danh mục</Text>
+        <FlatList
+          horizontal
+          data={categories.categories}
+          keyExtractor={(item) => item.id}
+          showsHorizontalScrollIndicator={false}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              className="bg-gray-100 rounded-lg px-4 py-3 mr-3"
+              onPress={() => console.log("CLICK CATEGORy")}
+            >
+              <Text className="text-base">{item.name}</Text>
+            </TouchableOpacity>
+          )}
+        />
+      </View>
 
       <FlatList
         data={courseData}
@@ -85,26 +101,6 @@ const HomeScreen = () => {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <CourseView navigation={navigation} item={item} />
-        )}
-      />
-
-      <Text className="text-lg font-semibold mb-2">Danh mục</Text>
-      <FlatList
-        horizontal
-        data={categories}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            className="bg-gray-100 rounded-lg px-4 py-3 mr-3"
-            onPress={() =>
-              navigation.navigate("Category", {
-                categoryId: item.id,
-                categoryName: item.name,
-              })
-            }
-          >
-            <Text className="text-base">{item.name}</Text>
-          </TouchableOpacity>
         )}
       />
     </View>

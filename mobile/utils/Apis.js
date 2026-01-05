@@ -15,4 +15,6 @@ export const endpoints = {
   login: "/o/token/",
   current_user: "/api/users/current-user/",
   baseUrl: BASE_URL,
+
+  googleAuth: "/api/auth/url?auth_type=google",
 };

@@ -13,6 +13,7 @@ import { Text } from "react-native";
 import RenderHTML from "react-native-render-html";
 import { Icon } from "react-native-paper";
 import HeaderBack from "../../components/HeaderBack";
+import HeaderCustom from "../../components/Header";
 
 const CourseDetailedScreen = () => {
   const route = useRoute();
@@ -63,14 +64,7 @@ const CourseDetailedScreen = () => {
   return (
     <View className="bg-white flex-1">
       <ScrollView className="pt-10 bg-white">
-        <View className="flex-row items-center mb-3">
-          <HeaderBack />
-          <View className="flex-1 flex-row items-center  py-1">
-            <Text className="text-gray-900 text-2xl leading-tight">
-              {course.subject}
-            </Text>
-          </View>
-        </View>
+        <HeaderCustom text={course.subject} />
         <View>
           <ImageBackground
             source={{ uri: course.image }}

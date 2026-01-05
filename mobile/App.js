@@ -17,7 +17,8 @@ import axiosClient from "./api/axiosClient";
 import { endpoints } from "./utils/Apis";
 import { useState } from "react";
 import { View } from "react-native";
-
+import LearningStack from "./navigation/LearningStack";
+import * as Linking from "expo-linking";
 const Tab = createBottomTabNavigator();
 
 const TabNavigator = () => {
@@ -54,7 +55,7 @@ const TabNavigator = () => {
       />
       <Tab.Screen
         name="Learning"
-        component={HomeStack}
+        component={LearningStack}
         options={{
           title: "Học nào",
           tabBarIcon: () => (
@@ -97,7 +98,8 @@ export default function App() {
           payload: res.data,
         });
       } catch (error) {
-        console.log(error.message);
+        console.log("Vao day ne");
+        console.error(error);
       } finally {
         setLoading(false);
       }
@@ -105,6 +107,7 @@ export default function App() {
 
     hydrateAuth();
   }, []);
+
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>

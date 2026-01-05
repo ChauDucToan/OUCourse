@@ -5,21 +5,28 @@
       "description": "Thông tin, mật khẩu, bảo mật",
       "iconLeft": "account-circle-outline",
       "iconColor": "#2563eb",
-      "navUrl": "AccountDetailedScreen"
+      "navUrl": "AccountDetailedScreen",
+      "navParams": {
+        "isEdit": false
+      }
     },
     {
       "title": "Khóa học của tôi",
       "description": "",
       "iconLeft": "book-open-variant",
       "iconColor": "#2563eb",
-      "navUrl": "MyCourses"
+      "navUrl": "Learning",
+      "navParams": {
+        "screen": "UserLearning"
+      }
     },
     {
       "title": "Thành tích & Chứng chỉ",
       "description": "",
       "iconLeft": "trophy-outline",
       "iconColor": "#fbbf24",
-      "navUrl": "Certificates"
+      "navUrl": "Certificates",
+      "navParams": ""
     }
   ],
   "system": [
@@ -28,21 +35,24 @@
       "description": "Lịch sử thanh toán, gia hạn",
       "iconLeft": "credit-card-outline",
       "iconColor": "#475569",
-      "navUrl": "SubscriptionHistory"
+      "navUrl": "SubscriptionHistory",
+      "navParams": ""
     },
     {
       "title": "Điều khoản & Quy định",
       "description": "",
       "iconLeft": "file-document-outline",
       "iconColor": "#475569",
-      "navUrl": "Terms"
+      "navUrl": "Terms",
+      "navParams": ""
     },
     {
       "title": "Trợ giúp & Phản hồi",
       "description": "",
       "iconLeft": "help-circle-outline",
       "iconColor": "#475569",
-      "navUrl": "Help"
+      "navUrl": "Help",
+      "navParams": ""
     }
   ]
 }

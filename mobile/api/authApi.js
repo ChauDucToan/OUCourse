@@ -19,7 +19,9 @@ export const authApi = {
         client_secret: CLIENT_SECRET,
         grant_type: "password",
       });
-      console.log("DA");
+      console.log(CLIENT_ID);
+      console.log(CLIENT_SECRET);
+
       await saveTokens(res.data.access_token, res.data.refresh_token);
 
       return res;

@@ -9,6 +9,7 @@ import { endpoints } from "../../utils/Apis";
 import { useNavigation } from "@react-navigation/native";
 import HeaderBack from "../../components/HeaderBack";
 import { Icon } from "react-native-paper";
+import HeaderCustom from "../../components/Header";
 
 const mockCourses = [
   { id: "1", title: "React Native cơ bản", teacher: "Nguyễn Văn A" },
@@ -47,29 +48,16 @@ const Search = () => {
 
   return (
     <View className="flex-1 bg-slate-50 pt-10">
-      <View className="flex-row items-center ">
-        <HeaderBack />
-        <View className="flex-1 flex-row items-center  py-1">
-          <Text className="text-xl">Thanh tìm kiếm</Text>
-        </View>
-      </View>
+      <HeaderCustom text="Thanh tìm kiếm" />
       <View className="pl-2  justify-center text-center pr-2 bg-white">
         <TextInput
-          className=" text-base bg-gray-200 text-gray-700 mb-4 rounded-xl p-3"
+          className=" text-base bg-gray-50 border border-gray-200 text-gray-700 mb-4 rounded-2xl p-3"
           placeholder="Nhập từ khóa..."
           value={keyword}
           onChangeText={handleSearch}
         />
       </View>
       <View className="flex-row p-4 bg-slate-50 gap-3 border-t border-b border-slate-200 pl-2">
-        <Text className="font-bold mb-2 text-xl">Thanh tìm kiếm</Text>
-        <TextInput
-          className="border border-gray-300 rounded-xl px-3 mb-4 "
-          placeholder="Nhập từ khóa..."
-          value={keyword}
-          onChangeText={handleSearch}
-        />
-
         <View className="flex-row mb-4 gap-3">
           {["React", "UX/UI", "Golang"].map((tag) => (
             <TouchableOpacity
@@ -81,32 +69,32 @@ const Search = () => {
             </TouchableOpacity>
           ))}
         </View>
-
-        <FlatList
-          data={results}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              className="border-b border-gray-200 bg-white py-3"
-              onPress={() =>
-                nav.navigate("CourseDetailedScreen", { id: item.id })
-              }
-            >
-              <View className="p-2">
-                <Text className="text-base font-medium">{item.subject}</Text>
-                <Text className="text-sm text-gray-500">{item.instructor}</Text>
-              </View>
-            </TouchableOpacity>
-          )}
-          ListEmptyComponent={
-            keyword.length > 0 ? (
-              <Text className="text-center text-gray-400 mt-4">
-                Không tìm thấy khóa học phù hợp
-              </Text>
-            ) : null
-          }
-        />
       </View>
+
+      <FlatList
+        data={results}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            className="border-b border-gray-200 bg-white py-3"
+            onPress={() =>
+              nav.navigate("CourseDetailedScreen", { id: item.id })
+            }
+          >
+            <View className="p-2">
+              <Text className="text-base font-medium">{item.subject}</Text>
+              <Text className="text-sm text-gray-500">{item.instructor}</Text>
+            </View>
+          </TouchableOpacity>
+        )}
+        ListEmptyComponent={
+          keyword.length > 0 ? (
+            <Text className="text-center text-gray-400 mt-4">
+              Không tìm thấy khóa học phù hợp
+            </Text>
+          ) : null
+        }
+      />
     </View>
   );
 };

@@ -7,7 +7,7 @@ const HeaderBack = () => {
   return (
     <TouchableOpacity
       onPress={() => nav.goBack()}
-      className=" p-2 rounded-full mr-3"
+      className=" p-2 rounded-full mr-5"
     >
       <Icon source="arrow-left" size={24} color="#374151" />
     </TouchableOpacity>

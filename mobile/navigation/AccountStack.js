@@ -4,6 +4,8 @@ import Register from "../screens/User/Register";
 import Appearance from "../screens/Setting/Appearance";
 import AccountScreen from "../screens/Account/Account";
 import AccountDetailedScreen from "../screens/Account/AccountDetailed";
+import TermsScreen from "../screens/Account/Terms";
+import HelpAndFeedbackScreen from "../screens/Account/HelpAndFeedback";
 
 const Stack = createNativeStackNavigator();
 
@@ -18,6 +20,8 @@ const AccountStack = () => {
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Register" component={Register} />
       <Stack.Screen name="Appearance" component={Appearance} />
+      <Stack.Screen name="Terms" component={TermsScreen} />
+      <Stack.Screen name="Help" component={HelpAndFeedbackScreen} />
     </Stack.Navigator>
   );
 };
