@@ -11,6 +11,7 @@ django-cors-headers==4.9.0
 django-js-asset==3.1.2
 django-oauth-toolkit==3.1.0
 djangorestframework==3.16.1
+drf-nested-routers==0.95.0
 drf-yasg==1.21.11
 google-api-core==2.28.1
 google-api-python-client==2.187.0

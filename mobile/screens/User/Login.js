@@ -1,15 +1,21 @@
 import { Pressable, View } from "react-native";
-import { ActivityIndicator, HelperText, TextInput } from "react-native-paper";
-import { CLIENT_ID, CLIENT_SECRET } from "@env";
-import colors from "tailwindcss/colors";
+import {
+  ActivityIndicator,
+  HelperText,
+  IconButton,
+  TextInput,
+} from "react-native-paper";
+import { MyUserContext } from "../../utils/contexts/MyContext";
 import TextCustom from "../../components/TextCustom";
 import AuthLayout from "../../components/AuthLayout";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { useContext } from "react";
-import { MyUserContext } from "../../utils/contexts/MyContext";
-import Apis, { authApis, endpoints } from "../../utils/Apis";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Linking from "expo-linking"; // Cần thiết để mở URL
 import { useState } from "react";
+import { authApi } from "../../api/authApi";
+import axiosClient from "../../api/axiosClient";
+import { endpoints } from "../../utils/Apis";
+import colors from "tailwindcss/colors";
+import { useNavigation } from "@react-navigation/native";
+import { useContext } from "react";
 
 const Login = () => {
   const jsonData = require("../../mock/data.config.register.json");
@@ -21,8 +27,9 @@ const Login = () => {
   const [user, setUser] = useState({});
   const [err, setErr] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPass, setShowConfirmPass] = useState(false);
   const navigation = useNavigation();
-  const route = useRoute();
   const [, dispatch] = useContext(MyUserContext);
 
   const validate = () => {
@@ -30,47 +37,27 @@ const Login = () => {
       setErr(true);
       return false;
     }
-    console.log("duoc");
     setErr(false);
     return true;
   };
 
   const login = async () => {
     if (validate() === true) {
+      setLoading(true);
       try {
-        console.log("duoc-1");
-        setLoading(true);
-        let res = await Apis.post(endpoints["login"], {
-          ...user,
-          client_id: CLIENT_ID, // Lưu vào biến môi trường của react
-          client_secret: CLIENT_SECRET, // Lưu vào biến môi trường của react
-          grant_type: "password",
+        await authApi.login(user);
+        console.log("QUA");
+
+        let userRes = await axiosClient.get(endpoints["current_user"]);
+        console.log("QUA");
+        dispatch({
+          type: "login",
+          payload: userRes.data,
         });
-        console.log("duoc-2");
-        await AsyncStorage.setItem("token", res.data.access_token);
-        console.log("duoc-3");
-
-        setTimeout(async () => {
-          console.log(res.data.access_token);
-
-          let user = await authApis(res.data.access_token).get(
-            endpoints["current_user"],
-          );
-          console.log("duoc-5");
-
-          dispatch({
-            type: "login",
-            payload: user.data,
-          });
-          console.log("duoc-6");
-          if (navigation.canGoBack()) {
-            navigation.goBack();
-            navigation.navigate("Home");
-          } else {
-            navigation.navigate("Home");
-          }
-          console.log("token", res.data.access_token);
-        }, 500);
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Home" }],
+        });
       } catch (ex) {
         console.error(ex);
       } finally {
@@ -78,24 +65,55 @@ const Login = () => {
       }
     }
   };
-
+  const loginGoogle = async () => {
+    try {
+      const res = await axiosClient.get(endpoints.googleAuth);
+      console.log("Mo link nef");
+      console.log(res.data);
+      if (res.data && res.data.auth_url) {
+        Linking.openURL(res.data.auth_url);
+      }
+    } catch (ex) {
+      console.error("Lỗi Google Auth:", ex);
+    }
+  };
   return (
     <AuthLayout title="ĐĂNG NHẬP NGƯỜI DÙNG">
       <HelperText type="error" visible={err}>
         Mật khẩu KHÔNG khớp!
       </HelperText>
-      {fieldsRender.map((item) => (
-        <TextInput
-          key={item.field}
-          label={item.title}
-          value={user[item.field]}
-          onChangeText={(t) => setUser({ ...user, [item.field]: t })}
-          secureTextEntry={item.secureTextEntry}
-          activeOutlineColor={colors.slate[500]}
-          right={<TextInput.Icon icon={item.icon} />}
-          mode="outlined"
-        />
-      ))}
+      {fieldsRender.map((item) => {
+        const isPasswordField =
+          item.field === "password" || item.field === "confirm";
+
+        const isVisible =
+          item.field === "password" ? showPassword : showConfirmPass;
+        const toggleVisibility = () => {
+          if (item.field === "password") setShowPassword(!showPassword);
+          else setShowConfirmPass(!showConfirmPass);
+        };
+        return (
+          <TextInput
+            key={item.field}
+            value={user[item.field]}
+            onChangeText={(t) => setUser({ ...user, [item.field]: t })}
+            label={item.title}
+            secureTextEntry={isPasswordField ? !isVisible : false}
+            activeOutlineColor={colors.slate[500]}
+            right={
+              isPasswordField ? (
+                <TextInput.Icon
+                  icon={isVisible ? "eye-off" : "eye"}
+                  onPress={toggleVisibility}
+                />
+              ) : (
+                <TextInput.Icon icon={item.icon} />
+              )
+            }
+            mode="outlined"
+          />
+        );
+      })}
       <View className="flex mb-2 flex-row-reverse gap-5 mt-3">
         <Pressable onPress={login} className={jsonStyle["pressable-focus"]}>
           {loading ? (
@@ -115,6 +133,43 @@ const Login = () => {
         >
           <TextCustom.TextFocus text="ĐĂNG KÝ" />
         </Pressable>
+      </View>
+      <View className="flex-row items-center my-6">
+        <View className="flex-1 h-[1px] bg-slate-200" />
+        <TextCustom.TextFocus
+          text=" Hoặc đăng nhập bằng "
+          style={{ fontSize: 12 }}
+        />
+        <View className="flex-1 h-[1px] bg-slate-200" />
+      </View>
+
+      <View className="flex-row justify-center gap-4">
+        <IconButton
+          icon="google"
+          mode="outlined"
+          iconColor="#DB4437"
+          size={30}
+          onPress={loginGoogle}
+          style={{ borderColor: "#DB4437" }}
+        />
+
+        <IconButton
+          icon="facebook"
+          mode="outlined"
+          iconColor="#4267B2"
+          size={30}
+          onPress={() => console.log("Facebook Login")}
+          style={{ borderColor: "#4267B2" }}
+        />
+
+        <IconButton
+          icon="github"
+          mode="outlined"
+          iconColor="#333"
+          size={30}
+          onPress={() => console.log("Github Login")}
+          style={{ borderColor: "#333" }}
+        />
       </View>
     </AuthLayout>
   );
