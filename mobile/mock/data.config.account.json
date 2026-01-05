@@ -5,7 +5,7 @@
       "description": "Thông tin, mật khẩu, bảo mật",
       "iconLeft": "account-circle-outline",
       "iconColor": "#2563eb",
-      "navUrl": "ProfileDetail"
+      "navUrl": "AccountDetailedScreen"
     },
     {
       "title": "Khóa học của tôi",

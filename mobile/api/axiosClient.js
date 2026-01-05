@@ -7,6 +7,7 @@ import { authApi } from "./authApi";
 const axiosClient = axios.create({
   baseURL: BASE_URL,
   headers: {
+    Accept: "application/json",
     "Content-Type": "application/json",
     "ngrok-skip-browser-warning": "69420",
   },
@@ -36,7 +37,6 @@ axiosClient.interceptors.response.use(
       try {
         const tokens = await getTokens();
         if (!tokens || !tokens.refresh_token) {
-          console.log("Không có refresh token");
           throw new Error("Không có refresh token");
         }
 
