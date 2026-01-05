@@ -48,7 +48,8 @@ class OAuthProvider(ABC):
             'refresh_token': self.credentials.refresh_token,
             'client_id': self.credentials.client_id,
             'token_uri': self.credentials.token_uri,
-            'expiry': expiry_val
+            'expiry': expiry_val,
+            'auth_type': 'generic_oauth'
         }
     
     @abstractmethod
@@ -132,3 +133,18 @@ class GoogleOAuthProvider(OAuthProvider):
             }
         except Exception as e:
             raise ValueError(f"Lỗi lấy thông tin user Google: {e}")
+        
+    def get_user_response(self):
+        response = super().get_user_response()
+        response['auth_type'] = 'google'
+        return response
+
+class OAuthFactory:
+    @staticmethod
+    def get_provider(auth_type: str) -> OAuthProvider:
+        provider_type = auth_type.lower().strip()
+        
+        if provider_type == 'google':
+            return GoogleOAuthProvider('../secret/google.json')
+        else:
+            raise ValueError(f"Hệ thống chưa hỗ trợ provider: {auth_type}")

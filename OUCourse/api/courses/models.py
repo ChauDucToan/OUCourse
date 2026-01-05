@@ -15,7 +15,7 @@ class Course(BaseModel):
         related_name="owned_courses",
     )
     category = models.ForeignKey(
-        "caterogries.Category", 
+        "categories.Category", 
         on_delete=models.RESTRICT,
         related_name="courses"
     )
