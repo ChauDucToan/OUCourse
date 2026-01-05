@@ -10,6 +10,7 @@ import { HomeHeader } from "../../components/HomeComponents/HomeHeader";
 import { HomeCategories } from "../../components/HomeComponents/HomeCategories";
 import { HomeBanner } from "../../components/HomeComponents/HomeBanner";
 import { HomeCourseList } from "../../components/HomeComponents/HomeCourseList";
+import HomePromotion from "../../components/HomeComponents/HomePromotion";
 
 const HomeScreen = () => {
   const [courseData, setCourseData] = useState([]);
@@ -35,7 +36,10 @@ const HomeScreen = () => {
   };
   return (
     <View className="flex-1 bg-white">
-      <FlatList ListHeaderComponent={render} />
+      <FlatList
+        ListHeaderComponent={render}
+        ListFooterComponent={HomePromotion}
+      />
     </View>
   );
 };

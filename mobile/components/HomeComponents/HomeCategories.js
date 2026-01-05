@@ -1,8 +1,6 @@
-import { TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View, FlatList, Text } from "react-native";
 import TextCustom from "../TextCustom";
-import { FlatList } from "react-native";
 import { categories } from "../../mock/data.mock.categories.json";
-import { Text } from "react-native";
 
 export const HomeCategories = () => {
   return (
@@ -10,16 +8,18 @@ export const HomeCategories = () => {
       <TextCustom.TextSection text={"Danh mục"} />
       <FlatList
         className="mt-4"
-        // horizontal
+        horizontal
         data={categories}
         keyExtractor={(item) => item.id}
         showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => (
           <TouchableOpacity
-            className="bg-gray-100 rounded-lg px-4 py-3 mr-3"
-            onPress={() => console.log("CLICK CATEGORy")}
+            className="bg-slate-500  rounded-lg px-4 py-3 mr-3 "
+            onPress={() => {
+              setActiveId(item.id);
+            }}
           >
-            <Text className="text-base">{item.name}</Text>
+            <Text className="text-base text-white">{item.name}</Text>
           </TouchableOpacity>
         )}
       />

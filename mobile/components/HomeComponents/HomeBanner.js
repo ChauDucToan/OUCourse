@@ -51,7 +51,7 @@ export const HomeBanner = () => {
         {imageBanner.map((_, index) => (
           <View
             key={index}
-            className={`ml-2 mr-2 ${currentIndex === index ? "w-6 rounded-pill h-3 bg-slate-600" : "w-3 h-3 bg-gray-200"} rounded-full`}
+            className={`ml-2 mr-2 ${currentIndex === index ? "w-6 rounded-pill h-3 bg-slate-500" : "w-3 h-3 bg-gray-200"} rounded-full`}
           />
         ))}
       </View>

@@ -14,7 +14,8 @@ export const HomeCourseList = ({ data, text }) => {
       <FlatList
         data={data}
         horizontal
-        className="gap-3"
+        showsHorizontalScrollIndicator={false}
+        className="gap-3 "
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => <CourseView navigation={nav} item={item} />}
       />
