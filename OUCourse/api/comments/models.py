@@ -29,11 +29,11 @@ class Comment(Interaction):
         return self.content
 
 class Emotion(BaseModel):
-    class EmotionType(models.TextChoices):
-        LIKE = "LIKE"
-        LOVE = "LOVE"
-        FUNNY = "FUNNY"
-        SAD = "SAD"
+    class EmotionType(models.IntegerChoices):
+        LIKE = 1
+        LOVE = 2
+        FUNNY = 3
+        SAD = 4
 
     type = models.CharField(
         max_length=10,

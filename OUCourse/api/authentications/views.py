@@ -1,5 +1,5 @@
-from rest_framework import viewsets, status
-from rest_framework.decorators import action
+from rest_framework import viewsets, status, permissions
+from rest_framework.decorators import action, authentication_classes,permission_classes
 from rest_framework.response import Response
 from django.db import transaction
 
@@ -13,13 +13,15 @@ class AuthViewSet(viewsets.GenericViewSet):
     serializer_class = AuthenticationModelSerializer
 
     @action(detail=False, methods=['get'], url_path='url')
+    @authentication_classes([])
+    @permission_classes([permissions.AllowAny])
     def get_oauth_url(self, request):
         auth_type = request.query_params.get('auth_type')
         if not auth_type:
             return Response({"error": "auth_type là bắt buộc"}, status=status.HTTP_400_BAD_REQUEST)
         
         try:
-            provider = OAuthFactory.get_provider(auth_type)
+            provider = OAuthFactory.get_provider(auth_type, request=request)
             auth_url = provider.authenticate()
             return Response({"auth_url": auth_url}, status=status.HTTP_200_OK)
         except ValueError as e:

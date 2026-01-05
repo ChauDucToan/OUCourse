@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from .models import AuthenticationModel
 from ..users.models import User
-from django.core.files.base import ContentFile
 from cloudinary.uploader import upload
 import requests
 
@@ -16,7 +15,6 @@ class AuthenticationModelSerializer(serializers.ModelSerializer):
         avatar_url = validated_data.get('avatar', '')
         provider = validated_data.get('provider')
         uid = validated_data.get('uid')
-        print(f"Creating or getting user with email: {email}, name: {name}, avatar: {avatar_url}, provider: {provider}, uid: {uid}")
         user, created = User.objects.get_or_create(
             username=email,
             defaults={
