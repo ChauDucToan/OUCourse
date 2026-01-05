@@ -16,9 +16,6 @@ class CourseView(viewsets.ModelViewSet):
     pagination_class = paginators.CoursePaginator
     
     def get_permissions(self):
-        if self.action == 'lessons' and self.request.method.__eq__('POST'):
-            return [perms.IsNotStudent()]
-        
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             return [perms.IsNotStudent()]
         
