@@ -1,4 +1,4 @@
-from rest_framework import viewsets, generics, permissions, status, parsers
+from rest_framework import viewsets, permissions, status, parsers
 from .. import perms
 from . import serializers, paginators, models
 from django.contrib.auth import get_user_model
@@ -9,11 +9,6 @@ from rest_framework.response import Response
 UserModel = get_user_model()
 
 # Create your views here.
-class CategoryView(viewsets.ViewSet, generics.DestroyAPIView):
-    queryset = models.Category.objects.all()
-    serializer_class = serializers.CategorySerializer
-    permission_classes = [permissions.IsAuthenticated]
-
 class CourseView(viewsets.ModelViewSet):
     parser_classes = [parsers.MultiPartParser, parsers.FormParser]
     queryset = models.Course.objects.filter(active=True)

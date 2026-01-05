@@ -1,5 +1,5 @@
 from django.contrib import admin, messages
-from .models import Course, Category
+from .models import Course
 from django.utils.safestring import mark_safe
 from django.contrib.auth import get_user_model
 

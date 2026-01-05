@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Course, Category, ManageCourse
+from .models import Course, ManageCourse
     
 class CourseSerializer(serializers.ModelSerializer):
     instructor = serializers.CharField(source='instructor.username', read_only=True)
