@@ -9,7 +9,7 @@ from rest_framework.response import Response
 UserModel = get_user_model()
 
 # Create your views here.
-class CategoryView(viewsets.ViewSet, generics.ListAPIView):
+class CategoryView(viewsets.ViewSet, generics.DestroyAPIView):
     queryset = models.Category.objects.all()
     serializer_class = serializers.CategorySerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -25,6 +25,11 @@ class CourseView(viewsets.ModelViewSet):
             return [perms.IsNotStudent()]
         
         return [permissions.AllowAny()]
+    
+    def get_serializer_class(self):
+        if self.action in ['retrieve']:
+            return serializers.CourseDetailSerializer
+        return self.serializer_class
 
     def get_queryset(self):
         query = self.queryset

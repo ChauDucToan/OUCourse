@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Lesson, Tag
+from .models import Lesson, Tag, LessonProgress
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
@@ -16,6 +16,15 @@ class LessonSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'image': {'required': False},
         }
+
+    def create(self, validated_data):
+        lesson = Lesson.objects.create(**validated_data)
+        progress = LessonProgress.objects.create(
+            student=self.context['request'].user,
+            lesson=lesson
+        )
+        progress.save()
+        return lesson
     
 class LessonDetailSerializer(LessonSerializer):
     tags = serializers.SerializerMethodField('get_tags')
@@ -26,3 +35,8 @@ class LessonDetailSerializer(LessonSerializer):
 
     def get_tags(self, obj):
         return [tag.name for tag in obj.tags.all()]
+    
+class ProgressLessonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LessonProgress
+        fields = ['id', 'status', 'student', 'lesson']

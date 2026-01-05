@@ -30,6 +30,25 @@ class LessonView(viewsets.ViewSet, generics.RetrieveUpdateDestroyAPIView
             return [perms.IsNotStudent()]
         return [permissions.IsAuthenticated()]
     
+    @action(methods=['get', 'patch'], url_path='progress', detail=True)
+    def get_progress(self, request, pk):
+        lesson = self.get_object()
+        progress, created = models.LessonProgress.objects.get_or_create(
+            student=request.user,
+            lesson=lesson
+        )
+        if request.method.__eq__('PATCH'):
+            s = serializers.ProgressLessonSerializer(progress, data=request.data, partial=True)
+            s.is_valid(raise_exception=True)
+            s.save()
+            return Response(s.data, status=status.HTTP_200_OK)
+        return Response(serializers.ProgressLessonSerializer(progress).data, status=status.HTTP_200_OK)
+    
+    @action(methods=['get'], url_path='tags', detail=True)
+    def get_tags(self, request, pk):
+        tags = self.get_object().tags.filter(active=True)
+        return Response(serializers.TagSerializer(tags, many=True).data, status=status.HTTP_200_OK)
+
     @action(methods=['get', 'post'], url_path='comments', detail=True,
             pagination_class=paginators.CommentPaginator)
     def get_comments(self, request, pk):

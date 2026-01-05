@@ -33,3 +33,33 @@ class Lesson(BaseModel):
 
     def __str__(self):
         return self.subject
+    
+class LessonProgress(BaseModel):
+    class Status(models.TextChoices):
+        NOT_STARTED = "NOT_STARTED"
+        IN_PROGRESS = "IN_PROGRESS"
+        COMPLETED = "COMPLETED"
+
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.NOT_STARTED,
+    )
+
+    student = models.ForeignKey(
+        'users.User',
+        on_delete=models.CASCADE,
+        related_name="lesson_progresses",
+    )
+
+    lesson = models.ForeignKey(
+        Lesson,
+        on_delete=models.CASCADE,
+        related_name="progresses",
+    )
+
+    class Meta:
+        unique_together = ('student', 'lesson')
+
+    def __str__(self):
+        return f"{self.student.username} - {self.lesson.subject} - {self.status}"
