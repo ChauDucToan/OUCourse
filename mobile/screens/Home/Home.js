@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import fetchCourse from "../../api/courseApi";
 import CourseView from "../../components/CourseView";
+import { getTokens } from "../../utils/tokenUtils";
 
 const categories = require("../../mock/data.mock.categories.json");
 
@@ -34,6 +35,7 @@ const HomeScreen = () => {
   useEffect(() => {
     const loadData = async () => {
       const fetchData = await fetchCourse();
+
       setCourseData(fetchData.data.results);
     };
     loadData();

@@ -5,6 +5,7 @@ import colors from "tailwindcss/colors";
 import { useContext } from "react";
 import { MyUserContext } from "../../utils/contexts/MyContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import HeaderBack from "../../components/HeaderBack";
 
 const AccountScreen = ({ navigation }) => {
   const jsonAccountData = require("../../mock/data.config.account.json");
@@ -19,7 +20,14 @@ const AccountScreen = ({ navigation }) => {
   };
   console.log("user ne", user);
   return (
-    <ScrollView className="flex-1 bg-slate-50 mt-10">
+    <ScrollView className="flex-1 bg-slate-50 pt-10">
+      <View className="flex-row items-center ">
+        <HeaderBack />
+
+        <View className="flex-1 flex-row items-center bg-gray-50 rounded-2xl px-3 py-1">
+          {/* <Text>Trang tùy chỉnh</Text>*/}
+        </View>
+      </View>
       {user && (
         <View>
           <View className="bg-white  p-5 flex flex-row items-center justify-around border-b border-slate-200">

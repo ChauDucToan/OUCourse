@@ -11,6 +11,8 @@ import { useState } from "react";
 import { authApi } from "../../api/authApi";
 import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../../utils/Apis";
+import HeaderBack from "../../components/HeaderBack";
+import { Text } from "react-native";
 
 const Login = () => {
   const jsonData = require("../../mock/data.config.register.json");
