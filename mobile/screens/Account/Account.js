@@ -5,6 +5,8 @@ import colors from "tailwindcss/colors";
 import { useContext } from "react";
 import { MyUserContext } from "../../utils/contexts/MyContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import HeaderBack from "../../components/HeaderBack";
+import HeaderCustom from "../../components/Header";
 
 const Account = ({ navigation }) => {
   const jsonAccountData = require("../../mock/data.config.account.json");
@@ -19,24 +21,29 @@ const Account = ({ navigation }) => {
   };
   console.log("user ne", user);
   return (
-    <ScrollView className="flex-1 bg-slate-50">
+    <ScrollView className="flex-1 bg-slate-50 pt-10">
+      <HeaderCustom text="" />
       {user && (
         <View>
-          <View className="bg-white  p-5 flex flex-row justify-around border-b border-slate-200">
+          <View className="bg-white  p-5 flex flex-row items-center justify-around border-b border-slate-200">
             <View>
               <Avatar.Image
                 size={80}
-                source={{ uri: user.image }}
+                source={{ uri: user.avatar }}
                 className="bg-slate-200"
               />
             </View>
             <View>
               <Text className="text-xl font-bold text-slate-800 mt-3">
-                {user.first_name + user.last_name}
+                {user.first_name + " " + user.last_name}
               </Text>
               <Text className="text-slate-500">{user.username}</Text>
               <Pressable
-                onPress={() => console.log("Click me!")}
+                onPress={() =>
+                  navigation.navigate("AccountDetailedScreen", {
+                    isEditParam: true,
+                  })
+                }
                 className="mt-3 p-2 rounded-xl shadow-sm bg-slate-600 active:bg-slate-700 active:opacity-90"
               >
                 <Text className="text-white font-bold text-xs text-center">

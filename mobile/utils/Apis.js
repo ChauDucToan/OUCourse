@@ -1,27 +1,20 @@
-import axios from "axios";
-
-const BASE_URL = "https://thanhduong.pythonanywhere.com/";
-
+import { BASE_URL } from "@env";
 export const endpoints = {
-  categories: "/categories/",
-  courses: "/courses/",
-  lessons: (courseId) => `/courses/${courseId}/lessons/`,
-  register: "/users/",
+  categories: "/api/categories/",
+
+  courses: "/api/courses/",
+  courseDetails: (courseId) => `/api/courses/${courseId}/`,
+  enrollCourse: (courseId) => `/api/courses/${courseId}/enroll/`,
+
+  lessons: () => `/api/lessons/`,
+  lessonDetailed: (lessonId) => `/api/lessons/${lessonId}`,
+  enrollLesson: (lessonId) => `/api/lessons/${lessonId}/enroll/`,
+  comments: (lessonId) => `/api/lessons/${lessonId}/comments/`,
+
+  register: "/api/users/",
   login: "/o/token/",
-  current_user: "/users/current-user/",
-  "lesson-details": (lessonId) => `/lessons/${lessonId}/`,
-  comments: (lessonId) => `/lessons/${lessonId}/comments/`,
-};
+  current_user: "/api/users/current-user/",
+  baseUrl: BASE_URL,
 
-export const authApis = (token) => {
-  return axios.create({
-    baseURL: BASE_URL,
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  googleAuth: "/api/auth/url?auth_type=google",
 };
-
-export default axios.create({
-  baseURL: BASE_URL,
-});

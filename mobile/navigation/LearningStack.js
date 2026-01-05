@@ -1,14 +1,14 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import HomeScreen from "../screens/Home/Home";
+import UserLearning from "../screens/User/UserLearning";
 
 const Stack = createNativeStackNavigator();
 
-const HomeStack = () => {
+const LearningStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="HomeScreen" component={HomeScreen} />
+      <Stack.Screen name="UserLearning" component={UserLearning} />
     </Stack.Navigator>
   );
 };
 
-export default HomeStack;
+export default LearningStack;

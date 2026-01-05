@@ -1,0 +1,13 @@
+{
+  "categories": [
+    { "id": "1", "name": "Lập trình" },
+    { "id": "2", "name": "Thiết kế" },
+    { "id": "3", "name": "Marketing" },
+    { "id": "4", "name": "Lập trình" },
+    { "id": "5", "name": "Thiết kế" },
+    { "id": "6", "name": "Marketing" },
+    { "id": "7", "name": "Lập trình" },
+    { "id": "8", "name": "Thiết kế" },
+    { "id": "9", "name": "Marketing" }
+  ]
+}

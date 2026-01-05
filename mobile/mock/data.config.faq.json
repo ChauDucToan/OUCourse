@@ -1,0 +1,14 @@
+{
+  "faqs": [
+    {
+      "id": "1",
+      "question": "Làm sao để gia hạn gói dịch vụ?",
+      "answer": "Bạn có thể vào mục 'Gói dịch vụ' tại trang Tài khoản để thực hiện gia hạn qua các cổng thanh toán."
+    },
+    {
+      "id": "2",
+      "question": "Tôi quên mật khẩu thì phải làm sao?",
+      "answer": "Tại màn hình đăng nhập, hãy chọn 'Quên mật khẩu' và làm theo hướng dẫn gửi tới email của bạn."
+    }
+  ]
+}

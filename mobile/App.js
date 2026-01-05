@@ -3,7 +3,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import { useReducer } from "react";
 import MyReducers from "./utils/reducers/MyReducers";
 import { MyUserContext } from "./utils/contexts/MyContext";
-import { Icon } from "react-native-paper";
+import { ActivityIndicator, Icon } from "react-native-paper";
+
 import { useContext } from "react";
 import colors from "tailwindcss/colors";
 
@@ -11,7 +12,13 @@ import AccountStack from "./navigation/AccountStack";
 import HomeStack from "./navigation/HomeStack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import SearchStack from "./navigation/SearchStack";
-
+import { useEffect } from "react";
+import axiosClient from "./api/axiosClient";
+import { endpoints } from "./utils/Apis";
+import { useState } from "react";
+import { View } from "react-native";
+import LearningStack from "./navigation/LearningStack";
+import * as Linking from "expo-linking";
 const Tab = createBottomTabNavigator();
 
 const TabNavigator = () => {
@@ -48,7 +55,7 @@ const TabNavigator = () => {
       />
       <Tab.Screen
         name="Learning"
-        component={HomeStack}
+        component={LearningStack}
         options={{
           title: "Học nào",
           tabBarIcon: () => (
@@ -80,6 +87,35 @@ const TabNavigator = () => {
 
 export default function App() {
   const [user, dispatch] = useReducer(MyReducers, null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const hydrateAuth = async () => {
+      let token;
+      try {
+        const res = await axiosClient.get(endpoints.current_user);
+        dispatch({
+          type: "login",
+          payload: res.data,
+        });
+      } catch (error) {
+        console.log("Vao day ne");
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    hydrateAuth();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color={colors.blue[600]} />
+      </View>
+    );
+  }
+
   return (
     <MyUserContext.Provider value={[user, dispatch]}>
       <NavigationContainer>
