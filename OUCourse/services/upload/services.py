@@ -12,7 +12,7 @@ def save_temp_file(file_obj):
     tfile.close()
     return tfile.name
 
-def get_youtube_service(user_id, scopes=None):
+def get_youtube_service(user_id = 1, scopes=None):
     try:
         auth = AuthenticationModel.objects.get(user_id=user_id, provider='google')
     except AuthenticationModel.DoesNotExist:

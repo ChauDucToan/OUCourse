@@ -35,8 +35,7 @@ class Emotion(BaseModel):
         FUNNY = 3
         SAD = 4
 
-    type = models.CharField(
-        max_length=10,
+    type = models.SmallIntegerField(
         choices=EmotionType.choices,
         null=False
     )

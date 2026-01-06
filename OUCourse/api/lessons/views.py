@@ -1,5 +1,7 @@
 from rest_framework import viewsets, generics, permissions, status
 from .. import perms
+from django.contrib.contenttypes.models import ContentType
+from ..comments.serializers import EmotionSerializer
 from . import serializers, paginators, models
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -29,6 +31,39 @@ class LessonView(viewsets.ViewSet, generics.RetrieveUpdateDestroyAPIView
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             return [perms.IsNotStudent()]
         return [permissions.IsAuthenticated()]
+    
+    @action(methods=['post'], url_path='react', detail=True, permission_classes=[permissions.IsAuthenticated])
+    def react(self, request, pk):
+        lesson = self.get_object()
+
+        c_type = ContentType.objects.get_for_model(lesson)
+
+        serializer = EmotionSerializer(data=request.data)
+        if serializer.is_valid():
+            emotion = serializer.save(
+                user=request.user,
+                content_type=c_type,
+                object_id=lesson.id
+            )
+            return Response(EmotionSerializer(emotion).data, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    @action(methods=['delete'], url_path='unreact', detail=True, permission_classes=[permissions.IsAuthenticated])
+    def unreact(self, request, pk):
+        lesson = self.get_object()
+        c_type = ContentType.objects.get_for_model(lesson)
+
+        try:
+            emotion = models.Emotion.objects.get(
+                user=request.user,
+                content_type=c_type,
+                object_id=lesson.id
+            )
+            emotion.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except models.Emotion.DoesNotExist:
+            return Response({"detail": "Reaction not found"}, status=status.HTTP_404_NOT_FOUND)
     
     @action(methods=['get', 'patch'], url_path='progress', detail=True)
     def get_progress(self, request, pk):

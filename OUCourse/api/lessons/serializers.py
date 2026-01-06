@@ -28,7 +28,6 @@ class LessonSerializer(serializers.ModelSerializer):
         if video_file:
             try:
                 youtube_url = upload_services.upload_video_to_youtube(
-                    user_id=user.id,
                     video_file_obj=video_file,
                     title=validated_data.get('subject', 'Untitled Lesson'),
                     description=content,

@@ -10,7 +10,7 @@ from .services import upload_video_to_youtube
 
 if __name__ == "__main__":
     from api.users.models import User
-    test_user = User.objects.filter(username__icontains='acctest').first()
+    test_user = User.objects.filter(email__icontains='acctest').first()
     with open('/home/oslamelon/Downloads/video.mp4', 'rb') as f:
         video_file = File(f)
 
