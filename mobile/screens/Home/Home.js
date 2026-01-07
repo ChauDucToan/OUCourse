@@ -54,7 +54,7 @@ const HomeScreen = () => {
         <HomeCourseList
           data={coursesFree}
           text="Top thịnh hành"
-          textClass="text-yellow-500"
+          textClass={"text-yellow-500"}
           iconColor={colors.yellow[500]}
           icon="star"
         />
@@ -63,8 +63,8 @@ const HomeScreen = () => {
           data={coursesExpensive}
           text="Khóa học cao cấp"
           icon="cash-multiple"
-          textClass="text-purple-700"
-          iconColor={colors.purple[700]}
+          textClass={"text-purple-600"}
+          iconColor={colors.purple[600]}
         />
       </View>
     );
@@ -89,13 +89,10 @@ const HomeScreen = () => {
           borderBottomColor: "#eee",
         }}
       >
-        {/* <HomeHeader text="OUCourse" subText="ok" />*/}
         <TextCustom.TextSection className="mt-8" text="OUCourse" />
-        {/* <Text>OUCourse</Text>*/}
-      </Animated.View>{" "}
+      </Animated.View>
       <Animated.FlatList
         ListHeaderComponent={render}
-        // ListFooterComponent={HomePromotion}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
           { useNativeDriver: true },

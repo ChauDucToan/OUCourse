@@ -86,10 +86,7 @@ const CourseDetailedScreen = () => {
       //   },
       // );
       // console.log("RES enrroll: ", res);
-      nav.reset({
-        index: 0,
-        routes: [{ name: "Search" }],
-      });
+      nav.goBack();
     } catch (error) {
       console.error(error);
     }

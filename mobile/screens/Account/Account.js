@@ -21,7 +21,12 @@ const Account = ({ navigation }) => {
   };
   console.log("user ne", user);
   return (
-    <ScrollView className="flex-1 bg-slate-50 pt-10">
+    <ScrollView
+      className="flex-1 bg-slate-50 pt-10"
+      contentContainerStyle={{
+        paddingBottom: 80,
+      }}
+    >
       <HeaderCustom text="" />
       {user && (
         <View>
@@ -67,7 +72,7 @@ const Account = ({ navigation }) => {
             />
           </View>
 
-          <View className="p-4 mt-2 mb-8">
+          <View className="p-4 mt-2 mb-3">
             <Button
               mode="outlined"
               textColor={colors.red[500]}
@@ -79,6 +84,9 @@ const Account = ({ navigation }) => {
               Đăng xuất
             </Button>
           </View>
+          <Text className="text-center text-slate-400 text-xs">
+            Phiên bản 1.0.0
+          </Text>
         </View>
       )}
       {!user && (
