@@ -29,18 +29,21 @@ class AuthViewSet(viewsets.GenericViewSet):
         except Exception as e:
             return Response({"error": "Lỗi hệ thống", "details": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    @action(detail=False, methods=['post'], url_path='callback', serializer_class=SocialLoginInputSerializer)
+    @action(detail=False, methods=['get'], url_path='callback', serializer_class=SocialLoginInputSerializer)
     def login(self, request):
-        input_serializer = SocialLoginInputSerializer(data=request.data)
+        data = request.query_params.dict()
+
+        input_serializer = SocialLoginInputSerializer(data=data)
         input_serializer.is_valid(raise_exception=True)
         
         auth_type = input_serializer.validated_data['auth_type']
         code = input_serializer.validated_data['code']
 
         try:
-            provider = OAuthFactory.get_provider(auth_type)
-            provider.fetch_token(code)
-            
+            verifier = request.data.get('code_verifier')
+            provider = OAuthFactory.get_provider(auth_type, request=request)
+            provider.fetch_token(code, code_verifier=verifier)
+
             user_info = provider.get_user_info()
             token_data = provider.get_user_response()
             

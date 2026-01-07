@@ -7,12 +7,6 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 # Create your views here.
-
-class TagView(viewsets.ViewSet, generics.ListAPIView):
-    queryset = models.Tag.objects.all()
-    serializer_class = serializers.TagSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
 class LessonView(viewsets.ViewSet, generics.RetrieveUpdateDestroyAPIView
                  , generics.CreateAPIView):
     pagination_class = paginators.LessonPaginator
@@ -81,8 +75,25 @@ class LessonView(viewsets.ViewSet, generics.RetrieveUpdateDestroyAPIView
     
     @action(methods=['get'], url_path='tags', detail=True)
     def get_tags(self, request, pk):
-        tags = self.get_object().tags.filter(active=True)
+        lesson = self.get_object()
+        tags = lesson.tags.filter(active=True)
         return Response(serializers.TagSerializer(tags, many=True).data, status=status.HTTP_200_OK)
+    
+    @action(methods=['post', 'delete'], url_path='manage-tags', detail=True, permission_classes=[perms.IsNotStudent])
+    def manage_tags(self, request, pk):
+        lesson = self.get_object()
+        tag_id = request.data.get('tag_id')
+        try:
+            tag = models.Tag.objects.get(pk=tag_id, active=True)
+        except models.Tag.DoesNotExist:
+            return Response({"detail": "Tag not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        if request.method.__eq__('POST'):
+            lesson.tags.add(tag)
+            return Response({"detail": "Tag added"}, status=status.HTTP_200_OK)
+        else:
+            lesson.tags.remove(tag)
+            return Response({"detail": "Tag removed"}, status=status.HTTP_200_OK)
 
     @action(methods=['get', 'post'], url_path='comments', detail=True,
             pagination_class=paginators.CommentPaginator)

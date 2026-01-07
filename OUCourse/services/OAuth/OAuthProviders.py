@@ -30,6 +30,12 @@ class OAuthProvider(ABC):
                 return data.get('installed') or data.get('web') or data
         except Exception:
             return {}
+        
+    def create_pkce_challenge(self):
+        code_verifier = secrets.token_urlsafe(64)
+        code_challenge = hashlib.sha256(code_verifier.encode('ascii')).digest()
+        code_challenge_b64 = base64.urlsafe_b64encode(code_challenge).decode('ascii').rstrip('=')
+        return code_verifier, code_challenge_b64
 
     @abstractmethod
     def authenticate(self) -> str:
@@ -37,7 +43,7 @@ class OAuthProvider(ABC):
         pass
 
     @abstractmethod
-    def fetch_token(self, callback_code: str) -> None:
+    def fetch_token(self, callback_code: str, **kwargs) -> None:
         """Đổi code lấy token"""
         pass
 
@@ -101,13 +107,26 @@ class GoogleOAuthProvider(OAuthProvider):
     
     def authenticate(self) -> str:
         self.flow = self._create_flow()
+
+        if self.request:
+            verifier = self.flow.code_verifier
+            self.request.session['pkce_verifier'] = verifier
+            self.request.session.save()
+
         
         auth_url, _ = self.flow.authorization_url(prompt='consent', access_type='offline', state='google')
         return auth_url
     
-    def fetch_token(self, callback_code: str) -> None:
+    def fetch_token(self, callback_code: str, **kwargs) -> None:
         if not self.flow:
             self.flow = self._create_flow()
+
+        code_verifier = kwargs.get('code_verifier')
+        if not code_verifier and self.request:
+            code_verifier = self.request.session.get('pkce_verifier')
+
+        if code_verifier:
+            self.flow.code_verifier = code_verifier
         
         try:
             self.flow.fetch_token(code=callback_code)
@@ -179,17 +198,11 @@ class DjangoOAuthProvider(OAuthProvider):
     def __init__(self, credential_file: str, scopes=None, request=None):
         super().__init__(credential_file, request=request)
         self.scopes = scopes or ["read", "write"]
-        self.redirect_uri = self.client_config.get('redirect_uri')
-
-    def _create_pkce_challenge(self):
-        code_verifier = secrets.token_urlsafe(64)
-        code_challenge = hashlib.sha256(code_verifier.encode('ascii')).digest()
-        code_challenge_b64 = base64.urlsafe_b64encode(code_challenge).decode('ascii').rstrip('=')
-        return code_verifier, code_challenge_b64
+        self.redirect_uri = self.client_config.get('redirect_uris')[0]
 
     def authenticate(self) -> str:
         base_url = self.client_config.get('auth_uri')
-        verifier, challenge = self._create_pkce_challenge()
+        verifier, challenge = self.create_pkce_challenge()
 
         if self.request:
             self.request.session['pkce_verifier'] = verifier
@@ -208,21 +221,32 @@ class DjangoOAuthProvider(OAuthProvider):
         auth_url = f"{base_url}?{urlencode(params)}"
         return auth_url
 
-    def fetch_token(self, callback_code: str) -> None:
+    def fetch_token(self, callback_code: str, **kwargs) -> None:
         token_url = self.client_config.get('token_uri')
 
-        code_verifier = None
-        if self.request:
+        code_verifier = kwargs.get('code_verifier')
+        if not code_verifier and self.request:
             code_verifier = self.request.session.get('pkce_verifier')
+
+            if 'pkce_verifier' in self.request.session:
+                del self.request.session['pkce_verifier']
+                self.request.session.modified = True
+
+        client_id = self.client_config.get('client_id')
+        client_secret = self.client_config.get('client_secret')
 
         data = {
             "grant_type": "authorization_code",
             "code": callback_code,
             "redirect_uri": self.redirect_uri,
-            "client_id": self.client_config.get('client_id'),
-            "client_secret": self.client_config.get('client_secret'),
+            "client_id": client_id,
             "code_verifier": code_verifier
         }
+
+        if client_secret:
+            data["client_secret"] = client_secret
+
+        print(data)
         
         try:
             response = requests.post(token_url, data=data)
@@ -241,9 +265,6 @@ class DjangoOAuthProvider(OAuthProvider):
                 client_secret=self.client_config.get('client_secret'),
                 expiry=expiry
             )
-
-            if self.request and 'pkce_verifier' in self.request.session:
-                del self.request.session['pkce_verifier']
             
         except Exception as e:
             raise ValueError(f"Lỗi khi đổi code lấy token DOT: {str(e)}")
