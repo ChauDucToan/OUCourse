@@ -73,10 +73,12 @@ const Login = () => {
         path: "oauthredirect",
       });
       console.log("redirectUri =", redirectUri);
-      // Backend build Google auth URL (nên include redirect_uri)
-      const res = await axiosClient.post(endpoints.googleCallback, {
-        params: { redirect_uri: redirectUri, auth_type: "django" },
-      });
+      const params = new URLSearchParams();
+      params.append("auth_type", "google");
+      params.append("redirect_uri", redirectUri);
+      // params.append("auth_type", "django");
+
+      const res = await axiosClient.get(endpoints.googleAuth, { params });
 
       const authUrl = res.data?.auth_url;
       console.log(authUrl);
@@ -97,6 +99,7 @@ const Login = () => {
       if (!code || !state) throw new Error("Missing code/state in callback");
 
       // Gọi backend đổi code -> token/session
+      console.log("Gọi loginRes");
       const loginRes = await axiosClient.get(endpoints.googleCallback, {
         code,
         state,

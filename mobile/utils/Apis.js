@@ -16,6 +16,6 @@ export const endpoints = {
   current_user: "/api/users/current-user/",
   baseUrl: BASE_URL,
 
-  googleAuth: "/api/auth/url?auth_type=google",
-  googleCallback: "api/auth/callback",
+  googleAuth: "/api/auth/url/",
+  googleCallback: "/api/auth/callback/",
 };

@@ -12,6 +12,7 @@ import HomePromotion from "../../components/HomeComponents/HomePromotion";
 import colors from "tailwindcss/colors";
 import { Animated } from "react-native";
 import { useRef } from "react";
+import TextCustom from "../../components/TextCustom";
 const HEADER_MAX_HEIGHT = 140; // Chiều cao lúc đầu của Header gốc
 const HEADER_MIN_HEIGHT = 80;
 const HomeScreen = () => {
@@ -88,10 +89,9 @@ const HomeScreen = () => {
           borderBottomColor: "#eee",
         }}
       >
-        {/* <HomeHeader text="OUCourse" />*/}
-        <Text style={{ fontSize: 20, fontWeight: "bold", color: "#1e40af" }}>
-          OUCourse
-        </Text>
+        {/* <HomeHeader text="OUCourse" subText="ok" />*/}
+        <TextCustom.TextSection className="mt-8" text="OUCourse" />
+        {/* <Text>OUCourse</Text>*/}
       </Animated.View>{" "}
       <Animated.FlatList
         ListHeaderComponent={render}

@@ -10,7 +10,9 @@ import { useNavigation } from "@react-navigation/native";
 import HeaderBack from "../../components/HeaderBack";
 import { Icon } from "react-native-paper";
 import HeaderCustom from "../../components/Header";
-
+import { results } from "../../mock/data.mock.courses.json";
+import { ImageBackground } from "react-native";
+import { StyleSheet } from "nativewind";
 const mockCourses = [
   { id: "1", title: "React Native cơ bản", teacher: "Nguyễn Văn A" },
   { id: "2", title: "Thiết kế UI/UX", teacher: "Trần Thị B" },
@@ -19,29 +21,32 @@ const mockCourses = [
 
 const Search = () => {
   const [keyword, setKeyword] = useState("");
-  const [results, setResults] = useState([]);
+  const [resultsSearch, setResultsSearch] = useState([]);
   const [coursesData, setCoursesData] = useState([]);
   const nav = useNavigation();
   useEffect(() => {
     const loadData = async () => {
       try {
         let res = await axiosClient.get(endpoints.courses);
-        setCoursesData(res.data.results);
-
-        setResults(res.data.results);
+        // setCoursesData(res.data.results);
+        setCoursesData(results);
+        setResultsSearch(res.data.results);
       } catch (error) {
         console.error(error);
       }
     };
     loadData();
+    console.log(coursesData);
   }, []);
   const handleSearch = (text) => {
     setKeyword(text);
     if (!text.trim()) {
-      setResults(coursesData);
+      // setResults(coursesData);
+      setResultsSearch(results);
       return;
     }
-    const filter = coursesData.filter((course) =>
+    // coursesData
+    const filter = results.filter((course) =>
       course.subject.toLowerCase().includes(text.toLowerCase()),
     );
   };
@@ -72,18 +77,34 @@ const Search = () => {
       </View>
 
       <FlatList
-        data={results}
+        data={coursesData}
         keyExtractor={(item) => item.id}
+        className="p-2"
+        contentContainerStyle={{
+          paddingBottom: 32,
+        }}
         renderItem={({ item }) => (
           <TouchableOpacity
-            className="border-b border-gray-200 bg-white py-3"
+            className=" border-gray-200 bg-white"
             onPress={() =>
               nav.navigate("CourseDetailedScreen", { id: item.id })
             }
           >
-            <View className="p-2">
-              <Text className="text-base font-medium">{item.subject}</Text>
-              <Text className="text-sm text-gray-500">{item.instructor}</Text>
+            <View className="rounded-xl overflow-hidden ">
+              <ImageBackground
+                source={{ uri: item.image }}
+                className="pt-8 pb-8 pl-4 mx-3 rounded-xl overflow-hidden mt-3"
+              >
+                <View className="absolute inset-0  bg-black/40" />
+                <View className="p-2">
+                  <Text className="text-base text-white font-medium">
+                    {item.subject}
+                  </Text>
+                  <Text className="text-sm text-white/70">
+                    {item.instructor}
+                  </Text>
+                </View>
+              </ImageBackground>
             </View>
           </TouchableOpacity>
         )}

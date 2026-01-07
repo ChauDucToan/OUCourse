@@ -1,4 +1,4 @@
-import { useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useState } from "react";
 import { useEffect } from "react";
 import { TouchableOpacity } from "react-native";
@@ -14,14 +14,14 @@ import RenderHTML from "react-native-render-html";
 import { Icon } from "react-native-paper";
 import HeaderBack from "../../components/HeaderBack";
 import HeaderCustom from "../../components/Header";
-
+import { results } from "../../mock/data.mock.courses.json";
 const CourseDetailedScreen = () => {
   const route = useRoute();
   const [course, setCourse] = useState();
   const [isLoading, setLoading] = useState(false);
   const { id } = route.params;
   const { width } = Dimensions.get("window");
-
+  const nav = useNavigation();
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -32,7 +32,15 @@ const CourseDetailedScreen = () => {
         console.error(error);
       }
     };
-    if (id) loadData();
+    // if (id) {
+    //   // loadData()
+    //   const filter = results.filter((course) => course.id === id);
+    //   setCourse(filter);
+    //   console.log("LOad filter course dc", filter);
+    //}
+    const filter = results.find((course) => course.id === id);
+
+    setCourse(filter);
   }, [id]);
   useEffect(() => {
     if (course) {
@@ -53,14 +61,39 @@ const CourseDetailedScreen = () => {
     return new Intl.NumberFormat("vi-VN").format(amount) + " đ";
   };
 
-  const handleEnroll = async () => {
+  const handleEnroll = async (course) => {
     try {
-      const res = await axiosClient.post(endpoints.enrollCourse);
+      // "id": 7,
+      // "subject": "Machine Learning căn bản",
+      // "instructor": "Ngô Tiến Đạt",
+      // "image": "https://img.freepik.com/free-vector/machine-learning-concept-illustration_114360-3908.jpg",
+      // "category": "Data Science",
+      // "description": "<strong>Thuật toán và Ứng dụng</strong><p>Tìm hiểu Linear Regression, Decision Trees và cách huấn luyện mô hình dự đoán đầu tiên.</p>",
+      // "price": 800000
+
+      console.log("Enroll DONE");
+      // const formData = new FormData();
+      // formData.append("subject", course.subject);
+      // formData.append("image", course.image);
+      // formData.append("price", course.price);
+      // formData.append("category", course.category);
+      // formData.append("id", course.id);
+      // const res = await axiosClient.post(
+      //   endpoints.enrollCourse(course.id),
+      //   formData,
+      //   {
+      //     headers: { "Content-Type": "multipart/form-data" },
+      //   },
+      // );
+      // console.log("RES enrroll: ", res);
+      nav.reset({
+        index: 0,
+        routes: [{ name: "Search" }],
+      });
     } catch (error) {
       console.error(error);
     }
   };
-
   return (
     <View className="bg-white flex-1">
       <ScrollView className="pt-10 bg-white">
@@ -112,7 +145,7 @@ const CourseDetailedScreen = () => {
 
             <TouchableOpacity
               className={`p-4 mr-4 rounded-2xl shadow-lg ${isLoading ? "bg-gray-400" : "bg-slate-600 shadow-blue-300"}`}
-              onPress={console.log("handle error")}
+              onPress={() => handleEnroll(course)}
               disabled={isLoading}
             >
               {isLoading ? (

@@ -25,6 +25,9 @@ const UserLearning = () => {
       <View className="bg-white">
         <FlatList
           data={results}
+          contentContainerStyle={{
+            paddingBottom: 52,
+          }}
           renderItem={({ item }) => (
             <TouchableOpacity
               key={item.id}
@@ -38,7 +41,10 @@ const UserLearning = () => {
                 </View>
                 <View className="justify-end border-b w-full m-2 border-gray-200">
                   <TextCustom.TextMuted text={item.category} />
-                  <TextCustom.TextSection text={item.subject} />
+                  <TextCustom.TextSection
+                    className="text-xl"
+                    text={item.subject}
+                  />
                   <TextCustom.TextFocus text={item.instructor} />
                 </View>
               </View>

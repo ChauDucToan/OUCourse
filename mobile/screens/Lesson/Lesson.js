@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import HeaderCustom from "../../components/Header";
-import { useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import TextCustom from "../../components/TextCustom";
 import RenderHTML from "react-native-render-html";
 import { lessons } from "../../mock/data.mock.lessons.json";
@@ -17,6 +17,7 @@ const LessonsRoute = ({ lessons, id }) => {
   const filterLessonsData = lessons.filter(
     (lesson) => String(lesson.course) === String(id),
   );
+  const nav = useNavigation();
   console.log(filterLessonsData);
   return (
     <View className="flex-1 p-4 bg-white">
@@ -28,7 +29,13 @@ const LessonsRoute = ({ lessons, id }) => {
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item, index }) => (
           <View>
-            <TouchableOpacity>
+            <TouchableOpacity
+              activeOpacity={0.6}
+              delayPressIn={0.7}
+              onPress={() => {
+                nav.navigate("LessonLearning", { lesson: item });
+              }}
+            >
               <View className="flex-row item-start gap-3 m-2 border border-gray-200 rounded-xl p-2">
                 <View className=" bg-blue-100 p-2 rounded-xl items-center justify-center mr-3 w-24">
                   <TextCustom.TextFocus
@@ -37,7 +44,7 @@ const LessonsRoute = ({ lessons, id }) => {
                   />
                 </View>
 
-                <View className="flex-1">
+                <View>
                   <TextCustom.TextFocus
                     text={item.subject}
                     className="text-slate-800 text-base font-medium "
