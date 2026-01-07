@@ -1,5 +1,6 @@
 import { List } from "react-native-paper";
 import TextCustom from "./TextCustom";
+import Appearance from "../screens/Setting/Appearance";
 
 const jsonStyle = require("../mock/data.styles.json");
 
@@ -10,19 +11,25 @@ const ListItem = ({ mapJson, navigation, header }) => {
         {header}
       </List.Subheader>
       {mapJson &&
-        mapJson.map((item, index) => (
-          <List.Item
-            key={item.id ? item.id.toString() : index.toString()}
-            className={jsonStyle["list-item"]}
-            title={() => <TextCustom.TextMuted text={item.title} />}
-            description={item.description}
-            left={(props) => <List.Icon {...props} icon={item.iconLeft} />}
-            right={(props) => (
-              <List.Icon {...props} icon="chevron-right" color="#cbd5e1" />
-            )}
-            onPress={() => navigation.navigate(item.navUrl, item.navParams)}
-          />
-        ))}
+        mapJson.map((item, index) => {
+          if (item.title !== "Theme") {
+            return (
+              <List.Item
+                key={item.id ? item.id.toString() : index.toString()}
+                className={jsonStyle["list-item"]}
+                title={() => <TextCustom.TextMuted text={item.title} />}
+                description={item.description}
+                left={(props) => <List.Icon {...props} icon={item.iconLeft} />}
+                right={(props) => (
+                  <List.Icon {...props} icon="chevron-right" color="#cbd5e1" />
+                )}
+                onPress={() => navigation.navigate(item.navUrl, item.navParams)}
+              />
+            );
+          } else {
+            return <Appearance key={item.id} />;
+          }
+        })}
     </List.Section>
   );
 };
