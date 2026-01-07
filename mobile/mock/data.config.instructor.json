@@ -32,7 +32,7 @@
     "iconColor": "#8b5cf6",
     "navUrl": "InstructorStack",
     "navParams": {
-      "screen": "InstructorEnrollments"
+      "screen": "InstructorTrackStudent"
     }
   },
   {

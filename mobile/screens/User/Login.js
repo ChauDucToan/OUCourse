@@ -10,20 +10,20 @@ import {
 import { MyUserContext } from "../../utils/contexts/MyContext";
 import TextCustom from "../../components/TextCustom";
 import AuthLayout from "../../components/AuthLayout";
-import * as Linking from "expo-linking"; // Cần thiết để mở URL
+import * as Linking from "expo-linking";
 import { useState } from "react";
 import { authApi } from "../../api/authApi";
 import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../../utils/Apis";
-import colors from "tailwindcss/colors";
 import { useNavigation } from "@react-navigation/native";
 import { useContext } from "react";
 import * as AuthSession from "expo-auth-session";
+import { MyColorContext } from "../../utils/contexts/MyColorContext";
 
 const Login = () => {
   const jsonData = require("../../mock/data.config.register.json");
   const jsonStyle = require("../../mock/data.styles.json");
-
+  const { theme } = useContext(MyColorContext);
   const fieldsRender = jsonData.info.filter(
     (item) => item.field === "username" || item.field === "password",
   );
@@ -76,7 +76,6 @@ const Login = () => {
       const params = new URLSearchParams();
       params.append("auth_type", "google");
       params.append("redirect_uri", redirectUri);
-      // params.append("auth_type", "django");
 
       const res = await axiosClient.get(endpoints.googleAuth, { params });
 
@@ -132,7 +131,7 @@ const Login = () => {
             onChangeText={(t) => setUser({ ...user, [item.field]: t })}
             label={item.title}
             secureTextEntry={isPasswordField ? !isVisible : false}
-            activeOutlineColor={colors.slate[500]}
+            activeOutlineColor={theme.colors.slate[500]}
             right={
               isPasswordField ? (
                 <TextInput.Icon
@@ -152,7 +151,7 @@ const Login = () => {
           {loading ? (
             <ActivityIndicator
               animating={true}
-              color={colors.white}
+              color={theme.colors.white}
               size="small"
             />
           ) : (
@@ -164,16 +163,26 @@ const Login = () => {
           onPress={() => navigation.navigate("Register")}
           className={jsonStyle["pressable-no-focus"]}
         >
-          <TextCustom.TextFocus text="ĐĂNG KÝ" />
+          <TextCustom.TextFocus text="ĐĂNG KÝ" style={{ fontSize: 12 }} />
         </Pressable>
       </View>
       <View className="flex-row items-center my-6">
-        <View className="flex-1 h-[1px] bg-slate-200" />
+        <View
+          className="flex-1 h-[1px]"
+          style={{
+            backgroundColor: theme.colors.slate[200],
+          }}
+        />
         <TextCustom.TextFocus
           text=" Hoặc đăng nhập bằng "
           style={{ fontSize: 12 }}
         />
-        <View className="flex-1 h-[1px] bg-slate-200" />
+        <View
+          className="flex-1 h-[1px]"
+          style={{
+            backgroundColor: theme.colors.slate[200],
+          }}
+        />
       </View>
 
       <View className="flex-row justify-center gap-4">

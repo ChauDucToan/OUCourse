@@ -61,6 +61,14 @@
       "iconColor": "#475569",
       "navUrl": "Help",
       "navParams": ""
+    },
+    {
+      "title": "Bảng điều khiển giảng viên",
+      "description": "Quản lý khóa học, học viên và tiến độ học tập.",
+      "iconLeft": "school-outline",
+      "iconColor": "#3b82f6",
+      "navUrl": "InstructorStack",
+      "navParams": { "screen": "InstructorDashboard" }
     }
   ]
 }

@@ -27,7 +27,11 @@ const ListItem = ({ mapJson, navigation, header }) => {
               />
             );
           } else {
-            return <Appearance key={item.id} />;
+            return (
+              <Appearance
+                key={item.id ? item.id.toString() : index.toString()}
+              />
+            );
           }
         })}
     </List.Section>

@@ -11,7 +11,6 @@ const Appearance = () => {
         value={value}
         onValueChange={setValue}
         buttons={jsonData.apperance}
-        className="rounded-sm"
       />
     </View>
   );

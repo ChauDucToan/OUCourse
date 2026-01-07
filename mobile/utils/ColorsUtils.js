@@ -6,7 +6,13 @@ const light = {
   tabActive: colors.gray[900],
   iconDefault: colors.slate[500],
   danger: colors.red[500],
-
+  green: {
+    500: colors.green[500],
+  },
+  blue: {
+    100: colors.blue[100],
+    500: colors.blue[500],
+  },
   slate: {
     800: colors.slate[800],
     700: colors.slate[700],
@@ -48,7 +54,13 @@ const dark = {
   tabActive: colors.gray[100],
   iconDefault: colors.slate[300],
   danger: colors.red[400],
-
+  blue: {
+    100: colors.blue[800],
+    500: colors.blue[300],
+  },
+  green: {
+    500: colors.green[300],
+  },
   gray: {
     900: colors.gray[50],
     700: colors.gray[100],

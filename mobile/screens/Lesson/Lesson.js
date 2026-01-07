@@ -5,23 +5,27 @@ import {
   useWindowDimensions,
   TouchableOpacity,
 } from "react-native";
-import { TabView, SceneMap, TabBar } from "react-native-tab-view";
+import { TabView, TabBar } from "react-native-tab-view";
 import HeaderCustom from "../../components/Header";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import TextCustom from "../../components/TextCustom";
 import RenderHTML from "react-native-render-html";
 import { lessons } from "../../mock/data.mock.lessons.json";
 import { FlatList } from "react-native";
+import { useContext } from "react";
+import { MyColorContext } from "../../utils/contexts/MyColorContext";
 
-const LessonsRoute = ({ lessons, id }) => {
+const LessonsRoute = ({ lessons, id, theme }) => {
   const filterLessonsData = lessons.filter(
     (lesson) => String(lesson.course) === String(id),
   );
   const nav = useNavigation();
-  console.log(filterLessonsData);
   return (
     <View className="flex-1 p-4 bg-white">
-      <TextCustom.TextSection text="Danh sách các bài học" />
+      <TextCustom.TextSection
+        style={{ color: theme.colors.slate[800] }}
+        text="Danh sách các bài học"
+      />
 
       <FlatList
         className="mt-4"
@@ -33,7 +37,7 @@ const LessonsRoute = ({ lessons, id }) => {
               activeOpacity={0.6}
               delayPressIn={0.7}
               onPress={() => {
-                nav.navigate("LessonLearning", { lesson: item });
+                nav.getParent().navigate("LessonLearning", { lesson: item });
               }}
             >
               <View className="flex-row item-start gap-3 m-2 border border-gray-200 rounded-xl p-2">
@@ -41,17 +45,22 @@ const LessonsRoute = ({ lessons, id }) => {
                   <TextCustom.TextFocus
                     text={`Bài học ${(index + 1).toString()}`}
                     className="w-24 text-center"
+                    style={{
+                      color: theme.colors.gray[700],
+                    }}
                   />
                 </View>
 
                 <View>
                   <TextCustom.TextFocus
                     text={item.subject}
-                    className="text-slate-800 text-base font-medium "
+                    className="text-base font-medium "
+                    style={{ color: theme.colors.slate[800] }}
                   />
                   <TextCustom.TextFocus
                     text="15:00 phút"
-                    className="text-slate-400 text-xs"
+                    className=" text-xs"
+                    style={{ color: theme.colors.slate[400] }}
                   />
                 </View>
               </View>
@@ -60,7 +69,10 @@ const LessonsRoute = ({ lessons, id }) => {
         )}
         ListEmptyComponent={() => (
           <View className="items-center mt-10">
-            <TextCustom.TextFocus text="Không có bài học nào cho khóa học này." />
+            <TextCustom.TextFocus
+              text="Không có bài học nào cho khóa học này."
+              style={{ color: theme.colors.slate[600] }}
+            />
           </View>
         )}
       />
@@ -68,19 +80,24 @@ const LessonsRoute = ({ lessons, id }) => {
   );
 };
 
-const DescriptionRoute = ({ description }) => {
+const DescriptionRoute = ({ description, theme }) => {
   const { width } = useWindowDimensions();
   const source = {
     html: description || "<p>Không có mô tả</p>",
   };
   return (
-    <View className="flex-1 p-4 bg-white">
+    <View
+      className="flex-1 p-4 "
+      style={{ backgroundColor: theme.colors.white }}
+    >
       <RenderHTML source={source} contentWidth={width} />
     </View>
   );
 };
 
 export const LessonScreen = () => {
+  const { theme } = useContext(MyColorContext);
+
   const route = useRoute();
   const { item } = route.params;
   const layout = useWindowDimensions();
@@ -95,9 +112,13 @@ export const LessonScreen = () => {
   const renderScene = ({ route }) => {
     switch (route.key) {
       case "lessons":
-        return <LessonsRoute lessons={lessons} id={route.courseId} />;
+        return (
+          <LessonsRoute lessons={lessons} id={route.courseId} theme={theme} />
+        );
       case "desc":
-        return <DescriptionRoute description={route.description} />;
+        return (
+          <DescriptionRoute description={route.description} theme={theme} />
+        );
       default:
         return null;
     }
@@ -106,8 +127,14 @@ export const LessonScreen = () => {
     <View className="bg-slate-50 pt-10 flex-1">
       <HeaderCustom text="" />
       <View className="p-5">
-        <TextCustom.TextSection text={item.subject} />
-        <TextCustom.TextFocus text={item.instructor} />
+        <TextCustom.TextSection
+          style={{ color: theme.colors.slate[800] }}
+          text={item.subject}
+        />
+        <TextCustom.TextFocus
+          text={item.instructor}
+          style={{ color: theme.colors.slate[600] }}
+        />
         <Image
           source={{ uri: item.image }}
           className="w-full h-48 mt-4 rounded-xl"

@@ -1,39 +1,67 @@
-import { useContext } from "react";
 import { MyUserContext } from "../../utils/contexts/MyContext";
-import { TouchableOpacity, View } from "react-native";
-import { Text } from "react-native";
 import { ActivityIndicator, Avatar, Divider, Icon } from "react-native-paper";
-import colors from "tailwindcss/colors";
-import { ScrollView } from "react-native";
-import { useState } from "react";
-import { TextInput } from "react-native";
-import { Pressable } from "react-native";
+import {
+  ScrollView,
+  TextInput,
+  Pressable,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import * as ImagePicker from "expo-image-picker";
+import HeaderCustom from "../../components/Header";
+
+import { useRoute } from "@react-navigation/native";
+import { useEffect, useState, useContext } from "react";
 import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../../utils/Apis";
-import * as ImagePicker from "expo-image-picker";
-import HeaderBack from "../../components/HeaderBack";
-import HeaderCustom from "../../components/Header";
-import { useRoute } from "@react-navigation/native";
-import { useEffect } from "react";
-
-const InfoRow = ({ subject, text, icon, isEdit, onChangeText, value }) => (
+import { MyColorContext } from "../../utils/contexts/MyColorContext";
+const InfoRow = ({
+  subject,
+  text,
+  icon,
+  isEdit,
+  onChangeText,
+  value,
+  theme,
+}) => (
   <TouchableOpacity className="flex-row items-center py-4">
-    <View className="bg-blue-50 p-2 rounded-full mr-4">
-      <Icon source={icon} size={24} color={colors.slate[700]} />
+    <View
+      className="p-2 rounded-full mr-4"
+      style={{
+        backgroundColor: theme.colors.blue[100],
+      }}
+    >
+      <Icon source={icon} size={24} color={theme.colors.slate[700]} />
     </View>
     <View className="flex-1">
-      <Text className="text-xs uppercase font-semibold text-gray-500 ">
+      <Text
+        className="text-xs uppercase font-semibold "
+        style={{
+          color: theme.colors.gray[500],
+        }}
+      >
         {subject}
       </Text>
       {!isEdit ? (
-        <Text className="text-base pt-2 font-medium text-gray-800 ">
+        <Text
+          className="text-base pt-2 font-medium text-gray-800 "
+          style={{
+            color: theme.colors.gray[800],
+          }}
+        >
           {text || "Chưa cập nhật"}
         </Text>
       ) : (
         <TextInput
           value={value}
           onChangeText={onChangeText}
-          className="bg-white border border-blue-500 rounded-lg p-2 text-base text-gray-800"
+          className="bg-white border rounded-lg p-2 text-base"
+          style={{
+            color: theme.colors.gray[800],
+            backgroundColor: theme.colors.white,
+            borderColor: theme.colors.blue[500],
+          }}
           placeholder={`Nhập ${subject.toLowerCase()}`}
         />
       )}
@@ -48,6 +76,7 @@ const AccountDetailedScreen = () => {
   const [userLastName, setUserLastName] = useState("");
   const [isLoading, setLoading] = useState(false);
   const [selectedAvatar, setSelectedAvatar] = useState(null); // State lưu ảnh mới chọn
+  const { theme } = useContext(MyColorContext);
 
   const route = useRoute();
   const { isEditParam } = route.params || {};
@@ -123,14 +152,27 @@ const AccountDetailedScreen = () => {
   };
 
   return (
-    <ScrollView className="bg-white flex-1">
-      <View className="bg-white pb-8 rounded-b-3xl shadow-sm items-center pt-12 px-5">
+    <ScrollView
+      className=" flex-1"
+      style={{
+        backgroundColor: theme.colors.white,
+      }}
+    >
+      <View
+        className="pb-8 rounded-b-3xl shadow-sm items-center pt-12 px-5"
+        style={{
+          backgroundColor: theme.colors.white,
+        }}
+      >
         <HeaderCustom text={"HỒ SƠ NGƯỜI DÙNG"} />
         {!isEdit ? (
           <Avatar.Image
             size={80}
             source={{ uri: selectedAvatar ? selectedAvatar.uri : user.avatar }}
-            className="bg-slate-200 mt-4"
+            className=" mt-4"
+            style={{
+              backgroundColor: theme.colors.slate[200],
+            }}
           />
         ) : (
           <Pressable onPress={pickImage}>
@@ -139,9 +181,16 @@ const AccountDetailedScreen = () => {
               source={{
                 uri: selectedAvatar ? selectedAvatar.uri : user.avatar,
               }}
-              className="bg-slate-200 "
+              style={{
+                backgroundColor: theme.colors.slate[200],
+              }}
             />
-            <View className="absolute bottom-0 right-0 bg-slate-600 rounded-full border-2 border-white p-1">
+            <View
+              className="absolute bottom-0 right-0 bg-slate-600 rounded-full border-2  p-1"
+              style={{
+                borderColor: theme.colors.white,
+              }}
+            >
               <Icon source="camera" color="white" size={16} />
             </View>
           </Pressable>
@@ -152,7 +201,12 @@ const AccountDetailedScreen = () => {
         </Text>
       </View>
       <View className="p-5 pt-0">
-        <View className="bg-white rounded-2xl p-4 shadow-sm">
+        <View
+          className="rounded-2xl p-4 shadow-sm"
+          style={{
+            backgroundColor: theme.colors.white,
+          }}
+        >
           <InfoRow
             subject={"Họ người dùng"}
             value={isEdit ? userFirstName : user.first_name}
@@ -160,6 +214,7 @@ const AccountDetailedScreen = () => {
             icon={isEdit ? "square-edit-outline" : "account-group-outline"}
             isEdit={isEdit}
             onChangeText={setUserFirstName}
+            theme={theme}
           />
 
           <Divider />
@@ -170,6 +225,7 @@ const AccountDetailedScreen = () => {
             icon={isEdit ? "rename-box" : "account-outline"}
             isEdit={isEdit}
             onChangeText={setUserLastName}
+            theme={theme}
           />
 
           <Divider />
@@ -179,6 +235,7 @@ const AccountDetailedScreen = () => {
             text={user.role === "admin" ? "Quản trị viên" : "Người dùng"}
             icon="account-key"
             isEdit={false}
+            theme={theme}
           />
           <Divider />
 
@@ -187,11 +244,15 @@ const AccountDetailedScreen = () => {
             text={user.email}
             icon="email"
             isEdit={false}
+            theme={theme}
           />
         </View>
         <Pressable
           loading={isLoading}
-          className="mt-6 bg-slate-600 py-3  rounded-2xl justify-end items-center shadow-blue-200 shadow-lg"
+          className="mt-6  py-3  rounded-2xl justify-end items-center shadow-blue-200 shadow-lg"
+          style={{
+            backgroundColor: theme.colors.slate[600],
+          }}
           onPress={() => {
             if (isEdit) {
               handleEditSave();
@@ -205,7 +266,12 @@ const AccountDetailedScreen = () => {
           {isLoading ? (
             <ActivityIndicator color="white" />
           ) : (
-            <Text className="text-white font-bold text-lg">
+            <Text
+              className=" font-bold text-lg"
+              style={{
+                color: theme.colors.white,
+              }}
+            >
               {isEdit ? "Lưu thay đổi" : "Chỉnh sửa hồ sơ"}
             </Text>
           )}
@@ -218,7 +284,14 @@ const AccountDetailedScreen = () => {
               setSelectedAvatar(null);
             }}
           >
-            <Text className="text-gray-500 font-semibold">Hủy bỏ</Text>
+            <Text
+              className="font-semibold"
+              style={{
+                color: theme.colors.gray[500],
+              }}
+            >
+              Hủy bỏ
+            </Text>
           </TouchableOpacity>
         )}
       </View>

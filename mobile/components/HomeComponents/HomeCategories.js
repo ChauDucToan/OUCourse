@@ -1,17 +1,21 @@
 import { TouchableOpacity, View, FlatList, Text } from "react-native";
 import TextCustom from "../TextCustom";
-import { categories } from "../../mock/data.mock.categories.json";
 import { Icon } from "react-native-paper";
-import colors from "tailwindcss/colors";
+import { MyColorContext } from "../../utils/contexts/MyColorContext";
+
+import { useContext } from "react";
+import { categories } from "../../mock/data.mock.categories.json";
+
 export const HomeCategories = ({ iconColor = "" }) => {
-  const jsonStyle = require("../../mock/data.styles.json");
+  const { theme } = useContext(MyColorContext);
+
   return (
     <View className="p-5">
       <View className="flex-row gap-3">
         <Icon
           source="tag"
           size={28}
-          color={iconColor ? iconColor : colors.slate[600]}
+          color={iconColor ? iconColor : theme.colors.slate[600]}
         />
         <TextCustom.TextSection text={"Danh mục"} />
       </View>
@@ -23,7 +27,10 @@ export const HomeCategories = ({ iconColor = "" }) => {
         showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => (
           <TouchableOpacity
-            className="bg-blue-100  rounded-lg px-4 py-3 mr-3 "
+            className=" rounded-lg px-4 py-3 mr-3 "
+            style={{
+              backgroundColor: theme.colors.blue[100],
+            }}
             onPress={() => {
               setActiveId(item.id);
             }}

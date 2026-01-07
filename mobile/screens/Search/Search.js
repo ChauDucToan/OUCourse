@@ -13,6 +13,8 @@ import HeaderCustom from "../../components/Header";
 import { results } from "../../mock/data.mock.courses.json";
 import { ImageBackground } from "react-native";
 import { StyleSheet } from "nativewind";
+import { useContext } from "react";
+import { MyColorContext } from "../../utils/contexts/MyColorContext";
 const mockCourses = [
   { id: "1", title: "React Native cơ bản", teacher: "Nguyễn Văn A" },
   { id: "2", title: "Thiết kế UI/UX", teacher: "Trần Thị B" },
@@ -23,6 +25,7 @@ const Search = () => {
   const [keyword, setKeyword] = useState("");
   const [resultsSearch, setResultsSearch] = useState([]);
   const [coursesData, setCoursesData] = useState([]);
+  const { theme } = useContext(MyColorContext);
   const nav = useNavigation();
   useEffect(() => {
     const loadData = async () => {
@@ -52,22 +55,46 @@ const Search = () => {
   };
 
   return (
-    <View className="flex-1 bg-slate-50 pt-10">
+    <View
+      className="flex-1  pt-10"
+      style={{
+        backgroundColor: theme.colors.slate[50],
+      }}
+    >
       <HeaderCustom text="Thanh tìm kiếm" />
-      <View className="pl-2  justify-center text-center pr-2 bg-white">
+      <View
+        className="pl-2  justify-center text-center pr-2"
+        style={{
+          backgroundColor: theme.colors.white,
+        }}
+      >
         <TextInput
-          className=" text-base bg-gray-50 border border-gray-200 text-gray-700 mb-4 rounded-2xl p-3"
+          className=" text-base border mb-4 rounded-2xl p-3"
+          style={{
+            backgroundColor: theme.colors.gray[50],
+            borderColor: theme.colors.gray[200],
+            color: theme.colors.gray[700],
+          }}
           placeholder="Nhập từ khóa..."
           value={keyword}
           onChangeText={handleSearch}
         />
       </View>
-      <View className="flex-row p-4 bg-slate-50 gap-3 border-t border-b border-slate-200 pl-2">
+      <View
+        className="flex-row p-4 gap-3 border-t border-b  pl-2"
+        style={{
+          backgroundColor: theme.colors.gray[50],
+          borderColor: theme.colors.gray[200],
+        }}
+      >
         <View className="flex-row  gap-3">
           {["React", "UX/UI", "Golang"].map((tag) => (
             <TouchableOpacity
               key={tag}
-              className="bg-gray-200 rounded-full px-3 py-1"
+              className="rounded-full px-3 py-1"
+              style={{
+                backgroundColor: theme.colors.gray[200],
+              }}
               onPress={() => handleSearch(tag)}
             >
               <Text className="text-sm">{tag}</Text>
@@ -85,7 +112,10 @@ const Search = () => {
         }}
         renderItem={({ item }) => (
           <TouchableOpacity
-            className=" border-gray-200 bg-white"
+            style={{
+              backgroundColor: theme.colors.white,
+              borderColor: theme.colors.gray[200],
+            }}
             onPress={() =>
               nav.navigate("CourseDetailedScreen", { id: item.id })
             }
@@ -110,7 +140,12 @@ const Search = () => {
         )}
         ListEmptyComponent={
           keyword.length > 0 ? (
-            <Text className="text-center text-gray-400 mt-4">
+            <Text
+              className="text-center mt-4"
+              style={{
+                color: theme.colors.gray[400],
+              }}
+            >
               Không tìm thấy khóa học phù hợp
             </Text>
           ) : null

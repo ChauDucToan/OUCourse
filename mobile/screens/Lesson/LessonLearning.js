@@ -11,6 +11,8 @@ import { TextInput } from "react-native";
 import { Image } from "react-native";
 import { endpoints } from "../../utils/Apis";
 import { ActivityIndicator } from "react-native-paper";
+import { useContext } from "react";
+import { MyColorContext } from "../../utils/contexts/MyColorContext";
 const extractVideoId = (url) => {
   if (!url) return null;
 
@@ -30,46 +32,49 @@ const LessonLearning = () => {
   const [loading, setLoading] = useState(false);
   const { lesson } = route.params;
   const videoId = extractVideoId(lesson.video);
-
+  const { theme } = useContext(MyColorContext);
   const onStateChange = useCallback((state) => {
     if (state === "ended") {
       setPlaying(false);
       Alert.alert("Hoàn thành bài học");
     }
   }, []);
-  const loadComments = async () => {
-    try {
-      console.log("GET COMMENT");
-      let res = await axiosClient.get(endpoints.comments(lesson.id));
-      setComments(res.data);
-    } catch (ex) {
-      console.error(ex);
-    }
-  };
-  const addComment = async () => {
-    setLoading(true);
-    try {
-      let res = await axiosClient.post(endpoints.comments(lesson.id), {
-        content: content,
-      });
+  // const loadComments = async () => {
+  //   try {
+  //     console.log("GET COMMENT");
+  //     let res = await axiosClient.get(endpoints.comments(lesson.id));
+  //     setComments(res.data);
+  //   } catch (ex) {
+  //     console.error(ex);
+  //   }
+  // };
+  // const addComment = async () => {
+  //   setLoading(true);
+  //   try {
+  //     let res = await axiosClient.post(endpoints.comments(lesson.id), {
+  //       content: content,
+  //     });
 
-      setComments((prevComments) => [res.data, ...prevComments]);
-      setContent("");
-    } catch (ex) {
-      console.error(ex);
-      Alert.alert("Lỗi", "Không thể gửi bình luận!");
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     setComments((prevComments) => [res.data, ...prevComments]);
+  //     setContent("");
+  //   } catch (ex) {
+  //     console.error(ex);
+  //     Alert.alert("Lỗi", "Không thể gửi bình luận!");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
-  useEffect(() => {
-    loadComments();
-  }, [lesson.id]);
+  // useEffect(() => {
+  //   loadComments();
+  // }, [lesson.id]);
   if (!videoId) {
     return (
       <View className="flex-1 justify-center items-center">
-        <TextCustom.TextSection text="URL Video không hợp lệ" />
+        <TextCustom.TextSection
+          style={{ color: theme.colors.slate[800] }}
+          text="URL Video không hợp lệ"
+        />
       </View>
     );
   }
@@ -87,20 +92,31 @@ const LessonLearning = () => {
           onChangeState={onStateChange}
         />
       ) : (
-        <TextCustom.TextSection text="KHông có video" />
+        <TextCustom.TextSection
+          text="KHông có video"
+          style={{ color: theme.colors.slate[800] }}
+        />
       )}
 
       <ScrollView>
-        <TextCustom.TextFocus className="pl-4 text-xl" text={lesson.subject} />
+        <TextCustom.TextFocus
+          style={{ color: theme.colors.slate[600] }}
+          className="pl-4 text-xl"
+          text={lesson.subject}
+        />
         <View className="flex-row gap-3">
           {lesson.tags.map((tag) => (
             <View key={tag.id} className="bg-blue-100 p-3 rounded-xl m-2">
-              <TextCustom.TextFocus text={tag} />
+              <TextCustom.TextFocus
+                style={{ color: theme.colors.slate[600] }}
+                text={tag}
+              />
             </View>
           ))}
         </View>
         <View className="mt-6 mb-10 p-3">
           <TextCustom.TextFocus
+            style={{ color: theme.colors.slate[600] }}
             className="text-lg font-bold mb-4"
             text="Bình luận"
           />
@@ -121,13 +137,17 @@ const LessonLearning = () => {
               {loading ? (
                 <ActivityIndicator color="white" size="small" />
               ) : (
-                <TextCustom.TextFocus className="text-white" text="Gửi" />
+                <TextCustom.TextFocus
+                  style={{ color: theme.colors.slate[600] }}
+                  className="text-white"
+                  text="Gửi"
+                />
               )}{" "}
             </TouchableOpacity>
           </View>
 
           {/* Danh sách bình luận mẫu */}
-          {comments.length > 0 ? (
+          {/* {comments.length > 0 ? (
             comments.map((c) => (
               <View
                 key={c.id}
@@ -141,14 +161,17 @@ const LessonLearning = () => {
                 />
                 <View className="flex-1">
                   <TextCustom.TextFocus
+                    style={{ color: theme.colors.slate[600] }}
                     className="font-bold text-sm"
                     text={c.user?.username}
                   />
                   <TextCustom.TextFocus
+                    style={{ color: theme.colors.slate[600] }}
                     className="text-gray-600 mt-1"
                     text={c.content}
                   />
                   <TextCustom.TextFocus
+                    style={{ color: theme.colors.slate[600] }}
                     className="text-gray-400 text-xs mt-1"
                     text={c.created_date}
                   />
@@ -158,11 +181,12 @@ const LessonLearning = () => {
           ) : (
             <View className="flex-1 bg-red-500 ">
               <TextCustom.TextSection
+                style={{ color: theme.colors.slate[800] }}
                 className="text-center italic text-gray-400"
                 text="Chưa có bình luận nào."
               />
             </View>
-          )}
+          )}*/}
         </View>
       </ScrollView>
     </View>

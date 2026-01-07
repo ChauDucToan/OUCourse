@@ -45,7 +45,10 @@ const UserLearning = () => {
                     className="text-xl"
                     text={item.subject}
                   />
-                  <TextCustom.TextFocus text={item.instructor} />
+                  <TextCustom.TextFocus
+                    text={item.instructor}
+                    style={{ fontSize: 12 }}
+                  />
                 </View>
               </View>
             </TouchableOpacity>

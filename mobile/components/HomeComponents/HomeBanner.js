@@ -1,10 +1,13 @@
 import { FlatList } from "react-native";
 import { View } from "react-native";
 import Banner from "../Banner";
+import { MyColorContext } from "../../utils/contexts/MyColorContext";
+
 import { useRef } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import { useEffect } from "react";
+import { useContext } from "react";
 
 const imageBanner = [
   require("../../assets/banner_1.png"),
@@ -16,6 +19,8 @@ const imageBanner = [
 export const HomeBanner = () => {
   const flatListRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const { theme } = useContext(MyColorContext);
+
   const nav = useNavigation();
   useEffect(() => {
     const interval = setInterval(() => {
@@ -51,7 +56,15 @@ export const HomeBanner = () => {
         {imageBanner.map((_, index) => (
           <View
             key={index}
-            className={`ml-2 mr-2 ${currentIndex === index ? "w-6 rounded-pill h-3 bg-slate-500" : "w-3 h-3 bg-gray-200"} rounded-full`}
+            className={`ml-2 mr-2 rounded-full ${
+              currentIndex === index ? "w-6 h-3" : "w-3 h-3"
+            }`}
+            style={{
+              backgroundColor:
+                currentIndex === index
+                  ? theme.colors.slate[500]
+                  : theme.colors.gray[200],
+            }}
           />
         ))}
       </View>
