@@ -5,11 +5,7 @@
       "label": "Sáng",
       "icon": "white-balance-sunny"
     },
-    {
-      "value": "system",
-      "label": "Tự động",
-      "icon": "theme-light-dark"
-    },
+
     {
       "value": "dark",
       "label": "Tối",
