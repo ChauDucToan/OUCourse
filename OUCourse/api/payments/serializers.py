@@ -18,7 +18,7 @@ class TransactionSerializer(serializers.ModelSerializer):
         total_amount = 0
         for item_data in items_data:
             course = item_data['courses']
-            price = course.price
+            price = float(course.price)
 
             TransactionDetailSerializer().create({
                 'transaction': transaction,
@@ -52,4 +52,4 @@ class TransactionSerializer(serializers.ModelSerializer):
             'user',
             'items',
         ]
-        read_only_fields = ['order_code', 'status', 'user', 'provider_transaction_id']
+        read_only_fields = ['order_code', 'status', 'user', 'provider_transaction_id', 'total_amount']

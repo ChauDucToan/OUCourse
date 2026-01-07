@@ -332,12 +332,16 @@ class Command(BaseCommand):
     def _create_users(self):
         for i in range(50):
             role = User.Role.INSTRUCTOR if random.random() < 0.1 else User.Role.STUDENT
+            
+            username = unique_username(f"{random.choice(VN_FAMILY + EN_FAMILY + VN_GIVEN + EN_GIVEN)}{i}")
+            first_name, last_name = pick_name()
+
             User.objects.create_user(
-                username=unique_username(f"user{i}"),
-                email=make_email(f"user{i}"),
+                username=username,
+                email=make_email(username),
                 password="Admin@123",
-                first_name=f"First{i}",
-                last_name=f"Last{i}",
+                first_name=first_name,
+                last_name=last_name,
                 role=role
             )
 
@@ -362,14 +366,17 @@ class Command(BaseCommand):
             # Tạo các lesson giả
             num_lessons = template["duration"] // 30  # giả sử mỗi lesson ~30 phút
             for j in range(num_lessons):
-                Lesson.objects.create(
+                les = Lesson.objects.create(
                     course=course,
                     subject=f"Bài học {j+1}: Nội dung của {subject}",
                     video=template["video"],
                     content=f"Nội dung chi tiết cho bài học {j+1} của khóa học {subject}.",
-                    tags=tags,
                     order=j * 10,
                 )
+
+                for tag in tags:
+                    if random.random() < 0.7:
+                        les.tags.add(tag)
 
     def handle(self, *args, **kwargs):
         self._create_tags()

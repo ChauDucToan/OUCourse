@@ -11,7 +11,7 @@ class Transaction(BaseModel):
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
-    order_code = models.CharField(max_length=100, unique=True)
+    order_code = models.CharField(max_length=100, unique=True, null=True, blank=True)
 
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     currency = models.CharField(max_length=10)
@@ -20,7 +20,7 @@ class Transaction(BaseModel):
     status = models.IntegerField(choices=statuses.choices, default=statuses.PENDING)
 
     provider = models.CharField(max_length=20)
-    provider_transaction_id = models.CharField(max_length=100, unique=True)
+    provider_transaction_id = models.CharField(max_length=100, unique=True, null=True, blank=True)
 
     user = models.ForeignKey(
         'users.User',

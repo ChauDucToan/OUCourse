@@ -51,7 +51,7 @@ class ZaloPayProvider(PaymentProviders):
         return mac
     
     def create_payment(self, transaction_obj) -> Dict[str, Any]:
-        amount = sum([item['amount'] * item.get('quantity', 1) for item in self.items])
+        amount = sum([float(item['amount']) * item.get('quantity', 1) for item in self.items])
         order_code = f"{datetime.now().strftime('%y%m%d')}_{transaction_obj.id.hex[:8]}_ZLP"
         transaction_obj.order_code = order_code
         transaction_obj.save()
@@ -228,6 +228,11 @@ class StripeProvider(PaymentProviders):
         
     
     def create_payment(self, transaction_obj) -> Dict[str, Any]:
+        if not transaction_obj.order_code:
+            order_code = f"{datetime.now().strftime('%y%m%d')}_{transaction_obj.id.hex[:8]}_STR"
+            transaction_obj.order_code = order_code
+            transaction_obj.save()
+
         line_items = []
         for item in self.items:
             line_items.append({
@@ -237,7 +242,7 @@ class StripeProvider(PaymentProviders):
                         'name': item['name'],
                         'description': item.get('description', ''),
                     },
-                    'unit_amount': int(item['amount'] if transaction_obj.currency == 'VND' else item['amount'] * 100),
+                    'unit_amount': int(float(item['amount']) if transaction_obj.currency == 'vnd' else float(item['amount']) * 100),
                 },
                 'quantity': item.get('quantity', 1),
             })
