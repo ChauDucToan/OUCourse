@@ -8,6 +8,8 @@ class TransactionDetailSerializer(serializers.ModelSerializer):
         model = TransactionDetail
         fields = ['id', 'courses', 'course_name', 'price_at_purchase']
 
+        read_only_fields = ['price_at_purchase']
+
 class TransactionSerializer(serializers.ModelSerializer):
     items = TransactionDetailSerializer(many=True, read_only=False)
 
@@ -20,11 +22,11 @@ class TransactionSerializer(serializers.ModelSerializer):
             course = item_data['courses']
             price = float(course.price)
 
-            TransactionDetailSerializer().create({
-                'transaction': transaction,
-                'courses': course,
-                'price_at_purchase': price,
-            })
+            detail = TransactionDetail.objects.create(
+                transaction=transaction,
+                courses=course,
+                price_at_purchase=price,
+            )
             total_amount += price
 
         transaction.total_amount = total_amount
