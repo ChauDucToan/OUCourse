@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework import viewsets, generics, status, parsers, permissions
 from .models import User
 from .serializers import UserSerializer, UserCreateSerializer
@@ -9,7 +8,7 @@ from rest_framework.decorators import action
 class UserView(viewsets.ViewSet, generics.CreateAPIView):
     queryset = User.objects.filter(is_active=True)
     serializer_class = UserSerializer
-    parser_classes = [parsers.MultiPartParser]
+    parser_classes = [parsers.MultiPartParser, parsers.FormParser]
     permission_classes = [permissions.AllowAny]
 
     def get_serializer_class(self):
@@ -29,8 +28,3 @@ class UserView(viewsets.ViewSet, generics.CreateAPIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(UserSerializer(u).data, status=status.HTTP_200_OK)
-    
-    @action(methods=['post'], url_path='login', detail=False, \
-            permission_classes=[permissions.AllowAny])
-    def login(self, request):
-        return Response({"detail": "Use OAuth2 to login"}, status=status.HTTP_200_OK)

@@ -1,6 +1,8 @@
 import { View } from "react-native";
 import { useState } from "react";
 import { useEffect } from "react";
+import fetchCourse from "../../api/courseApi";
+import CourseView from "../../components/CourseView";
 
 import fetchCourse from "../../api/courseApi";
 import { results } from "../../mock/data.mock.courses.json";
