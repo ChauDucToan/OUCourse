@@ -1,6 +1,9 @@
-from django.contrib import admin
-from .models import Course, Category, Tag, Lesson
+from django.contrib import admin, messages
+from .models import Course
 from django.utils.safestring import mark_safe
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 class ImageVideoViewMixin(admin.ModelAdmin):
     readonly_fields = ['image_view', 'video_view']
@@ -36,22 +39,17 @@ class CourseAdmin(ImageVideoViewMixin):
     search_fields = ('instructor', 'subject', 'price')
 
     list_filter = ['category']
-    
-class LessonAdmin(ImageVideoViewMixin):
-    list_display = ('subject', 'course', 'order', 'active', 'video', 'created_date')
-    search_fields = ('subject', 'course__subject')
 
-    list_filter = ['course']
+    def save_model(self, request, obj, form, change):
+        if form.cleaned_data.get('instructor'):
+            if not User.objects.get(id=form.cleaned_data['instructor'].id).role.__eq__('INSTRUCTOR'):
+                self.message_user(request, "Instructor must have the role of INSTRUCTOR.", level=messages.ERROR)
+                return
+            if form.cleaned_data.get('price') < 0:
+                self.message_user(request, "Price must be a non-negative value.", level=messages.ERROR)
+                return
 
-class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'active', 'created_date')
-    search_fields = ('name',)
-
-class TagAdmin(admin.ModelAdmin):
-    list_display = ('name', 'active', 'created_date')
-    search_fields = ('name',)
+            return super().save_model(request, obj, form, change)
+        return
 
 admin.site.register(Course, CourseAdmin)
-admin.site.register(Category, CategoryAdmin)
-admin.site.register(Tag, TagAdmin)
-admin.site.register(Lesson, LessonAdmin)

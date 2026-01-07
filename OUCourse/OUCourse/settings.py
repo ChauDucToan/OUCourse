@@ -43,12 +43,16 @@ SECRET_KEY = 'django-insecure-p4ylr@%qf6mhp=pq*q__#(%*krvh7$*^t)pv61e_xi_pu8b*ed
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'paleological-pachydermatously-linnie.ngrok-free.dev',
+    '.ngrok-free.dev',
     '127.0.0.1',
     'localhost',
 ]
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+OAUTH2_PROVIDER = {
+    'ALLOWED_REDIRECT_URI_SCHEMES': ['http', 'https', 'oucourse'],
+}
 
 CSRF_TRUSTED_ORIGINS = [
     'https://paleological-pachydermatously-linnie.ngrok-free.dev',
@@ -79,7 +83,11 @@ INSTALLED_APPS = [
     'corsheaders',
     'oauth2_provider',
     'api.courses.apps.CoursesConfig',
-    'api.users.apps.UsersConfig'
+    'api.users.apps.UsersConfig',
+    'api.lessons.apps.LessonsConfig',
+    'api.comments.apps.CommentsConfig',
+    'api.categories.apps.CategoriesConfig',
+    'api.authentications.apps.AuthenticationsConfig',
 ]
 AUTH_USER_MODEL = "users.User"
 

@@ -26,7 +26,26 @@ export const authApi = {
 
       return res;
     } catch (error) {
-      console.error("login error || new Client_ID ClientSecret");
+      console.error("login error");
+      throw error;
+    }
+  },
+  refresh: async (refreshToken) => {
+    try {
+      const params = new URLSearchParams();
+      params.append("client_id", CLIENT_ID);
+      params.append("client_secret", CLIENT_SECRET);
+      params.append("grant_type", "refresh_token");
+      params.append("refresh_token", refreshToken);
+
+      let res = await authAxios.post(endpoints["login"], params);
+      const newAccessToken = res.data.access_token;
+      const newRefreshToken = res.data.refresh_token || refreshToken;
+
+      await saveTokens(newAccessToken, newRefreshToken);
+      return res;
+    } catch (error) {
+      console.error("login error: ", error.message);
       throw error;
     }
   },

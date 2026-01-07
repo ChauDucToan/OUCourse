@@ -32,15 +32,7 @@ const CourseDetailedScreen = () => {
         console.error(error);
       }
     };
-    // if (id) {
-    //   // loadData()
-    //   const filter = results.filter((course) => course.id === id);
-    //   setCourse(filter);
-    //   console.log("LOad filter course dc", filter);
-    //}
-    const filter = results.find((course) => course.id === id);
-
-    setCourse(filter);
+    if (id) loadData();
   }, [id]);
   useEffect(() => {
     if (course) {
