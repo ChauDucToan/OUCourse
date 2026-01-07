@@ -152,8 +152,8 @@ class ZaloPayProvider(PaymentProviders):
             return_code = resp_json.get("return_code")
             
             if return_code == 1:
-                if transaction_obj.status != PaymentTransaction.statuses.COMPLETED:
-                    transaction_obj.status = PaymentTransaction.statuses.COMPLETED
+                if transaction_obj.status != Transaction.statuses.COMPLETED:
+                    transaction_obj.status = Transaction.statuses.COMPLETED
 
                     if "zalo_trans_id" in resp_json:
                          transaction_obj.provider_transaction_id = str(resp_json["zalo_trans_id"])
@@ -281,9 +281,9 @@ class StripeProvider(PaymentProviders):
 
             real_transaction_id = session.get('payment_intent') 
 
-            transaction = PaymentTransaction.objects.get(order_code=order_code)
+            transaction = Transaction.objects.get(order_code=order_code)
             if transaction:
-                transaction.status = PaymentTransaction.statuses.COMPLETED
+                transaction.status = Transaction.statuses.COMPLETED
                 transaction.provider_transaction_id = real_transaction_id
                 transaction.save()
         else:

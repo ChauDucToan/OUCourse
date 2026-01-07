@@ -82,6 +82,7 @@ INSTALLED_APPS = [
     'ckeditor',
     'corsheaders',
     'oauth2_provider',
+    'api',
     'api.courses.apps.CoursesConfig',
     'api.users.apps.UsersConfig',
     'api.lessons.apps.LessonsConfig',

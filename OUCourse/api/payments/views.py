@@ -57,6 +57,7 @@ class TransactionViewSet(viewsets.ViewSet, generics.CreateAPIView, generics.List
 class PaymentWebhookView(viewsets.ViewSet, generics.GenericAPIView):
     authentication_classes = [] 
     permission_classes = [permissions.AllowAny]
+    serializer_class = None
 
     def _handle_webhook(self, request, provider_name):
         provider = PaymentFactory.get_payment_provider(provider_name, items=[])
