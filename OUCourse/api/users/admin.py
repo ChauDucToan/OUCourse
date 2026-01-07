@@ -4,7 +4,7 @@ from django.utils.safestring import mark_safe
 from .models import User
 
 # Register your models here.
-class UserAdmin(BaseUserAdmin):
+class UserAdmin(admin.ModelAdmin):
     list_display = ('username', 'email', 'role')
     search_fields = ('username', 'email', 'role')
 
