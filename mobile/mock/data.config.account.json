@@ -31,9 +31,9 @@
   ],
   "system": [
     {
-      "title": "Gói dịch vụ",
-      "description": "Lịch sử thanh toán, gia hạn",
-      "iconLeft": "credit-card-outline",
+      "title": "Theme",
+      "description": "",
+      "iconLeft": "theme-light-dark",
       "iconColor": "#475569",
       "navUrl": "SubscriptionHistory",
       "navParams": ""

@@ -3,6 +3,7 @@ import TextCustom from "../TextCustom";
 import { categories } from "../../mock/data.mock.categories.json";
 
 export const HomeCategories = () => {
+  const jsonStyle = require("../../mock/data.styles.json");
   return (
     <View className="p-5">
       <TextCustom.TextSection text={"Danh mục"} />
@@ -14,12 +15,12 @@ export const HomeCategories = () => {
         showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => (
           <TouchableOpacity
-            className="bg-slate-500  rounded-lg px-4 py-3 mr-3 "
+            className="bg-blue-100  rounded-lg px-4 py-3 mr-3 "
             onPress={() => {
               setActiveId(item.id);
             }}
           >
-            <Text className="text-base text-white">{item.name}</Text>
+            <Text>{item.name}</Text>
           </TouchableOpacity>
         )}
       />

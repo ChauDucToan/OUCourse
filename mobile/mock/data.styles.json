@@ -6,5 +6,9 @@
   "text-focus": "text-slate-600 font-bold text-base",
   "text-no-focus": "text-white   font-bold text-base",
   "pressable-focus": "bg-slate-600 border border-slate-500 p-3 rounded-xl items-center",
-  "pressable-no-focus": "border border-slate-500 p-3 rounded-xl items-center active:bg-slate-200"
+  "pressable-no-focus": "border border-slate-500 p-3 rounded-xl items-center active:bg-slate-200",
+  "Lập trình": "bg-blue-100 text-blue-700",
+  "Thiết kế": "bg-pink-100 text-pink-700",
+  "Marketing": "bg-green-100 text-green-700",
+  "skill": "bg-orange-100 text-orange-700"
 }

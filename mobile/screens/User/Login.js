@@ -1,3 +1,5 @@
+import * as WebBrowser from "expo-web-browser";
+WebBrowser.maybeCompleteAuthSession();
 import { Pressable, View } from "react-native";
 import {
   ActivityIndicator,
@@ -16,6 +18,7 @@ import { endpoints } from "../../utils/Apis";
 import colors from "tailwindcss/colors";
 import { useNavigation } from "@react-navigation/native";
 import { useContext } from "react";
+import * as AuthSession from "expo-auth-session";
 
 const Login = () => {
   const jsonData = require("../../mock/data.config.register.json");
@@ -64,15 +67,46 @@ const Login = () => {
   };
   const loginGoogle = async () => {
     try {
-      const res = await axiosClient.get(endpoints.googleAuth);
-      console.log(res.data);
-      if (res.data && res.data.auth_url) {
-        Linking.openURL(res.data.auth_url);
-      }
+      // Redirect URI về app
+      const redirectUri = AuthSession.makeRedirectUri({
+        scheme: "oucourse",
+        path: "oauthredirect",
+      });
+      console.log("redirectUri =", redirectUri);
+      // Backend build Google auth URL (nên include redirect_uri)
+      const res = await axiosClient.post(endpoints.googleCallback, {
+        params: { redirect_uri: redirectUri, auth_type: "django" },
+      });
+
+      const authUrl = res.data?.auth_url;
+      console.log(authUrl);
+      if (!authUrl) throw new Error("Missing auth_url from backend");
+
+      // Mở phiên đăcng nhập + chờ redirect về app
+      const result = await WebBrowser.openAuthSessionAsync(
+        authUrl,
+        redirectUri,
+      );
+      if (result.type !== "success" || !result.url) return;
+
+      // Parse callback: oucourse://... ?code=...&state=...
+      const parsed = Linking.parse(result.url);
+      const code = parsed.queryParams?.code;
+      const state = parsed.queryParams?.state;
+
+      if (!code || !state) throw new Error("Missing code/state in callback");
+
+      // Gọi backend đổi code -> token/session
+      const loginRes = await axiosClient.get(endpoints.googleCallback, {
+        code,
+        state,
+        redirect_uri: redirectUri,
+      });
     } catch (ex) {
       console.error("Lỗi Google Auth:", ex);
     }
   };
+
   return (
     <AuthLayout title="ĐĂNG NHẬP NGƯỜI DÙNG">
       <HelperText type="error" visible={err}>
@@ -147,24 +181,6 @@ const Login = () => {
           size={30}
           onPress={loginGoogle}
           style={{ borderColor: "#DB4437" }}
-        />
-
-        <IconButton
-          icon="facebook"
-          mode="outlined"
-          iconColor="#4267B2"
-          size={30}
-          onPress={() => console.log("Facebook Login")}
-          style={{ borderColor: "#4267B2" }}
-        />
-
-        <IconButton
-          icon="github"
-          mode="outlined"
-          iconColor="#333"
-          size={30}
-          onPress={() => console.log("Github Login")}
-          style={{ borderColor: "#333" }}
         />
       </View>
     </AuthLayout>

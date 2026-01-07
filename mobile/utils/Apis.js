@@ -17,4 +17,5 @@ export const endpoints = {
   baseUrl: BASE_URL,
 
   googleAuth: "/api/auth/url?auth_type=google",
+  googleCallback: "api/auth/callback",
 };
