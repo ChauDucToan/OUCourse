@@ -71,7 +71,7 @@ class CourseView(viewsets.ModelViewSet):
         return Response(serializers.LessonSerializer(lessons, many=True).data, status=status.HTTP_200_OK)
 
     @action(methods=['post'], permission_classes=[permissions.IsAuthenticated], url_path='enroll',
-             detail=True)
+             detail=True, serializer_class=serializers.ManageCourseSerializer)
     def enroll(self, request):
         course = self.get_object()
         u = request.user

@@ -88,6 +88,7 @@ INSTALLED_APPS = [
     'api.comments.apps.CommentsConfig',
     'api.categories.apps.CategoriesConfig',
     'api.authentications.apps.AuthenticationsConfig',
+    'api.payments.apps.PaymentsConfig',
 ]
 AUTH_USER_MODEL = "users.User"
 

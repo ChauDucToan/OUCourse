@@ -32,7 +32,7 @@ class Course(BaseModel):
     def __str__(self):
         return self.subject
 
-class ManageCourse(models.Model):
+class ManageCourse(BaseModel):
     class Status(models.TextChoices):
         UNENROLLED = "UNENROLLED"
         ENROLLED = "ENROLLED"
