@@ -5,14 +5,11 @@ import YoutubePlayer from "react-native-youtube-iframe";
 import HeaderCustom from "../../components/Header";
 import TextCustom from "../../components/TextCustom";
 import { ScrollView } from "react-native";
-import axiosClient from "../../api/axiosClient";
-import { useEffect } from "react";
+
 import { TextInput } from "react-native";
-import { Image } from "react-native";
-import { endpoints } from "../../utils/Apis";
+
 import { ActivityIndicator } from "react-native-paper";
-import { useContext } from "react";
-import { MyColorContext } from "../../utils/contexts/MyColorContext";
+
 const extractVideoId = (url) => {
   if (!url) return null;
 
@@ -30,9 +27,9 @@ const LessonLearning = () => {
   const [comments, setComments] = useState([]); // Quản lý danh sách bình luận
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
-  const { lesson } = route.params;
+  const { lesson, theme } = route.params;
+  console.log(theme);
   const videoId = extractVideoId(lesson.video);
-  const { theme } = useContext(MyColorContext);
   const onStateChange = useCallback((state) => {
     if (state === "ended") {
       setPlaying(false);
@@ -80,7 +77,7 @@ const LessonLearning = () => {
   }
 
   return (
-    <View className="pt-10">
+    <View className="pt-10" style={{ backgroundColor: theme.colors.gray[100] }}>
       <HeaderCustom />
       {lesson.video !== null ? (
         <YoutubePlayer
@@ -106,9 +103,15 @@ const LessonLearning = () => {
         />
         <View className="flex-row gap-3">
           {lesson.tags.map((tag) => (
-            <View key={tag.id} className="bg-blue-100 p-3 rounded-xl m-2">
+            <View
+              key={tag.id}
+              className=" p-3 rounded-xl m-2"
+              style={{ backgroundColor: theme.colors.slate[200] }}
+            >
               <TextCustom.TextFocus
-                style={{ color: theme.colors.slate[600] }}
+                style={{
+                  color: theme.colors.slate[600],
+                }}
                 text={tag}
               />
             </View>

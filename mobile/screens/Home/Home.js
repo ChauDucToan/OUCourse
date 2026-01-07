@@ -13,11 +13,13 @@ import colors from "tailwindcss/colors";
 import { Animated } from "react-native";
 import { useRef } from "react";
 import TextCustom from "../../components/TextCustom";
+import { useContext } from "react";
+import { MyColorContext } from "../../utils/contexts/MyColorContext";
 const HEADER_MAX_HEIGHT = 140; // Chiều cao lúc đầu của Header gốc
 const HEADER_MIN_HEIGHT = 80;
 const HomeScreen = () => {
   const [courseData, setCourseData] = useState([]);
-
+  const { theme } = useContext(MyColorContext);
   const scrollY = useRef(new Animated.Value(0)).current;
   const coursesFree = results.filter((course) => course.price <= 0);
   const coursesExpensive = results.filter((course) => course.price >= 500000);
@@ -44,33 +46,45 @@ const HomeScreen = () => {
 
   const render = () => {
     return (
-      <View>
+      <View
+        style={{
+          backgroundColor: theme.colors.gray[100],
+        }}
+      >
         <HomeHeader
           text={"Hôm nay bạn muốn học gì?"}
           subText={"Tiếp tục hành trình khai phá tri thức"}
+          theme={theme}
         />
-        <HomeBanner />
-        <HomeCategories />
+        <HomeBanner theme={theme} />
+        <HomeCategories theme={theme} />
         <HomeCourseList
           data={coursesFree}
           text="Top thịnh hành"
-          textClass={"text-yellow-500"}
-          iconColor={colors.yellow[500]}
+          textClass={{ color: theme.colors.yellow[500] }}
+          iconColor={theme.colors.yellow[500]}
           icon="star"
+          theme={theme}
         />
         <HomePromotion />
         <HomeCourseList
           data={coursesExpensive}
           text="Khóa học cao cấp"
           icon="cash-multiple"
-          textClass={"text-purple-600"}
-          iconColor={colors.purple[600]}
+          textClass={{ color: theme.colors.violet[600] }}
+          iconColor={theme.colors.violet[600]}
+          theme={theme}
         />
       </View>
     );
   };
   return (
-    <View className="flex-1 bg-white">
+    <View
+      className="flex-1 "
+      style={{
+        backgroundColor: theme.colors.gray[100],
+      }}
+    >
       <Animated.View
         style={{
           position: "absolute",
@@ -78,7 +92,6 @@ const HomeScreen = () => {
           left: 0,
           right: 0,
           height: HEADER_MIN_HEIGHT,
-          backgroundColor: "white",
           zIndex: 1000,
           elevation: 5,
           opacity: headerTitleOpacity,
@@ -87,9 +100,15 @@ const HomeScreen = () => {
           alignItems: "center",
           borderBottomWidth: 1,
           borderBottomColor: "#eee",
+          backgroundColor: theme.colors.gray[100],
+          backgroundColor: theme.colors.gray[100],
         }}
       >
-        <TextCustom.TextSection className="mt-8" text="OUCourse" />
+        <TextCustom.TextSection
+          style={{ color: theme.colors.black }}
+          className="mt-8"
+          text="OUCourse"
+        />
       </Animated.View>
       <Animated.FlatList
         ListHeaderComponent={render}

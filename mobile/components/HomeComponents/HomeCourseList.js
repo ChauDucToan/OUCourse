@@ -5,18 +5,16 @@ import { Icon } from "react-native-paper";
 import CourseView from "../CourseComponents/CourseView";
 
 import { useNavigation } from "@react-navigation/native";
-import { useContext } from "react";
-import { MyColorContext } from "../../utils/contexts/MyColorContext";
 
 export const HomeCourseList = ({
   data,
   text,
   icon,
-  textClass = "",
+  textClass = {},
   iconColor,
+  theme,
 }) => {
   const nav = useNavigation();
-  const { theme } = useContext(MyColorContext);
 
   return (
     <View>
@@ -26,7 +24,7 @@ export const HomeCourseList = ({
           size={28}
           color={iconColor ? iconColor : theme.colors.slate[600]}
         />
-        <TextCustom.TextSection className={textClass} text={text} />
+        <TextCustom.TextSection style={textClass} text={text} />
       </View>
       <FlatList
         data={data}
@@ -34,7 +32,9 @@ export const HomeCourseList = ({
         showsHorizontalScrollIndicator={false}
         className="gap-3 "
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <CourseView navigation={nav} item={item} />}
+        renderItem={({ item }) => (
+          <CourseView theme={theme} navigation={nav} item={item} />
+        )}
       />
     </View>
   );

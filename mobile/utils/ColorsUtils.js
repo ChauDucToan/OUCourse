@@ -7,8 +7,17 @@ const light = {
   iconDefault: colors.slate[500],
   danger: colors.red[500],
   green: {
+    100: colors.green[100],
+    200: colors.green[200],
+    300: colors.green[300],
+    400: colors.green[400],
     500: colors.green[500],
+    600: colors.green[600],
+    700: colors.green[700],
+    800: colors.green[800],
+    900: colors.green[900],
   },
+
   blue: {
     100: colors.blue[100],
     500: colors.blue[500],
@@ -59,7 +68,15 @@ const dark = {
     500: colors.blue[300],
   },
   green: {
-    500: colors.green[300],
+    100: colors.green[900],
+    200: colors.green[800],
+    300: colors.green[700],
+    400: colors.green[600],
+    500: colors.green[500],
+    600: colors.green[400],
+    700: colors.green[300],
+    800: colors.green[200],
+    900: colors.green[100],
   },
   gray: {
     900: colors.gray[50],

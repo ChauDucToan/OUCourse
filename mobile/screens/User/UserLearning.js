@@ -10,6 +10,8 @@ import { results } from "../../mock/data.mock.courses.json";
 import TextCustom from "../../components/TextCustom";
 import { FlatList } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useContext } from "react";
+import { MyColorContext } from "../../utils/contexts/MyColorContext";
 
 const UserLearning = () => {
   const [corse, setCourse] = useState(null);
@@ -19,10 +21,14 @@ const UserLearning = () => {
     };
   });
   const nav = useNavigation();
+  const { theme } = useContext(MyColorContext);
   return (
-    <View className="bg-slate-50 pt-10 flex-1">
+    <View
+      className="pt-10 flex-1"
+      style={{ backgroundColor: theme.colors.gray[100] }}
+    >
       <HeaderCustom text="Danh sách bài học của tôi" />
-      <View className="bg-white">
+      <View style={{ backgroundColor: theme.colors.slate[300] }}>
         <FlatList
           data={results}
           contentContainerStyle={{
@@ -43,11 +49,12 @@ const UserLearning = () => {
                   <TextCustom.TextMuted text={item.category} />
                   <TextCustom.TextSection
                     className="text-xl"
+                    style={{ color: theme.colors.yellow[500] }}
                     text={item.subject}
                   />
                   <TextCustom.TextFocus
                     text={item.instructor}
-                    style={{ fontSize: 12 }}
+                    style={{ color: theme.colors.blue[500] }}
                   />
                 </View>
               </View>

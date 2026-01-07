@@ -58,23 +58,23 @@ const Search = () => {
     <View
       className="flex-1  pt-10"
       style={{
-        backgroundColor: theme.colors.slate[50],
+        backgroundColor: theme.colors.gray[100],
       }}
     >
       <HeaderCustom text="Thanh tìm kiếm" />
       <View
         className="pl-2  justify-center text-center pr-2"
         style={{
-          backgroundColor: theme.colors.white,
+          backgroundColor: theme.colors.gray[100],
         }}
       >
         <TextInput
           className=" text-base border mb-4 rounded-2xl p-3"
           style={{
             backgroundColor: theme.colors.gray[50],
-            borderColor: theme.colors.gray[200],
-            color: theme.colors.gray[700],
+            borderColor: theme.colors.slate[200],
           }}
+          placeholderTextColor={theme.colors.slate[400]}
           placeholder="Nhập từ khóa..."
           value={keyword}
           onChangeText={handleSearch}
@@ -93,11 +93,16 @@ const Search = () => {
               key={tag}
               className="rounded-full px-3 py-1"
               style={{
-                backgroundColor: theme.colors.gray[200],
+                backgroundColor: theme.colors.slate[200],
               }}
               onPress={() => handleSearch(tag)}
             >
-              <Text className="text-sm">{tag}</Text>
+              <Text
+                className="text-xl"
+                style={{ color: theme.colors.slate[400] }}
+              >
+                {tag}
+              </Text>
             </TouchableOpacity>
           ))}
         </View>

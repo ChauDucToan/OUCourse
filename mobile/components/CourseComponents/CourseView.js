@@ -1,15 +1,12 @@
-import { useContext } from "react";
 import { Text } from "react-native";
 import { Image } from "react-native";
 import { TouchableOpacity, View } from "react-native";
 import { Icon } from "react-native-paper";
-import { MyColorContext } from "../../utils/contexts/MyColorContext";
 
-const CourseView = ({ navigation, item }) => {
+const CourseView = ({ navigation, item, theme }) => {
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("vi-VN").format(amount) + " đ";
   };
-  const { theme } = useContext(MyColorContext);
   return (
     <TouchableOpacity
       activeOpacity={0.8}
@@ -21,7 +18,7 @@ const CourseView = ({ navigation, item }) => {
       }
       className=" mb-4 mt-4 mx-4 rounded-3xl overflow-hidden shadown-sm border flex-row p-5"
       style={{
-        backgroundColor: theme.colors.white,
+        backgroundColor: theme.colors.slate[50],
         borderColor: theme.colors.slate[100],
       }}
     >

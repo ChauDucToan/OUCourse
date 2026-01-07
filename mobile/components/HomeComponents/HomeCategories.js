@@ -6,9 +6,7 @@ import { MyColorContext } from "../../utils/contexts/MyColorContext";
 import { useContext } from "react";
 import { categories } from "../../mock/data.mock.categories.json";
 
-export const HomeCategories = ({ iconColor = "" }) => {
-  const { theme } = useContext(MyColorContext);
-
+export const HomeCategories = ({ iconColor = "", theme }) => {
   return (
     <View className="p-5">
       <View className="flex-row gap-3">
@@ -17,7 +15,10 @@ export const HomeCategories = ({ iconColor = "" }) => {
           size={28}
           color={iconColor ? iconColor : theme.colors.slate[600]}
         />
-        <TextCustom.TextSection text={"Danh mục"} />
+        <TextCustom.TextSection
+          text={"Danh mục"}
+          style={{ color: theme.colors.slate[500] }}
+        />
       </View>
       <FlatList
         className="mt-4"
@@ -29,13 +30,19 @@ export const HomeCategories = ({ iconColor = "" }) => {
           <TouchableOpacity
             className=" rounded-lg px-4 py-3 mr-3 "
             style={{
-              backgroundColor: theme.colors.blue[100],
+              backgroundColor: theme.colors.blue[500],
             }}
             onPress={() => {
               setActiveId(item.id);
             }}
           >
-            <Text>{item.name}</Text>
+            <Text
+              style={{
+                color: theme.colors.slate[200],
+              }}
+            >
+              {item.name}
+            </Text>
           </TouchableOpacity>
         )}
       />

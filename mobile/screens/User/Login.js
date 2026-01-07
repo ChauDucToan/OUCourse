@@ -151,7 +151,7 @@ const Login = () => {
           {loading ? (
             <ActivityIndicator
               animating={true}
-              color={theme.colors.white}
+              color={theme.colors.gray[100]}
               size="small"
             />
           ) : (

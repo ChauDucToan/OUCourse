@@ -1,8 +1,8 @@
 import AppColors from "../ColorsUtils";
 
 export const initialThemeState = {
-  mode: "light",
-  colors: AppColors.light,
+  mode: "dark",
+  colors: AppColors.dark,
 };
 export function ThemeReducer(state, action) {
   switch (action.type) {

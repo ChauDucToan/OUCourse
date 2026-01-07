@@ -24,7 +24,7 @@ const Account = ({ navigation }) => {
     <ScrollView
       className="flex-1 pt-10"
       style={{
-        backgroundColor: theme.colors.slate[50],
+        backgroundColor: theme.colors.gray[100],
       }}
       contentContainerStyle={{
         paddingBottom: 80,
@@ -35,7 +35,7 @@ const Account = ({ navigation }) => {
         <View>
           <View
             style={{
-              backgroundColor: theme.colors.white,
+              backgroundColor: theme.colors.gray[100],
             }}
             className=" p-5 flex flex-row items-center justify-around border-b "
           >
@@ -79,7 +79,7 @@ const Account = ({ navigation }) => {
                 <Text
                   className="font-bold text-xs text-center"
                   style={{
-                    color: theme.colors.white,
+                    color: theme.colors.gray[100],
                   }}
                 >
                   Chỉnh sửa hồ sơ
@@ -92,6 +92,7 @@ const Account = ({ navigation }) => {
               mapJson={jsonAccountData.personal}
               navigation={navigation}
               header="cá nhân"
+              theme={theme}
             />
           </View>
           <View>
@@ -99,6 +100,7 @@ const Account = ({ navigation }) => {
               mapJson={jsonAccountData.system}
               navigation={navigation}
               header="hệ thống"
+              theme={theme}
             />
           </View>
 
@@ -108,12 +110,12 @@ const Account = ({ navigation }) => {
               textColor={theme.colors.red[500]}
               className="rounded-xl  "
               style={{
-                backgroundColor: theme.colors.white,
+                backgroundColor: theme.colors.gray[100],
                 borderColor: theme.colors.red[200],
               }}
               contentStyle={{
                 paddingVertical: 4,
-                backgroundColor: theme.colors.white,
+                backgroundColor: theme.colors.gray[100],
               }}
               icon="logout"
               onPress={handleLogout}
@@ -138,6 +140,7 @@ const Account = ({ navigation }) => {
               mapJson={jsonAccountData.system}
               navigation={navigation}
               header="hệ thống"
+              theme={theme}
             />
           </View>
           <View className="p-4 mt-2 mb-8">
@@ -145,7 +148,7 @@ const Account = ({ navigation }) => {
               onPress={() => navigation.navigate("Login")}
               className="flex-row items-center justify-center p-3 border  rounded-xl shadow-sm mt-4"
               style={{
-                backgroundColor: theme.colors.white,
+                backgroundColor: theme.colors.gray[100],
                 borderColor: theme.colors.slate[200],
               }}
             >

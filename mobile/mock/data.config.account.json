@@ -40,7 +40,7 @@
   "system": [
     {
       "title": "Theme",
-      "description": "",
+      "description": "Dooi",
       "iconLeft": "theme-light-dark",
       "iconColor": "#475569",
       "navUrl": "",
@@ -48,7 +48,7 @@
     },
     {
       "title": "Điều khoản & Quy định",
-      "description": "",
+      "description": "Cũng này nọ",
       "iconLeft": "file-document-outline",
       "iconColor": "#475569",
       "navUrl": "Terms",
@@ -56,7 +56,7 @@
     },
     {
       "title": "Trợ giúp & Phản hồi",
-      "description": "",
+      "description": "Okle",
       "iconLeft": "help-circle-outline",
       "iconColor": "#475569",
       "navUrl": "Help",

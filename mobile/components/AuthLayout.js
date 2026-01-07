@@ -10,7 +10,7 @@ const AuthLayout = ({ title, children }) => {
     <View
       className="flex-1  p-4 justify-center"
       style={{
-        backgroundColor: theme.colors.white,
+        backgroundColor: theme.colors.gray[100],
       }}
     >
       <HeaderCustom text={title} />

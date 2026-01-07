@@ -28,6 +28,10 @@ const TabNavigator = () => {
     <Tab.Navigator
       screenOptions={{
         headerShown: false, // ẩn header của tab
+        tabBarStyle: {
+          backgroundColor: theme.colors.gray[100],
+          borderTopColor: theme.colors.slate[200],
+        },
       }}
     >
       <Tab.Screen

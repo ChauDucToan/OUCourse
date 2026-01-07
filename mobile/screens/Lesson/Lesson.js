@@ -21,7 +21,10 @@ const LessonsRoute = ({ lessons, id, theme }) => {
   );
   const nav = useNavigation();
   return (
-    <View className="flex-1 p-4 bg-white">
+    <View
+      className="flex-1 p-4"
+      style={{ backgroundColor: theme.colors.gray[100] }}
+    >
       <TextCustom.TextSection
         style={{ color: theme.colors.slate[800] }}
         text="Danh sách các bài học"
@@ -37,24 +40,30 @@ const LessonsRoute = ({ lessons, id, theme }) => {
               activeOpacity={0.6}
               delayPressIn={0.7}
               onPress={() => {
-                nav.getParent().navigate("LessonLearning", { lesson: item });
+                nav.navigate("LessonLearning", { lesson: item, theme: theme });
               }}
             >
-              <View className="flex-row item-start gap-3 m-2 border border-gray-200 rounded-xl p-2">
-                <View className=" bg-blue-100 p-2 rounded-xl items-center justify-center mr-3 w-24">
+              <View
+                className="flex-row item-start gap-3 m-2 border rounded-xl p-2"
+                style={{ borderColor: theme.colors.gray[300] }}
+              >
+                <View
+                  className=" p-2 rounded-xl items-center justify-center mr-3 w-24"
+                  style={{ backgroundColor: theme.colors.blue[500] }}
+                >
                   <TextCustom.TextFocus
                     text={`Bài học ${(index + 1).toString()}`}
                     className="w-24 text-center"
                     style={{
-                      color: theme.colors.gray[700],
+                      color: theme.colors.gray[200],
                     }}
                   />
                 </View>
 
-                <View>
+                <View className="flex-1">
                   <TextCustom.TextFocus
                     text={item.subject}
-                    className="text-base font-medium "
+                    className="text-base font-medium"
                     style={{ color: theme.colors.slate[800] }}
                   />
                   <TextCustom.TextFocus
@@ -88,9 +97,13 @@ const DescriptionRoute = ({ description, theme }) => {
   return (
     <View
       className="flex-1 p-4 "
-      style={{ backgroundColor: theme.colors.white }}
+      style={{ backgroundColor: theme.colors.gray[100] }}
     >
-      <RenderHTML source={source} contentWidth={width} />
+      <RenderHTML
+        source={source}
+        baseStyle={{ fontSize: 18, color: theme.colors.slate[600] }}
+        contentWidth={width}
+      />
     </View>
   );
 };
@@ -124,7 +137,12 @@ export const LessonScreen = () => {
     }
   };
   return (
-    <View className="bg-slate-50 pt-10 flex-1">
+    <View
+      className=" pt-10 flex-1"
+      style={{
+        backgroundColor: theme.colors.gray[100],
+      }}
+    >
       <HeaderCustom text="" />
       <View className="p-5">
         <TextCustom.TextSection
@@ -150,8 +168,12 @@ export const LessonScreen = () => {
           <TabBar
             {...props}
             indicatorStyle={{ backgroundColor: "#2563eb" }}
-            style={{ backgroundColor: "white" }}
-            labelStyle={{ color: "black", fontWeight: "bold" }}
+            style={{
+              backgroundColor: theme.colors.gray[100],
+            }}
+            activeColor={theme.colors.slate[800]}
+            inactiveColor={theme.colors.slate[500]}
+            labelStyle={{ color: theme.colors.slate[700], fontWeight: "bold" }}
           />
         )}
       />

@@ -16,10 +16,9 @@ const imageBanner = [
   require("../../assets/banner_4.png"),
 ];
 
-export const HomeBanner = () => {
+export const HomeBanner = ({ theme }) => {
   const flatListRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const { theme } = useContext(MyColorContext);
 
   const nav = useNavigation();
   useEffect(() => {
