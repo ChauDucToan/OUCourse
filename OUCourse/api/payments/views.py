@@ -18,7 +18,6 @@ class TransactionViewSet(viewsets.ViewSet, generics.CreateAPIView, generics.List
         
         transaction = serializer.save(user=request.user)
 
-
         items_for_provider = []
         for detail in transaction.items.all():
             items_for_provider.append({
@@ -54,10 +53,9 @@ class TransactionViewSet(viewsets.ViewSet, generics.CreateAPIView, generics.List
 
         return Response(response_data, status=status.HTTP_201_CREATED)
     
-class PaymentWebhookView(viewsets.ViewSet, generics.GenericAPIView):
+class PaymentWebhookView(viewsets.ViewSet):
     authentication_classes = [] 
     permission_classes = [permissions.AllowAny]
-    serializer_class = None
 
     def _handle_webhook(self, request, provider_name):
         provider = PaymentFactory.get_payment_provider(provider_name, items=[])
@@ -67,6 +65,7 @@ class PaymentWebhookView(viewsets.ViewSet, generics.GenericAPIView):
                 {"error": f"Provider '{provider_name}' not supported"}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
+        print( "Webhook received for provider:", provider_name)
 
         django_response = provider.process_webhook(request)
 

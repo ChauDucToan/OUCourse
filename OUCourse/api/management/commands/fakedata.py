@@ -346,6 +346,7 @@ class Command(BaseCommand):
         for template in COURSE_TEMPLATES:
             subject = unique_subject(template["subject"])
             category = find_category_by_keywords(template["category_keywords"])
+            tags = Tag.objects.filter(name__in=BROAD_TAGS).order_by('?')[:3]
             instructor = random.choice(instructors) if instructors.exists() else None
 
             course = Course.objects.create(
@@ -366,6 +367,7 @@ class Command(BaseCommand):
                     subject=f"Bài học {j+1}: Nội dung của {subject}",
                     video=template["video"],
                     content=f"Nội dung chi tiết cho bài học {j+1} của khóa học {subject}.",
+                    tags=tags,
                     order=j * 10,
                 )
 

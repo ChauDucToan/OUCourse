@@ -13,14 +13,11 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ['id', 'content', 'created_date', 'user', 'lesson']
-        extra_kwargs = {
-            'lesson': {
-                'write_only': "True"
-            }
-        }
+        read_only_fields = ['user', 'lesson', 'created_date']
 
 class EmotionSerializer(serializers.ModelSerializer):
     class Meta:
+        model = Emotion
         fields = ['id', 'type', 'user']
         read_only_fields = ['user']
 

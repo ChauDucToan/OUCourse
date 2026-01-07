@@ -93,9 +93,13 @@ class ZaloPayProvider(PaymentProviders):
             response_json = response.json()
             if response.status_code == 200 and response_json.get("return_code") == 1:
                 checkout_url = response_json.get("order_url")
+                zp_transaction_token = response_json.get("zp_trans_token")
+
+                transaction_obj.provider_transaction_id = str(zp_transaction_token)
+                transaction_obj.save()
                 return {
                     "checkout_url": checkout_url,
-                    "session_id": order_code
+                    "session_id": zp_transaction_token
                 }
             else:
                 return {'error': response_json.get("return_message", response.text)}

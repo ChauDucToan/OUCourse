@@ -1,7 +1,8 @@
 from rest_framework import viewsets, generics, permissions, status
 from .. import perms
 from django.contrib.contenttypes.models import ContentType
-from ..comments.serializers import EmotionSerializer
+from ..comments.serializers import EmotionSerializer, CommentSerializer
+from ..comments.models import Emotion
 from . import serializers, paginators, models
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -13,8 +14,13 @@ class LessonView(viewsets.ViewSet, generics.RetrieveUpdateDestroyAPIView
     serializer_class = serializers.LessonDetailSerializer
 
     def get_queryset(self):
+        queryset = models.Lesson.objects.filter(active=True).order_by('order')
+
         course_id = self.request.query_params.get('course_id')
-        return models.Lesson.objects.filter(course_id=course_id, active=True).order_by('order')
+        if course_id:
+            queryset = queryset.filter(course_id=course_id)
+        
+        return queryset
 
     def perform_create(self, serializer):
         course_id = self.request.query_params.get('course_id')
@@ -26,7 +32,8 @@ class LessonView(viewsets.ViewSet, generics.RetrieveUpdateDestroyAPIView
             return [perms.IsNotStudent()]
         return [permissions.IsAuthenticated()]
     
-    @action(methods=['post'], url_path='react', detail=True, permission_classes=[permissions.IsAuthenticated])
+    @action(methods=['post'], url_path='react', detail=True, permission_classes=[permissions.IsAuthenticated],
+            serializer_class=EmotionSerializer)
     def react(self, request, pk):
         lesson = self.get_object()
 
@@ -43,20 +50,21 @@ class LessonView(viewsets.ViewSet, generics.RetrieveUpdateDestroyAPIView
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    @action(methods=['delete'], url_path='unreact', detail=True, permission_classes=[permissions.IsAuthenticated])
+    @action(methods=['delete'], url_path='unreact', detail=True, permission_classes=[permissions.IsAuthenticated],
+            serializer_class=EmotionSerializer)
     def unreact(self, request, pk):
         lesson = self.get_object()
         c_type = ContentType.objects.get_for_model(lesson)
 
         try:
-            emotion = models.Emotion.objects.get(
+            emotion = Emotion.objects.get(
                 user=request.user,
                 content_type=c_type,
                 object_id=lesson.id
             )
             emotion.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-        except models.Emotion.DoesNotExist:
+        except Emotion.DoesNotExist:
             return Response({"detail": "Reaction not found"}, status=status.HTTP_404_NOT_FOUND)
     
     @action(methods=['get', 'patch'], url_path='progress', detail=True)
@@ -96,18 +104,24 @@ class LessonView(viewsets.ViewSet, generics.RetrieveUpdateDestroyAPIView
             return Response({"detail": "Tag removed"}, status=status.HTTP_200_OK)
 
     @action(methods=['get', 'post'], url_path='comments', detail=True,
-            pagination_class=paginators.CommentPaginator)
+            pagination_class=paginators.CommentPaginator, serializer_class=CommentSerializer)
     def get_comments(self, request, pk):
         if request.method.__eq__('POST'):
-            s = serializers.CommentSerializer(data={
-                'user': request.user.pk,
-                'lesson': pk,
-                'content': request.data.get('content')
-            })
+            s = CommentSerializer(data=request.data)
             s.is_valid(raise_exception=True)
-            c = s.save()
 
-            return Response(serializers.CommentSerializer(c).data, status=status.HTTP_201_CREATED)
+            current_lesson = self.get_object()
+
+            c = s.save(user=request.user, lesson=current_lesson)
+
+            return Response(CommentSerializer(c).data, status=status.HTTP_201_CREATED)
 
         comments = self.get_object().comment_set.select_related('user').filter(active=True)
-        return Response(serializers.CommentSerializer(comments, many=True).data, status=status.HTTP_200_OK)
+
+        page = self.paginate_queryset(comments)
+        if page is not None:
+            serializer = CommentSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = CommentSerializer(comments, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

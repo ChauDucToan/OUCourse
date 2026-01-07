@@ -52,4 +52,4 @@ class TransactionSerializer(serializers.ModelSerializer):
             'user',
             'items',
         ]
-        read_only_fields = ['order_code', 'status', 'user', 'provider_transaction_id', 'total_amount']
+        read_only_fields = ['order_code', 'status', 'user', 'provider_transaction_id']
