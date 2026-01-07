@@ -7,7 +7,7 @@ const jsonStyle = require("../mock/data.styles.json");
 const ListItem = ({ mapJson, navigation, header, theme }) => {
   return (
     <List.Section
-      className="mt-2 border-t border-b "
+      className="mt-2  border-b "
       style={{
         backgroundColor: theme.colors.gray[100],
         borderColor: theme.colors.slate[200],

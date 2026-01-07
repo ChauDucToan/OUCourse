@@ -1,13 +1,12 @@
-{
-  "categories": [
-    { "id": "1", "name": "Lập trình" },
-    { "id": "2", "name": "Thiết kế" },
-    { "id": "3", "name": "Marketing" },
-    { "id": "4", "name": "Lập trình" },
-    { "id": "5", "name": "Thiết kế" },
-    { "id": "6", "name": "Marketing" },
-    { "id": "7", "name": "Lập trình" },
-    { "id": "8", "name": "Thiết kế" },
-    { "id": "9", "name": "Marketing" }
-  ]
-}
+[
+  { "id": 1, "name": "technology", "label": "Công nghệ", "value": "tech" },
+  { "id": 2, "name": "business", "label": "Kinh doanh", "value": "business" },
+  { "id": 3, "name": "design", "label": "Thiết kế", "value": "design" },
+  { "id": 4, "name": "marketing", "label": "Marketing", "value": "marketing" },
+  { "id": 5, "name": "ai_ml", "label": "AI / ML", "value": "ai" },
+  { "id": 6, "name": "mobile", "label": "Mobile", "value": "mobile" },
+  { "id": 7, "name": "web", "label": "Web", "value": "web" },
+  { "id": 8, "name": "backend", "label": "Backend", "value": "backend" },
+  { "id": 9, "name": "frontend", "label": "Frontend", "value": "frontend" },
+  { "id": 10, "name": "devops", "label": "DevOps", "value": "devops" }
+]
