@@ -14,11 +14,13 @@ import { lessons } from "../../mock/data.mock.lessons.json";
 import { FlatList } from "react-native";
 import { useContext } from "react";
 import { MyColorContext } from "../../utils/contexts/MyColorContext";
+import { useMemo } from "react";
 
 const LessonsRoute = ({ lessons, id, theme }) => {
-  const filterLessonsData = lessons.filter(
-    (lesson) => String(lesson.course) === String(id),
-  );
+  const filterLesson = useMemo(() => {
+    return lessons.filter((lesson) => String(lesson.course) === String(id));
+  }, [lessons, id]);
+
   const nav = useNavigation();
   return (
     <View
@@ -32,7 +34,7 @@ const LessonsRoute = ({ lessons, id, theme }) => {
 
       <FlatList
         className="mt-4"
-        data={filterLessonsData}
+        data={filterLesson}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item, index }) => (
           <View>

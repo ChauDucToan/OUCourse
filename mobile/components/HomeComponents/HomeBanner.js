@@ -1,20 +1,13 @@
 import { FlatList } from "react-native";
 import { View } from "react-native";
 import Banner from "../Banner";
-import { MyColorContext } from "../../utils/contexts/MyColorContext";
 
 import { useRef } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import { useEffect } from "react";
-import { useContext } from "react";
 
-const imageBanner = [
-  require("../../assets/banner_1.png"),
-  require("../../assets/banner_2.png"),
-  require("../../assets/banner_3.png"),
-  require("../../assets/banner_4.png"),
-];
+import { images } from "../../mock/data.mock.banner.json";
 
 export const HomeBanner = ({ theme }) => {
   const flatListRef = useRef(null);
@@ -23,7 +16,7 @@ export const HomeBanner = ({ theme }) => {
   const nav = useNavigation();
   useEffect(() => {
     const interval = setInterval(() => {
-      let nextIndex = (currentIndex + 1) % imageBanner.length;
+      let nextIndex = (currentIndex + 1) % images.length;
       flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
       setCurrentIndex(nextIndex);
     }, 5000);
@@ -34,7 +27,7 @@ export const HomeBanner = ({ theme }) => {
     <View>
       <FlatList
         ref={flatListRef}
-        data={imageBanner}
+        data={images}
         className="mb-4 gap-3"
         horizontal
         pagingEnabled
@@ -52,7 +45,7 @@ export const HomeBanner = ({ theme }) => {
         )}
       />
       <View className="flex-row justify-center mb-3">
-        {imageBanner.map((_, index) => (
+        {images.map((_, index) => (
           <View
             key={index}
             className={`ml-2 mr-2 rounded-full ${
