@@ -1,12 +1,18 @@
-from django.contrib import admin, messages
-from .models import Course
+from django.contrib import messages
+from unfold.admin import ModelAdmin
+from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-class ImageVideoViewMixin(admin.ModelAdmin):
+class ImageVideoViewMixin(ModelAdmin):
     readonly_fields = ['image_view', 'video_view']
+
+    @admin.display(description='Image Preview')
+    def small_image_view(self, course):
+        if course.image:
+            return mark_safe(f'<img src="{course.image.url}" width="120" />')
 
     def image_view(self, course):
         if course.image:
@@ -35,10 +41,25 @@ class ImageVideoViewMixin(admin.ModelAdmin):
 
 # Register your models here.
 class CourseAdmin(ImageVideoViewMixin):
-    list_display = ('instructor', 'subject', 'price', 'category', 'active', 'created_date')
+    list_display = ('instructor', 'subject', 'price', 'active', 'created_date')
     search_fields = ('instructor', 'subject', 'price')
 
     list_filter = ['category']
+
+    fieldsets = (
+        ('active', {
+            'fields': ('active',)
+        }),
+        ('Thông tin tổng quan', {
+            'fields': (('instructor', 'category', 'subject'), ('image', 'image_view'), ('video', 'video_view'))
+        }),
+        ('Thời lượng/giá cả khóa học', {
+            'fields': ('duration', 'price')
+        }),
+        ('Nội dung khóa học', {
+            'fields': ('description',)
+        }),
+    )
 
     def save_model(self, request, obj, form, change):
         if form.cleaned_data.get('instructor'):
@@ -51,5 +72,3 @@ class CourseAdmin(ImageVideoViewMixin):
 
             return super().save_model(request, obj, form, change)
         return
-
-admin.site.register(Course, CourseAdmin)

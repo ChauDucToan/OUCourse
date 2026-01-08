@@ -77,10 +77,11 @@ class CourseView(viewsets.ModelViewSet):
         course = self.get_object()
         u = request.user
 
+        status = request.data.get('status', models.ManageCourse.Status.ENROLLED)
         manage_course, created = models.ManageCourse.objects.get_or_create(
             student=u,
             course=course,
-            defaults={'status': models.ManageCourse.Status.ENROLLED}
+            defaults={'status': status}
         )
 
         if not created:

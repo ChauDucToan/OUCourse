@@ -1,15 +1,30 @@
-from django.contrib import admin
-from .models import Tag, Lesson
+from unfold.admin import ModelAdmin
+from unfold.forms import forms
+
+from api.lessons.models import Lesson
 from django.utils.safestring import mark_safe
+from django.contrib import admin
 
 # Register your models here.
-class ImageVideoViewMixin(admin.ModelAdmin):
+class LessonForm(forms.ModelForm):
+    class Meta:
+        model = Lesson
+        fields = ['course', 'subject', 'content', 'order', 'image', 'video', 'active']
+
+class ImageVideoViewMixin(ModelAdmin):
     readonly_fields = ['image_view', 'video_view']
 
+    @admin.display(description='Image')
+    def small_image_view(self, course):
+        if course.image:
+            return mark_safe(f'<img src="{course.image.url}" width="120" style="object-fit: cover;" />')
+
+    @admin.display(description='Image')
     def image_view(self, course):
         if course.image:
-            return mark_safe(f'<img src="{course.image.url}" width="200" />')
+            return mark_safe(f'<img src="{course.image.url}" width="560" style="object-fit: cover;" />')
         
+    @admin.display(description='Video')
     def video_view(self, course):
         if course.video:
             video_url = str(course.video)
@@ -32,14 +47,28 @@ class ImageVideoViewMixin(admin.ModelAdmin):
         return ""
     
 class LessonAdmin(ImageVideoViewMixin):
-    list_display = ('subject', 'course', 'order', 'active', 'video', 'created_date')
+    form = LessonForm
+
+    list_display = ('small_image_view','subject', 'course')
     search_fields = ('subject', 'course__subject')
 
-    list_filter = ['course']
+    list_filter = ['course', 'active', 'created_date']
 
-class TagAdmin(admin.ModelAdmin):
+    fieldsets = (
+        ('Thông tin bài học', {
+            'fields': (('course', 'subject'), ('order', 'active'))
+        }),
+        ('Nội dung bài học', {
+            'fields': ('content',)
+        }),
+        ('Media', {
+            'fields': (('image', 'image_view'), ('video', 'video_view'))
+        })
+    )
+
+class TagAdmin(ModelAdmin):
     list_display = ('name', 'active', 'created_date')
     search_fields = ('name',)
 
-admin.site.register(Tag, TagAdmin)
-admin.site.register(Lesson, LessonAdmin)
+    list_editable = ('active',)
+    list_filter = ['active']

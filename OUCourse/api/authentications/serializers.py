@@ -43,11 +43,7 @@ class AuthenticationModelSerializer(serializers.ModelSerializer):
                 response = requests.get(avatar_url)
 
                 if response.status_code == 200:
-                    avatar_url_ext = avatar_url.split('.')[-1]
-
-                    if avatar_url_ext.lower()[:3] not in ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp']:
-                        avatar_url_ext = 'png'
-                    file_name = f"avatar_{user.id}.{avatar_url_ext}"
+                    file_name = f"avatar_{user.id}"
                     upload_result = upload(response.content, public_id=file_name)
                     user.avatar = upload_result.get('public_id')
                     user.save()

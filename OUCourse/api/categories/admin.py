@@ -1,9 +1,9 @@
-from django.contrib import admin
-from .models import Category
+from unfold.admin import ModelAdmin
 
 # Register your models here.
-class CategoryAdmin(admin.ModelAdmin):
+class CategoryAdmin(ModelAdmin):
     list_display = ('name', 'active', 'created_date')
     search_fields = ('name',)
 
-admin.site.register(Category, CategoryAdmin)
+    list_editable = ('active',)
+    list_filter = ['active', 'created_date']

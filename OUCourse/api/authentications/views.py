@@ -70,7 +70,7 @@ class AuthViewSet(viewsets.GenericViewSet):
                     "id": auth_instance.user.id,
                     "email": auth_instance.user.email,
                     "name": auth_instance.user.first_name,
-                    "avatar": auth_instance.user.profile.avatar.url if hasattr(auth_instance.user, 'profile') else ""
+                    "avatar": auth_instance.user.profile.avatar if hasattr(auth_instance.user, 'profile') else ""
                 },
                 "tokens": oauth_token
             }, status=status.HTTP_200_OK)
