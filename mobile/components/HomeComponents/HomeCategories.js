@@ -1,12 +1,17 @@
 import { TouchableOpacity, View, FlatList, Text } from "react-native";
 import TextCustom from "../TextCustom";
 import { Icon } from "react-native-paper";
-import { MyColorContext } from "../../utils/contexts/MyColorContext";
-
 import { useContext } from "react";
-import { categories } from "../../mock/data.mock.categories.json";
+import { CategoriesContext } from "../../utils/contexts/CategoriesContext";
+import { useEffect } from "react";
+import { useMemo } from "react";
 
 export const HomeCategories = ({ iconColor = "", theme }) => {
+  const { categories, ensureCategories } = useContext(CategoriesContext);
+  const topCategories = useMemo(() => categories.slice(0, 12), [categories]);
+  useEffect(() => {
+    ensureCategories();
+  }, [ensureCategories]);
   return (
     <View className="p-5">
       <View className="flex-row gap-3">
@@ -23,14 +28,14 @@ export const HomeCategories = ({ iconColor = "", theme }) => {
       <FlatList
         className="mt-4"
         horizontal
-        data={categories}
+        data={topCategories}
         keyExtractor={(item) => item.id}
         showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => (
           <TouchableOpacity
             className=" rounded-lg px-4 py-3 mr-3 "
             style={{
-              backgroundColor: theme.colors.blue[500],
+              backgroundColor: theme.colors.slate[500],
             }}
             onPress={() => {
               setActiveId(item.id);

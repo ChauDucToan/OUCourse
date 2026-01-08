@@ -107,11 +107,11 @@ const Account = ({ navigation }) => {
           <View className="p-4 mt-2 mb-3">
             <Button
               mode="outlined"
-              textColor={theme.colors.red[500]}
+              textColor={theme.colors.danger}
               className="rounded-xl  "
               style={{
                 backgroundColor: theme.colors.gray[100],
-                borderColor: theme.colors.red[200],
+                borderColor: theme.colors.danger,
               }}
               contentStyle={{
                 paddingVertical: 4,

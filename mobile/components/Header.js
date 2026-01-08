@@ -13,13 +13,14 @@ const HeaderCustom = ({ text, viewClass = "" }) => {
         <View className={`w-16 ${viewClass}`}>
           <HeaderBack theme={theme} />
         </View>
-        <View className="items-center py-1">
+        <View className="items-center flex-1 py-1">
           <TextCustom.TextSection
+            className="text-xl"
             text={text}
             style={{ color: theme.colors.slate[500] }}
           />
         </View>
-        <View className={`w-16 ${viewClass}`}></View>
+        <View className={`w-4 ${viewClass}`}></View>
       </View>
       <Divider />
     </View>

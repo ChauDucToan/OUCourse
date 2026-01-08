@@ -36,11 +36,12 @@ axiosClient.interceptors.response.use(
       try {
         const tokens = await getTokens();
         if (!tokens || !tokens.refresh_token) {
-          throw new Error("Không có refresh token");
+          return;
         }
 
         const res = await authApi.refresh(tokens.refresh_token);
         const newAccessToken = res.access_token;
+        await saveTokens({ ...tokens, access_token: newAccessToken });
         originRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return axiosClient(originRequest);
       } catch (error) {

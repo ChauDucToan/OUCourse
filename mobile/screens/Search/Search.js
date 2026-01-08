@@ -1,58 +1,38 @@
 import { useEffect } from "react";
-
 import { useState } from "react";
 import { FlatList } from "react-native";
 import { Text, TextInput, TouchableOpacity } from "react-native";
-import { View, ScrollView } from "react-native";
-import axiosClient from "../../api/axiosClient";
-import { endpoints } from "../../utils/Apis";
+import { View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import HeaderBack from "../../components/HeaderBack";
-import { Icon } from "react-native-paper";
+
 import HeaderCustom from "../../components/Header";
-import { results } from "../../mock/data.mock.courses.json";
 import { ImageBackground } from "react-native";
-import { StyleSheet } from "nativewind";
 import { useContext } from "react";
 import { MyColorContext } from "../../utils/contexts/MyColorContext";
-const mockCourses = [
-  { id: "1", title: "React Native cơ bản", teacher: "Nguyễn Văn A" },
-  { id: "2", title: "Thiết kế UI/UX", teacher: "Trần Thị B" },
-  { id: "3", title: "Python cho người mới", teacher: "Lê Văn C" },
-];
+import { CourseContext } from "../../utils/contexts/CoursesContext";
+import { CategoriesContext } from "../../utils/contexts/CategoriesContext";
+import { useMemo } from "react";
 
 const Search = () => {
   const [keyword, setKeyword] = useState("");
-  const [resultsSearch, setResultsSearch] = useState([]);
-  const [coursesData, setCoursesData] = useState([]);
   const { theme } = useContext(MyColorContext);
+  const { courses, ensureCourses } = useContext(CourseContext);
+  const { categories, ensureCategories } = useContext(CategoriesContext);
+  const topCategories = useMemo(() => categories.slice(0, 10), [categories]);
+  const coursesFilter = useMemo(() => {
+    const q = keyword.trim().toLowerCase();
+    if (!q) return courses;
+    return courses.filter((course) =>
+      (course?.subject ?? "").toLowerCase().includes(q),
+    );
+  }, [courses, keyword]);
   const nav = useNavigation();
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        let res = await axiosClient.get(endpoints.courses);
-        // setCoursesData(res.data.results);
-        setCoursesData(results);
-        setResultsSearch(res.data.results);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    loadData();
-    console.log(coursesData);
-  }, []);
-  const handleSearch = (text) => {
-    setKeyword(text);
-    if (!text.trim()) {
-      // setResults(coursesData);
-      setResultsSearch(results);
-      return;
-    }
-    // coursesData
-    const filter = results.filter((course) =>
-      course.subject.toLowerCase().includes(text.toLowerCase()),
-    );
-  };
+    ensureCategories();
+  }, [ensureCategories]);
+  useEffect(() => {
+    ensureCourses();
+  }, [ensureCourses]);
 
   return (
     <View
@@ -77,7 +57,7 @@ const Search = () => {
           placeholderTextColor={theme.colors.slate[400]}
           placeholder="Nhập từ khóa..."
           value={keyword}
-          onChangeText={handleSearch}
+          onChangeText={setKeyword}
         />
       </View>
       <View
@@ -87,29 +67,31 @@ const Search = () => {
           borderColor: theme.colors.gray[200],
         }}
       >
-        <View className="flex-row  gap-3">
-          {["React", "UX/UI", "Golang"].map((tag) => (
+        <FlatList
+          data={topCategories}
+          horizontal
+          keyExtractor={(item) => String(item.id)}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ gap: 12, paddingHorizontal: 8 }}
+          renderItem={({ item }) => (
             <TouchableOpacity
-              key={tag}
               className="rounded-full px-3 py-1"
-              style={{
-                backgroundColor: theme.colors.slate[200],
-              }}
-              onPress={() => handleSearch(tag)}
+              style={{ backgroundColor: theme.colors.slate[200] }}
+              onPress={() => handleSearch(item.name)}
             >
               <Text
                 className="text-xl"
                 style={{ color: theme.colors.slate[400] }}
               >
-                {tag}
+                {item.name}
               </Text>
             </TouchableOpacity>
-          ))}
-        </View>
+          )}
+        />
       </View>
 
       <FlatList
-        data={coursesData}
+        data={coursesFilter}
         keyExtractor={(item) => item.id}
         className="p-2"
         contentContainerStyle={{

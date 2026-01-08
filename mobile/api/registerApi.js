@@ -8,6 +8,8 @@ export const registerApi = {
         "Content-Type": "multipart/form-data",
       },
     });
+    console.log("NAY har register");
+
     return res;
   },
 };

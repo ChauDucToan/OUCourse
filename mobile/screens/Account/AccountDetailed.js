@@ -138,6 +138,8 @@ const AccountDetailedScreen = () => {
       const res = await axiosClient.patch(endpoints.current_user, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
+      console.log("NAY har Account-detaield");
+
       if (res.status === 200 || res.status === 202) {
         dispatch({ type: "login", payload: res.data });
         alert("Cập nhật thành công!");

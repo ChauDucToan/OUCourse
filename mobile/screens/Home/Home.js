@@ -2,35 +2,43 @@ import { View } from "react-native";
 import { useState } from "react";
 import { useEffect } from "react";
 import fetchCourse from "../../api/courseApi";
-import CourseView from "../../components/CourseView";
 import { results } from "../../mock/data.mock.courses.json";
 import { HomeHeader } from "../../components/HomeComponents/HomeHeader";
 import { HomeCategories } from "../../components/HomeComponents/HomeCategories";
 import { HomeBanner } from "../../components/HomeComponents/HomeBanner";
 import { HomeCourseList } from "../../components/HomeComponents/HomeCourseList";
 import HomePromotion from "../../components/HomeComponents/HomePromotion";
-import colors from "tailwindcss/colors";
-import { Animated } from "react-native";
 import { useRef } from "react";
 import TextCustom from "../../components/TextCustom";
 import { useContext } from "react";
 import { MyColorContext } from "../../utils/contexts/MyColorContext";
-const HEADER_MAX_HEIGHT = 140; // Chiều cao lúc đầu của Header gốc
+import { Animated } from "react-native";
+import { useMemo } from "react";
+import { CourseContext } from "../../utils/contexts/CoursesContext";
+
+const HEADER_MAX_HEIGHT = 140;
 const HEADER_MIN_HEIGHT = 80;
+
 const HomeScreen = () => {
   const [courseData, setCourseData] = useState([]);
   const { theme } = useContext(MyColorContext);
   const scrollY = useRef(new Animated.Value(0)).current;
-  const coursesFree = results.filter((course) => course.price <= 0);
-  const coursesExpensive = results.filter((course) => course.price >= 500000);
+  const { courses, ensureCourses } = useContext(CourseContext);
+
+  const courseFree = useMemo(
+    () => courses.filter((c) => (c?.price ?? 0) <= 0),
+    [courses],
+  );
+
+  const courseExpensive = useMemo(
+    () => courses.filter((c) => (c?.price ?? 0) >= 10000),
+    [courses],
+  );
+
   useEffect(() => {
-    const loadData = async () => {
-      const fetchData = await fetchCourse();
-      console.log("FETCH", fetchData.data);
-      setCourseData(fetchData.data.results);
-    };
-    loadData();
-  }, []);
+    ensureCourses();
+  }, [ensureCourses]);
+
   const headerTitleOpacity = scrollY.interpolate({
     inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
     outputRange: [0, 1],
@@ -59,7 +67,7 @@ const HomeScreen = () => {
         <HomeBanner theme={theme} />
         <HomeCategories theme={theme} />
         <HomeCourseList
-          data={coursesFree}
+          data={courseFree}
           text="Top thịnh hành"
           textClass={{ color: theme.colors.yellow[500] }}
           iconColor={theme.colors.yellow[500]}
@@ -68,7 +76,7 @@ const HomeScreen = () => {
         />
         <HomePromotion />
         <HomeCourseList
-          data={coursesExpensive}
+          data={courseExpensive}
           text="Khóa học cao cấp"
           icon="cash-multiple"
           textClass={{ color: theme.colors.violet[600] }}

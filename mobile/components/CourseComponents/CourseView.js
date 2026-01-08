@@ -61,7 +61,7 @@ const CourseView = ({ navigation, item, theme }) => {
           </Text>
           <Text
             numberOfLines={2}
-            className="text-base font-bold leading-5 mt-1"
+            className="text-base font-bold w-60 leading-5 mt-1"
             style={{
               color: theme.colors.slate[800],
             }}
@@ -92,7 +92,9 @@ const CourseView = ({ navigation, item, theme }) => {
               color: theme.colors.green[500],
             }}
           >
-            {item.price >= 0 ? formatCurrency(item.price) : "Miễn phí"}
+            {Number(item.price) > 0
+              ? formatCurrency(Number(item.price))
+              : "Miễn phí"}{" "}
           </Text>
           <View
             className=" p-1.5 rounded-xl"

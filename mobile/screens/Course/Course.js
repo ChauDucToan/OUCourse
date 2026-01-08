@@ -30,6 +30,7 @@ const CourseDetailedScreen = () => {
       try {
         const params = `${endpoints.courses}${id}/`;
         let res = await axiosClient.get(params);
+
         setCourse(res.data);
       } catch (error) {
         console.error(error);
@@ -66,21 +67,20 @@ const CourseDetailedScreen = () => {
       // "description": "<strong>Thuật toán và Ứng dụng</strong><p>Tìm hiểu Linear Regression, Decision Trees và cách huấn luyện mô hình dự đoán đầu tiên.</p>",
       // "price": 800000
 
+      const formData = new FormData();
+      formData.append("id", course.id);
+      formData.append("status", "ENROLLED");
+      const res = await axiosClient.post(
+        endpoints.enrollCourse(course.id),
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        },
+      );
+
       console.log("Enroll DONE");
-      // const formData = new FormData();
-      // formData.append("subject", course.subject);
-      // formData.append("image", course.image);
-      // formData.append("price", course.price);
-      // formData.append("category", course.category);
-      // formData.append("id", course.id);
-      // const res = await axiosClient.post(
-      //   endpoints.enrollCourse(course.id),
-      //   formData,
-      //   {
-      //     headers: { "Content-Type": "multipart/form-data" },
-      //   },
-      // );
-      // console.log("RES enrroll: ", res);
+
+      console.log("RES enrroll: ", res);
       nav.goBack();
     } catch (error) {
       console.error(error);

@@ -12,6 +12,8 @@ const authAxios = axios.create({
 export const authApi = {
   login: async (user) => {
     try {
+      console.log(CLIENT_ID);
+      console.log(CLIENT_SECRET);
       let res = await authAxios.post(endpoints["login"], {
         username: user.username,
         password: user.password,
@@ -19,8 +21,6 @@ export const authApi = {
         client_secret: CLIENT_SECRET,
         grant_type: "password",
       });
-      console.log(CLIENT_ID);
-      console.log(CLIENT_SECRET);
 
       await saveTokens(res.data.access_token, res.data.refresh_token);
 
