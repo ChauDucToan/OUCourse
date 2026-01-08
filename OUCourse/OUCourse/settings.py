@@ -107,6 +107,10 @@ REST_FRAMEWORK = {
     )
 }
 
+UNFOLD = {
+    "DASHBOARD_CALLBACK": "api.admin.dashboard_callback",
+}
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

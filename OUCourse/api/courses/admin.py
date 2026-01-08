@@ -41,10 +41,12 @@ class ImageVideoViewMixin(ModelAdmin):
 
 # Register your models here.
 class CourseAdmin(ImageVideoViewMixin):
-    list_display = ('instructor', 'subject', 'price', 'active', 'created_date')
+    list_display = ('small_image_view', 'instructor', 'subject', 'price')
     search_fields = ('instructor', 'subject', 'price')
 
-    list_filter = ['category']
+    list_filter = ['category', 'active']
+
+    list_per_page = 16
 
     fieldsets = (
         ('active', {

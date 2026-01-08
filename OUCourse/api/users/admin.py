@@ -18,7 +18,7 @@ class UserAdmin(ModelAdmin):
     list_filter = ['role']
     readonly_fields = ['avatar_view']
 
-    list_per_page = 16
+    list_per_page = 12
 
     fieldsets = (
         ('Thông tin tài khoản', {

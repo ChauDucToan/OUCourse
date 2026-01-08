@@ -45,7 +45,6 @@ class TransactionSerializer(serializers.ModelSerializer):
             'order_code',
             'total_amount',
             'currency',
-            'payment_method',
 
             'status',
 
@@ -54,4 +53,4 @@ class TransactionSerializer(serializers.ModelSerializer):
             'user',
             'items',
         ]
-        read_only_fields = ['order_code', 'status', 'user', 'provider_transaction_id', 'total_amount', 'payment_method']
+        read_only_fields = ['order_code', 'status', 'user', 'provider_transaction_id', 'total_amount']

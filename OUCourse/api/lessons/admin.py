@@ -54,6 +54,8 @@ class LessonAdmin(ImageVideoViewMixin):
 
     list_filter = ['course', 'active', 'created_date']
 
+    list_per_page = 12
+
     fieldsets = (
         ('Thông tin bài học', {
             'fields': (('course', 'subject'), ('order', 'active'))
@@ -69,6 +71,8 @@ class LessonAdmin(ImageVideoViewMixin):
 class TagAdmin(ModelAdmin):
     list_display = ('name', 'active', 'created_date')
     search_fields = ('name',)
+
+    list_per_page = 12
 
     list_editable = ('active',)
     list_filter = ['active']

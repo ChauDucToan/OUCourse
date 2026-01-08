@@ -1,13 +1,19 @@
-from api.courses.models import Course
+from api.courses.models import Course, ManageCourse
 from api.users.models import User
 from api.categories.models import Category
 from api.lessons.models import Lesson, Tag
+from api.payments.models import Transaction, TransactionDetail
+from api.comments.models import Comment, Emotion
+
 
 import random
 import unicodedata
 import string
+from datetime import timedelta
+from django.utils import timezone
 from decimal import Decimal
 from django.core.management.base import BaseCommand
+from django.contrib.contenttypes.models import ContentType
 
 random.seed(27)
 
@@ -263,6 +269,35 @@ COURSE_TEMPLATES = [
     },
 ]
 
+_WORDS = [
+    "hay", "rõ", "dễ hiểu", "khó", "ổn", "đỉnh", "chi tiết", "thiếu ví dụ",
+    "tốc độ vừa", "tốc độ nhanh", "cần demo", "nên thêm bài tập", "phần này quan trọng",
+    "mình chưa hiểu đoạn này", "giải thích lại giúp", "cảm ơn thầy", "good job",
+]
+
+_TEMPLATES = [
+    "Bài này {adj} 👍 {extra}",
+    "Em thấy phần này {adj}. {extra}",
+    "Đoạn {topic} hơi {adj}, {extra}",
+    "Cảm ơn bài giảng! {extra}",
+    "Mình đề xuất: {extra}",
+]
+
+_TOPICS = ["ORM", "serializer", "queryset", "filter", "prefetch", "select_related", "GenericFK", "signals"]
+_ADJ = ["hay", "ổn", "khó", "rõ ràng", "hơi nhanh", "cực kỳ dễ hiểu", "thiếu ví dụ"]
+
+PROVIDERS = ["stripe", "zalopay"]
+CURRENCIES = ["vnd", "usd"]
+
+def generate_comment_content():
+    template = random.choice(_TEMPLATES)
+    content = template.format(
+        adj=random.choice(_ADJ),
+        topic=random.choice(_TOPICS),
+        extra=" ".join(random.sample(_WORDS, k=random.randint(0, 3)))
+    )
+    return content.strip()
+
 def find_category_by_keywords(keywords):
     qs = Category.objects.all()
     for kw in keywords:
@@ -320,21 +355,28 @@ class Command(BaseCommand):
     help = 'Generate fake data for testing'
 
     def _create_tags(self):
+        tags = []
         for tag_name in BROAD_TAGS:
-            Tag.objects.get_or_create(name=tag_name)
+            tag, created = Tag.objects.get_or_create(name=tag_name)
+            tags.append(tag)
+        return tags
 
     def _create_categories(self):
+        categories = []
         for cat_name in CS_FOCUSED_CATEGORIES:
-            Category.objects.get_or_create(name=cat_name)
+            category, created = Category.objects.get_or_create(name=cat_name)
+            categories.append(category)
+        return categories
 
     def _create_users(self):
+        users = []
         for i in range(50):
             role = User.Role.INSTRUCTOR if random.random() < 0.1 else User.Role.STUDENT
             
             username = unique_username(f"{random.choice(VN_FAMILY + EN_FAMILY + VN_GIVEN + EN_GIVEN)}{i}")
             first_name, last_name = pick_name()
 
-            User.objects.create_user(
+            user = User.objects.create_user(
                 username=username,
                 email=make_email(username),
                 password="Admin@123",
@@ -343,8 +385,13 @@ class Command(BaseCommand):
                 role=role
             )
 
+            users.append(user)
+        return users
+
     def _create_courses(self):
         instructors = User.objects.filter(role=User.Role.INSTRUCTOR)
+        courses = []
+        lessons = []
         for template in COURSE_TEMPLATES:
             subject = unique_subject(template["subject"])
             category = find_category_by_keywords(template["category_keywords"])
@@ -375,9 +422,100 @@ class Command(BaseCommand):
                 for tag in tags:
                     if random.random() < 0.7:
                         les.tags.add(tag)
+                
+                lessons.append(les)
+            courses.append(course)
+        return courses, lessons
+
+    def _create_comments(self, students, lessons):
+        comments = []
+        emotions = []
+        for lesson in lessons:
+            num_comments = random.randint(5, 20)
+            for _ in range(num_comments):
+                student = random.choice(students)
+                content = generate_comment_content()
+                comment = Comment.objects.create(
+                    user=student,
+                    lesson=lesson,
+                    content=content
+                )
+                
+                emotion = Emotion.objects.create(
+                    type = random.choice(Emotion.EmotionType.values),
+                    user = student,
+                    content_type = ContentType.objects.get_for_model(Comment),
+                    object_id = comment.id
+                )
+
+                comments.append(comment)
+                emotions.append(emotion)
+        return comments, emotions
+    
+    def _create_transactions(self, students, courses, current_date):
+        transactions = []
+        for student in students:
+            if random.random() < 0.5:
+                continue  # không phải ai cũng mua khóa học
+            
+            num_courses = random.randint(1, 3)
+            selected_courses = random.sample(courses, k=num_courses)
+
+            if ManageCourse.objects.filter(student=student, course__in=selected_courses).exists():
+                continue  # tránh mua trùng khóa đã đăng ký
+
+            transaction = Transaction.objects.create(
+                order_code=f"ORD-{random.randint(100, 999999999)}",
+                total_amount=sum(course.price for course in selected_courses),
+                currency='vnd',
+                status=Transaction.statuses.COMPLETED,
+                provider=random.choice(PROVIDERS),
+                user=student,
+            )
+
+            transaction.created_date = current_date
+            transaction.save()
+
+            for course in selected_courses:
+                transaction_details = TransactionDetail.objects.create(
+                    transaction=transaction,
+                    courses=course,
+                    price_at_purchase=course.price
+                )
+
+                manage_course = ManageCourse.objects.create(
+                    student=student,
+                    course=course,
+                    status=ManageCourse.Status.ENROLLED
+                )
+
+                manage_course.created_date = current_date
+                manage_course.save()
+
+            transactions.append(transaction)
+
+        return transactions
 
     def handle(self, *args, **kwargs):
-        self._create_tags()
-        self._create_categories()
-        self._create_users()
-        self._create_courses()
+        tags = self._create_tags()
+        categories = self._create_categories()
+        users = self._create_users()
+        courses, lessons = self._create_courses()
+        comments, emotions = self._create_comments(
+            students=[u for u in users if u.role == User.Role.STUDENT],
+            lessons=lessons
+        )
+
+        end_date = timezone.now()
+        start_date = end_date - timedelta(days=365 * 2)  # 2 năm trước
+        
+        current_loop_date = start_date
+        while current_loop_date < end_date:            
+            self._create_transactions(
+                students=[u for u in users if u.role == User.Role.STUDENT],
+                courses=courses,
+                current_date=current_loop_date
+            )
+
+            days_to_skip = random.randint(3, 5)
+            current_loop_date += timedelta(days=days_to_skip)

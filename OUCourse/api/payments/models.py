@@ -14,8 +14,7 @@ class Transaction(BaseModel):
     order_code = models.CharField(max_length=100, unique=True, null=True, blank=True)
 
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    currency = models.CharField(max_length=10)
-    payment_method = models.CharField(max_length=50)
+    currency = models.CharField(max_length=10, help_text='vnd, usd')
 
     status = models.IntegerField(choices=statuses.choices, default=statuses.PENDING)
 
@@ -45,5 +44,9 @@ class TransactionDetail(BaseModel):
     )
 
     price_at_purchase = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        unique_together = ('transaction', 'courses')
+        
     def __str__(self):
         return f"{self.transaction.order_code} - {self.course_name_snapshot}"
