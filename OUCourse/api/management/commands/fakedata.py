@@ -1,9 +1,7 @@
-from api.models import BaseModel
-from api.courses.models import Course, ManageCourse
+from api.courses.models import Course
 from api.users.models import User
 from api.categories.models import Category
-from api.lessons.models import Lesson, Tag, LessonProgress
-from api.comments.models import Comment
+from api.lessons.models import Lesson, Tag
 
 import random
 import unicodedata

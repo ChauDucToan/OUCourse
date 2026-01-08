@@ -13,7 +13,7 @@ class Transaction(BaseModel):
 
     order_code = models.CharField(max_length=100, unique=True, null=True, blank=True)
 
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     currency = models.CharField(max_length=10)
     payment_method = models.CharField(max_length=50)
 

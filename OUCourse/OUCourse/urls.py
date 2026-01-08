@@ -20,6 +20,8 @@ from django.views.generic.base import TemplateView
 from django.contrib.auth import logout
 from django.shortcuts import redirect
 
+from api.admin import admin_site
+
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -41,7 +43,7 @@ def logout_view(request):
     return redirect(request.GET.get('next', '/'))
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', admin_site.urls),
     path('accounts/logout/', logout_view, name='logout'),
     path('accounts/', include("django.contrib.auth.urls")),
     path('', TemplateView.as_view(template_name="home.html"), name="home"),
