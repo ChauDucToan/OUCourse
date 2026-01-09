@@ -31,20 +31,21 @@ axiosClient.interceptors.response.use(
   },
   async (error) => {
     const originRequest = error.config;
-    if (error.respone?.status === 401 || !originRequest._retry) {
+    if (error.response?.status === 401 && !originRequest._retry) {
       originRequest._retry = true;
       try {
         const tokens = await getTokens();
         if (!tokens || !tokens.refresh_token) {
-          throw new Error("Không có refresh token");
+          return;
         }
 
         const res = await authApi.refresh(tokens.refresh_token);
         const newAccessToken = res.access_token;
+        await saveTokens({ ...tokens, access_token: newAccessToken });
         originRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return axiosClient(originRequest);
       } catch (error) {
-        console.error("refresh token lỗi: ", error);
+        console.error("Interceptors-respone: ", error.message);
         await removeTokens();
         return Promise.reject(error);
       }

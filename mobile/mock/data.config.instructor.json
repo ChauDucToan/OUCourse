@@ -1,0 +1,49 @@
+[
+  {
+    "key": "instructor_courses",
+    "title": "Quản lý khóa học",
+    "description": "Tạo, chỉnh sửa, xuất bản và quản lý các khóa học của bạn.",
+    "iconLeft": "book-outline",
+    "iconColor": "#22c55e",
+    "navUrl": "InstructorStack",
+    "navParams": {
+      "screen": "InstructorCourses"
+    }
+  },
+  {
+    "key": "instructor_create_course",
+    "title": "Tạo khóa học mới",
+    "description": "Khởi tạo khóa học mới với thông tin, học phí và nội dung.",
+    "iconLeft": "note-plus-outline",
+    "iconColor": "#3b82f6",
+    "navUrl": "InstructorStack",
+    "navParams": {
+      "screen": "CourseEditor",
+      "params": {
+        "mode": "create"
+      }
+    }
+  },
+  {
+    "key": "instructor_students",
+    "title": "Quản lý học viên",
+    "description": "Theo dõi danh sách sinh viên và tiến độ học tập.",
+    "iconLeft": "track-light",
+    "iconColor": "#8b5cf6",
+    "navUrl": "InstructorStack",
+    "navParams": {
+      "screen": "InstructorTrackStudent"
+    }
+  },
+  {
+    "key": "instructor_progress",
+    "title": "Tiến độ học tập",
+    "description": "Xem chi tiết tiến độ học của từng sinh viên theo khóa.",
+    "iconLeft": "progress-pencil",
+    "iconColor": "#06b6d4",
+    "navUrl": "InstructorStack",
+    "navParams": {
+      "screen": "StudentProgress"
+    }
+  }
+]

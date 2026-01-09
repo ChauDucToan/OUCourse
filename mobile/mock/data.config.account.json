@@ -27,20 +27,28 @@
       "iconColor": "#fbbf24",
       "navUrl": "Certificates",
       "navParams": ""
+    },
+    {
+      "title": "Bảng điều khiển giảng viên",
+      "description": "Quản lý khóa học, học viên và tiến độ học tập.",
+      "iconLeft": "school-outline",
+      "iconColor": "#3b82f6",
+      "navUrl": "InstructorStack",
+      "navParams": { "screen": "InstructorDashboard" }
     }
   ],
   "system": [
     {
-      "title": "Gói dịch vụ",
-      "description": "Lịch sử thanh toán, gia hạn",
-      "iconLeft": "credit-card-outline",
+      "title": "Theme",
+      "description": "Dooi",
+      "iconLeft": "theme-light-dark",
       "iconColor": "#475569",
-      "navUrl": "SubscriptionHistory",
+      "navUrl": "",
       "navParams": ""
     },
     {
       "title": "Điều khoản & Quy định",
-      "description": "",
+      "description": "Cũng này nọ",
       "iconLeft": "file-document-outline",
       "iconColor": "#475569",
       "navUrl": "Terms",
@@ -48,11 +56,19 @@
     },
     {
       "title": "Trợ giúp & Phản hồi",
-      "description": "",
+      "description": "Okle",
       "iconLeft": "help-circle-outline",
       "iconColor": "#475569",
       "navUrl": "Help",
       "navParams": ""
+    },
+    {
+      "title": "Bảng điều khiển giảng viên",
+      "description": "Quản lý khóa học, học viên và tiến độ học tập.",
+      "iconLeft": "school-outline",
+      "iconColor": "#3b82f6",
+      "navUrl": "InstructorStack",
+      "navParams": { "screen": "InstructorDashboard" }
     }
   ]
 }

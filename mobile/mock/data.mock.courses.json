@@ -1,0 +1,85 @@
+{
+  "results": [
+    {
+      "id": 1,
+      "subject": "Lập trình React Native căn bản",
+      "instructor": "Nguyễn Văn A",
+      "image": "https://img.freepik.com/free-vector/mobile-app-development-concept-illustration_114360-1081.jpg",
+      "category": "Công nghệ thông tin",
+      "description": "<h3>Khóa học dành cho người mới bắt đầu</h3><p>Học cách xây dựng ứng dụng di động đa nền tảng với React Native và Expo.</p><ul><li>Cài đặt môi trường</li><li>Component cơ bản</li><li>Navigation</li></ul>",
+      "price": 500000
+    },
+    {
+      "id": 2,
+      "subject": "Thiết kế UI/UX hiện đại",
+      "instructor": "Trần Thị B",
+      "image": "https://img.freepik.com/free-vector/ui-ux-design-concept-illustration_114360-354.jpg",
+      "category": "Thiết kế",
+      "description": "<h4>Nâng cao tư duy thiết kế</h4><p>Nắm vững các nguyên lý thiết kế trải nghiệm người dùng trên thiết bị di động.</p>",
+      "price": 350000
+    },
+    {
+      "id": 3,
+      "subject": "Python cho khoa học dữ liệu",
+      "instructor": "Lê Văn C",
+      "image": "https://img.freepik.com/free-vector/data-science-concept-illustration_114360-2172.jpg",
+      "category": "Data Science",
+      "description": "<strong>Phân tích dữ liệu thực tế</strong><p>Học cách sử dụng Pandas, Numpy và Matplotlib để trực quan hóa dữ liệu.</p>",
+      "price": -1
+    },
+    {
+      "id": 4,
+      "subject": "Tiếng Anh giao tiếp công sở",
+      "instructor": "Hoàng Nam",
+      "image": "https://img.freepik.com/free-vector/english-teacher-concept-illustration_114360-7467.jpg",
+      "category": "Ngoại ngữ",
+      "description": "<p>Tự tin giao tiếp trong môi trường làm việc quốc tế.</p>",
+      "price": 200000
+    },
+    {
+      "id": 5,
+      "subject": "Phát triển Web với Next.js 14",
+      "instructor": "Phạm Minh Đức",
+      "image": "https://img.freepik.com/free-vector/website-setup-concept-illustration_114360-382.jpg",
+      "category": "Công nghệ thông tin",
+      "description": "<h3>Xây dựng Website tối ưu SEO</h3><p>Làm chủ App Router, Server Components và triển khai ứng dụng lên Vercel.</p><ul><li>Server-side Rendering</li><li>API Routes</li><li>Middleware</li></ul>",
+      "price": 650000
+    },
+    {
+      "id": 6,
+      "subject": "Digital Marketing tổng thể",
+      "instructor": "Nguyễn Thùy Linh",
+      "image": "https://img.freepik.com/free-vector/digital-marketing-concept-illustration_114360-537.jpg",
+      "category": "Marketing",
+      "description": "<h4>Bứt phá doanh số online</h4><p>Lập kế hoạch đa kênh từ Facebook, Google đến TikTok Ads cho doanh nghiệp vừa và nhỏ.</p>",
+      "price": 450000
+    },
+    {
+      "id": 7,
+      "subject": "Machine Learning căn bản",
+      "instructor": "Ngô Tiến Đạt",
+      "image": "https://img.freepik.com/free-vector/machine-learning-concept-illustration_114360-3908.jpg",
+      "category": "Data Science",
+      "description": "<strong>Thuật toán và Ứng dụng</strong><p>Tìm hiểu Linear Regression, Decision Trees và cách huấn luyện mô hình dự đoán đầu tiên.</p>",
+      "price": 800000
+    },
+    {
+      "id": 8,
+      "subject": "Kỹ năng Quản lý thời gian",
+      "instructor": "Lê Thanh Sơn",
+      "image": "https://img.freepik.com/free-vector/time-management-concept-illustration_114360-1013.jpg",
+      "category": "Kỹ năng mềm",
+      "description": "<p>Tăng gấp đôi hiệu suất làm việc với phương pháp Pomodoro và ma trận Eisenhower.</p>",
+      "price": -1
+    },
+    {
+      "id": 9,
+      "subject": "Nghệ thuật Chụp ảnh bằng Smartphone",
+      "instructor": "Minh Trendy",
+      "image": "https://img.freepik.com/free-vector/mobile-photography-concept-illustration_114360-8433.jpg",
+      "category": "Nhiếp ảnh",
+      "description": "<h3>Sống ảo chuyên nghiệp</h3><p>Bố cục, ánh sáng và các app chỉnh sửa ảnh hậu kỳ để có những bức hình triệu like.</p>",
+      "price": 250000
+    }
+  ]
+}

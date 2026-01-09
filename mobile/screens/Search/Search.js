@@ -1,95 +1,138 @@
 import { useEffect } from "react";
-
 import { useState } from "react";
 import { FlatList } from "react-native";
 import { Text, TextInput, TouchableOpacity } from "react-native";
-import { View, ScrollView } from "react-native";
-import axiosClient from "../../api/axiosClient";
-import { endpoints } from "../../utils/Apis";
+import { View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import HeaderBack from "../../components/HeaderBack";
-import { Icon } from "react-native-paper";
-import HeaderCustom from "../../components/Header";
 
-const mockCourses = [
-  { id: "1", title: "React Native cơ bản", teacher: "Nguyễn Văn A" },
-  { id: "2", title: "Thiết kế UI/UX", teacher: "Trần Thị B" },
-  { id: "3", title: "Python cho người mới", teacher: "Lê Văn C" },
-];
+import HeaderCustom from "../../components/Header";
+import { ImageBackground } from "react-native";
+import { useContext } from "react";
+import { MyColorContext } from "../../utils/contexts/MyColorContext";
+import { CourseContext } from "../../utils/contexts/CoursesContext";
+import { CategoriesContext } from "../../utils/contexts/CategoriesContext";
+import { useMemo } from "react";
 
 const Search = () => {
   const [keyword, setKeyword] = useState("");
-  const [results, setResults] = useState([]);
-  const [coursesData, setCoursesData] = useState([]);
+  const { theme } = useContext(MyColorContext);
+  const { courses, ensureCourses } = useContext(CourseContext);
+  const { categories, ensureCategories } = useContext(CategoriesContext);
+  const topCategories = useMemo(() => categories.slice(0, 10), [categories]);
+  const coursesFilter = useMemo(() => {
+    const q = keyword.trim().toLowerCase();
+    if (!q) return courses;
+    return courses.filter((course) =>
+      (course?.subject ?? "").toLowerCase().includes(q),
+    );
+  }, [courses, keyword]);
   const nav = useNavigation();
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        let res = await axiosClient.get(endpoints.courses);
-        setCoursesData(res.data.results);
-
-        setResults(res.data.results);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    loadData();
-  }, []);
-  const handleSearch = (text) => {
-    setKeyword(text);
-    if (!text.trim()) {
-      setResults(coursesData);
-      return;
-    }
-    const filter = coursesData.filter((course) =>
-      course.subject.toLowerCase().includes(text.toLowerCase()),
-    );
-  };
+    ensureCategories();
+  }, [ensureCategories]);
+  useEffect(() => {
+    ensureCourses();
+  }, [ensureCourses]);
 
   return (
-    <View className="flex-1 bg-slate-50 pt-10">
+    <View
+      className="flex-1  pt-10"
+      style={{
+        backgroundColor: theme.colors.gray[100],
+      }}
+    >
       <HeaderCustom text="Thanh tìm kiếm" />
-      <View className="pl-2  justify-center text-center pr-2 bg-white">
+      <View
+        className="pl-2  justify-center text-center pr-2"
+        style={{
+          backgroundColor: theme.colors.gray[100],
+        }}
+      >
         <TextInput
-          className=" text-base bg-gray-50 border border-gray-200 text-gray-700 mb-4 rounded-2xl p-3"
+          className=" text-base border mb-4 rounded-2xl p-3"
+          style={{
+            backgroundColor: theme.colors.gray[50],
+            borderColor: theme.colors.slate[200],
+          }}
+          placeholderTextColor={theme.colors.slate[400]}
           placeholder="Nhập từ khóa..."
           value={keyword}
-          onChangeText={handleSearch}
+          onChangeText={setKeyword}
         />
       </View>
-      <View className="flex-row p-4 bg-slate-50 gap-3 border-t border-b border-slate-200 pl-2">
-        <View className="flex-row  gap-3">
-          {["React", "UX/UI", "Golang"].map((tag) => (
+      <View
+        className="flex-row p-4 gap-3 border-t border-b  pl-2"
+        style={{
+          backgroundColor: theme.colors.gray[50],
+          borderColor: theme.colors.gray[200],
+        }}
+      >
+        <FlatList
+          data={topCategories}
+          horizontal
+          keyExtractor={(item) => String(item.id)}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ gap: 12, paddingHorizontal: 8 }}
+          renderItem={({ item }) => (
             <TouchableOpacity
-              key={tag}
-              className="bg-gray-200 rounded-full px-3 py-1"
-              onPress={() => handleSearch(tag)}
+              className="rounded-full px-3 py-1"
+              style={{ backgroundColor: theme.colors.slate[200] }}
+              onPress={() => handleSearch(item.name)}
             >
-              <Text className="text-sm">{tag}</Text>
+              <Text
+                className="text-xl"
+                style={{ color: theme.colors.slate[400] }}
+              >
+                {item.name}
+              </Text>
             </TouchableOpacity>
-          ))}
-        </View>
+          )}
+        />
       </View>
 
       <FlatList
-        data={results}
+        data={coursesFilter}
         keyExtractor={(item) => item.id}
+        className="p-2"
+        contentContainerStyle={{
+          paddingBottom: 32,
+        }}
         renderItem={({ item }) => (
           <TouchableOpacity
-            className="border-b border-gray-200 bg-white py-3"
+            style={{
+              backgroundColor: theme.colors.white,
+              borderColor: theme.colors.gray[200],
+            }}
             onPress={() =>
               nav.navigate("CourseDetailedScreen", { id: item.id })
             }
           >
-            <View className="p-2">
-              <Text className="text-base font-medium">{item.subject}</Text>
-              <Text className="text-sm text-gray-500">{item.instructor}</Text>
+            <View className="rounded-xl overflow-hidden ">
+              <ImageBackground
+                source={{ uri: item.image }}
+                className="pt-8 pb-8 pl-4 mx-3 rounded-xl overflow-hidden mt-3"
+              >
+                <View className="absolute inset-0  bg-black/40" />
+                <View className="p-2">
+                  <Text className="text-base text-white font-medium">
+                    {item.subject}
+                  </Text>
+                  <Text className="text-sm text-white/70">
+                    {item.instructor}
+                  </Text>
+                </View>
+              </ImageBackground>
             </View>
           </TouchableOpacity>
         )}
         ListEmptyComponent={
           keyword.length > 0 ? (
-            <Text className="text-center text-gray-400 mt-4">
+            <Text
+              className="text-center mt-4"
+              style={{
+                color: theme.colors.gray[400],
+              }}
+            >
               Không tìm thấy khóa học phù hợp
             </Text>
           ) : null

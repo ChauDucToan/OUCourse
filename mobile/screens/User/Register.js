@@ -1,19 +1,20 @@
 import AuthLayout from "../../components/AuthLayout";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import { Image, Text, TouchableOpacity, Pressable } from "react-native";
 import { List, TextInput } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
-import { useState } from "react";
-import { useNavigation } from "@react-navigation/native";
 
-import colors from "tailwindcss/colors";
-import { Pressable } from "react-native";
 import TextCustom from "../../components/TextCustom";
 import { ActivityIndicator } from "react-native";
+import { MyColorContext } from "../../utils/contexts/MyColorContext";
+
 import { registerApi } from "../../api/registerApi";
+import { useContext, useState } from "react";
+import { useNavigation } from "@react-navigation/native";
+
 const Register = () => {
   const jsonData = require("../../mock/data.config.register.json");
   const fieldsRender = jsonData.info;
-
+  const { theme } = useContext(MyColorContext);
   const [user, setUser] = useState({});
   const [err, setErr] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -112,7 +113,7 @@ const Register = () => {
             onChangeText={(t) => setUser({ ...user, [item.field]: t })}
             label={item.title}
             secureTextEntry={isPasswordField ? !isVisible : false}
-            activeOutlineColor={colors.slate[500]}
+            activeOutlineColor={theme.colors.slate[500]}
             right={
               isPasswordField ? (
                 <TextInput.Icon
@@ -142,18 +143,30 @@ const Register = () => {
       <Pressable
         onPress={register}
         disabled={loading}
-        className={`mt-4 p-3 rounded-xl flex-row justify-center items-center shadow-md ${loading ? "bg-slate-400" : "bg-slate-700"} active:bg-slate-800`}
+        className="mt-4 p-3 rounded-xl flex-row justify-center items-center shadow-md"
+        style={{
+          backgroundColor: loading
+            ? theme.colors.slate[400]
+            : theme.colors.slate[700],
+        }}
       >
         {loading ? (
           <ActivityIndicator
             animating={true}
-            color={colors.white}
+            color={theme.colors.white}
             size="small"
           />
         ) : (
           <>
-            <List.Icon icon="account" color={colors.white} />
-            <Text className="text-white font-bold ml-1 text-base">ĐĂNG KÝ</Text>
+            <List.Icon icon="account" color={theme.colors.white} />
+            <Text
+              className="font-bold ml-1 text-base"
+              style={{
+                color: theme.colors.white,
+              }}
+            >
+              ĐĂNG KÝ
+            </Text>
           </>
         )}
       </Pressable>

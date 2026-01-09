@@ -1,3 +1,5 @@
+import * as WebBrowser from "expo-web-browser";
+WebBrowser.maybeCompleteAuthSession();
 import { Pressable, View } from "react-native";
 import {
   ActivityIndicator,
@@ -8,19 +10,20 @@ import {
 import { MyUserContext } from "../../utils/contexts/MyContext";
 import TextCustom from "../../components/TextCustom";
 import AuthLayout from "../../components/AuthLayout";
-import * as Linking from "expo-linking"; // Cần thiết để mở URL
+import * as Linking from "expo-linking";
 import { useState } from "react";
 import { authApi } from "../../api/authApi";
 import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../../utils/Apis";
-import colors from "tailwindcss/colors";
 import { useNavigation } from "@react-navigation/native";
 import { useContext } from "react";
+import * as AuthSession from "expo-auth-session";
+import { MyColorContext } from "../../utils/contexts/MyColorContext";
 
 const Login = () => {
   const jsonData = require("../../mock/data.config.register.json");
   const jsonStyle = require("../../mock/data.styles.json");
-
+  const { theme } = useContext(MyColorContext);
   const fieldsRender = jsonData.info.filter(
     (item) => item.field === "username" || item.field === "password",
   );
@@ -46,10 +49,7 @@ const Login = () => {
       setLoading(true);
       try {
         await authApi.login(user);
-        console.log("QUA");
-
         let userRes = await axiosClient.get(endpoints["current_user"]);
-        console.log("QUA");
         dispatch({
           type: "login",
           payload: userRes.data,
@@ -59,7 +59,7 @@ const Login = () => {
           routes: [{ name: "Home" }],
         });
       } catch (ex) {
-        console.error(ex);
+        console.error("Login ", ex.message);
       } finally {
         setLoading(false);
       }
@@ -67,16 +67,48 @@ const Login = () => {
   };
   const loginGoogle = async () => {
     try {
-      const res = await axiosClient.get(endpoints.googleAuth);
-      console.log("Mo link nef");
-      console.log(res.data);
-      if (res.data && res.data.auth_url) {
-        Linking.openURL(res.data.auth_url);
-      }
+      // Redirect URI về app
+      const redirectUri = AuthSession.makeRedirectUri({
+        scheme: "oucourse",
+        path: "oauthredirect",
+      });
+      console.log("redirectUri =", redirectUri);
+      const params = new URLSearchParams();
+      params.append("auth_type", "google");
+      params.append("redirect_uri", redirectUri);
+
+      const res = await axiosClient.get(endpoints.googleAuth, { params });
+
+      const authUrl = res.data?.auth_url;
+      console.log(authUrl);
+      if (!authUrl) throw new Error("Missing auth_url from backend");
+
+      // Mở phiên đăcng nhập + chờ redirect về app
+      const result = await WebBrowser.openAuthSessionAsync(
+        authUrl,
+        redirectUri,
+      );
+      if (result.type !== "success" || !result.url) return;
+
+      // Parse callback: oucourse://... ?code=...&state=...
+      const parsed = Linking.parse(result.url);
+      const code = parsed.queryParams?.code;
+      const state = parsed.queryParams?.state;
+
+      if (!code || !state) throw new Error("Missing code/state in callback");
+
+      // Gọi backend đổi code -> token/session
+      console.log("Gọi loginRes");
+      const loginRes = await axiosClient.get(endpoints.googleCallback, {
+        code,
+        state,
+        redirect_uri: redirectUri,
+      });
     } catch (ex) {
       console.error("Lỗi Google Auth:", ex);
     }
   };
+
   return (
     <AuthLayout title="ĐĂNG NHẬP NGƯỜI DÙNG">
       <HelperText type="error" visible={err}>
@@ -99,7 +131,7 @@ const Login = () => {
             onChangeText={(t) => setUser({ ...user, [item.field]: t })}
             label={item.title}
             secureTextEntry={isPasswordField ? !isVisible : false}
-            activeOutlineColor={colors.slate[500]}
+            activeOutlineColor={theme.colors.slate[500]}
             right={
               isPasswordField ? (
                 <TextInput.Icon
@@ -119,7 +151,7 @@ const Login = () => {
           {loading ? (
             <ActivityIndicator
               animating={true}
-              color={colors.white}
+              color={theme.colors.gray[100]}
               size="small"
             />
           ) : (
@@ -131,16 +163,26 @@ const Login = () => {
           onPress={() => navigation.navigate("Register")}
           className={jsonStyle["pressable-no-focus"]}
         >
-          <TextCustom.TextFocus text="ĐĂNG KÝ" />
+          <TextCustom.TextFocus text="ĐĂNG KÝ" style={{ fontSize: 12 }} />
         </Pressable>
       </View>
       <View className="flex-row items-center my-6">
-        <View className="flex-1 h-[1px] bg-slate-200" />
+        <View
+          className="flex-1 h-[1px]"
+          style={{
+            backgroundColor: theme.colors.slate[200],
+          }}
+        />
         <TextCustom.TextFocus
           text=" Hoặc đăng nhập bằng "
           style={{ fontSize: 12 }}
         />
-        <View className="flex-1 h-[1px] bg-slate-200" />
+        <View
+          className="flex-1 h-[1px]"
+          style={{
+            backgroundColor: theme.colors.slate[200],
+          }}
+        />
       </View>
 
       <View className="flex-row justify-center gap-4">
@@ -151,24 +193,6 @@ const Login = () => {
           size={30}
           onPress={loginGoogle}
           style={{ borderColor: "#DB4437" }}
-        />
-
-        <IconButton
-          icon="facebook"
-          mode="outlined"
-          iconColor="#4267B2"
-          size={30}
-          onPress={() => console.log("Facebook Login")}
-          style={{ borderColor: "#4267B2" }}
-        />
-
-        <IconButton
-          icon="github"
-          mode="outlined"
-          iconColor="#333"
-          size={30}
-          onPress={() => console.log("Github Login")}
-          style={{ borderColor: "#333" }}
         />
       </View>
     </AuthLayout>
