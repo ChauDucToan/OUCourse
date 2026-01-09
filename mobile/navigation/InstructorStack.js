@@ -1,9 +1,9 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import InstructorDashboard from "../components/InstructorComponents/InstructorDashboard";
-import InstructorCourses from "../components/InstructorComponents/InstructorCourses";
-import CourseEditor from "../components/InstructorComponents/CourseEditor";
-import InstructorTrackStudent from "../components/InstructorComponents/InstructorTrackStudent";
+import InstructorDashboard from "../screens/InstructorComponents/InstructorDashboard";
+import InstructorCourses from "../screens/InstructorComponents/InstructorCourses";
+import CourseEditor from "../screens/InstructorComponents/CourseEditor";
+import InstructorTrackStudent from "../screens/InstructorComponents/InstructorTrackStudent";
 
 const Stack = createNativeStackNavigator();
 

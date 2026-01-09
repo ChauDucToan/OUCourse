@@ -1,20 +1,20 @@
 import { View } from "react-native";
-import HeaderCustom from "../Header";
 import { useContext } from "react";
 import { MyColorContext } from "../../utils/contexts/MyColorContext";
+import HeaderCustom from "../../components/Header";
 
-const InstructorTrackStudent = () => {
+const InstructorCourses = () => {
   const { theme } = useContext(MyColorContext);
 
   return (
     <View
-      className="pt-10"
+      className="pt-10 "
       style={{
         backgroundColor: theme.colors.white,
       }}
     >
-      <HeaderCustom text={"Trang quản lý học sinh"} />
+      <HeaderCustom text={"Trang quản lý khóa học"} />
     </View>
   );
 };
-export default InstructorTrackStudent;
+export default InstructorCourses;

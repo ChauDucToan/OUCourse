@@ -1,12 +1,13 @@
 import { View } from "react-native";
-import HeaderCustom from "../Header";
-import ListItem from "../ListItem";
+
 import { useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import { ScrollView } from "react-native";
-import { MyColorContext } from "../../utils/contexts/MyColorContext";
 import { useContext } from "react";
+import ListItem from "../../components/ListItem";
+import HeaderCustom from "../../components/Header";
+import { MyColorContext } from "../../utils/contexts/MyColorContext";
 
 const InstructorDashboard = () => {
   const [selectionInstructor, setSelectionInstructor] = useState([]);

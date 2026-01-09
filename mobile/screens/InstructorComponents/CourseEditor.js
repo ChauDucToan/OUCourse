@@ -1,52 +1,13 @@
 import { TouchableOpacity, View } from "react-native";
-import HeaderCustom from "../Header";
-import { MyColorContext } from "../../utils/contexts/MyColorContext";
 import { useContext, useEffect, useState } from "react";
 import { Picker } from "@react-native-picker/picker";
 import { TextInput } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
-import TextCustom from "../TextCustom";
 import { ActivityIndicator } from "react-native";
-
-const SelectTime = ({ theme }) => {
-  const hours = Array.from({ length: 24 }, (_, i) => i);
-  const minutes = Array.from({ length: 60 }, (_, i) => i);
-  const [hour, setHour] = useState(0);
-  const [minute, setMinute] = useState(0);
-  return (
-    <View className="flex-row gap-3 mt-3">
-      <View className="flex-1">
-        <Picker
-          selectedValue={hour}
-          onValueChange={(v) => setHour(v)}
-          style={{
-            backgroundColor: theme.colors.slate[200],
-            color: theme.colors.slate[400],
-          }}
-        >
-          {hours.map((h) => (
-            <Picker.Item key={h} label={`${h} giờ`} value={h} />
-          ))}
-        </Picker>
-      </View>
-
-      <View className="flex-1">
-        <Picker
-          selectedValue={minute}
-          onValueChange={(v) => setMinute(v)}
-          style={{
-            backgroundColor: theme.colors.slate[200],
-            color: theme.colors.slate[400],
-          }}
-        >
-          {minutes.map((m) => (
-            <Picker.Item key={m} label={`${m} phút`} value={m} />
-          ))}
-        </Picker>
-      </View>
-    </View>
-  );
-};
+import HeaderCustom from "../../components/Header";
+import SelectTime from "../../components/SelectTime";
+import TextCustom from "../../components/TextCustom";
+import { MyColorContext } from "../../utils/contexts/MyColorContext";
 
 const CourseEditor = () => {
   const { theme } = useContext(MyColorContext);
@@ -70,7 +31,7 @@ const CourseEditor = () => {
     if (status !== "granted") return alert("Permissions denied!");
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ImagePicker.MediaType.Images,
       quality: 1,
     });
 
@@ -82,7 +43,7 @@ const CourseEditor = () => {
     if (status !== "granted") return alert("Permissions denied!");
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+      mediaTypes: ImagePicker.MediaType.Videos,
       quality: 1,
     });
 
@@ -96,12 +57,15 @@ const CourseEditor = () => {
 
   return (
     <View
-      className="pt-10 flex-1"
+      className="pt-10 flex-1 "
       style={{ backgroundColor: theme.colors.gray[100] }}
     >
       <HeaderCustom text={"Tạo mới khóa học"} />
 
-      <View>
+      <View
+        className="p-4 m-6 rounded-xl"
+        style={{ backgroundColor: theme.colors.gray[200] }}
+      >
         <TextInput placeholder="Nhập tên khóa học" />
 
         <TextInput
@@ -116,25 +80,27 @@ const CourseEditor = () => {
         />
 
         <SelectTime theme={theme} />
-
-        <Picker
-          selectedValue={selectedCategory}
-          onValueChange={(itemValue) => setSelectedCategory(itemValue)}
-          style={{
-            backgroundColor: theme.colors.slate[200],
-            color: theme.colors.slate[400],
-          }}
-        >
-          <Picker.Item label="Chọn danh mục" value="" />
-          {categories?.map((item) => (
-            <Picker.Item
-              key={item.id?.toString() ?? item.value}
-              label={item.label}
-              value={item.value}
-            />
-          ))}
-        </Picker>
-
+        <View className="rounded-xl">
+          <Picker
+            selectedValue={selectedCategory}
+            onValueChange={(itemValue) => setSelectedCategory(itemValue)}
+            style={{
+              backgroundColor: theme.colors.slate[500],
+              color: theme.colors.slate[600],
+              marginTop: 4,
+              marginBottom: 4,
+            }}
+          >
+            <Picker.Item label="Chọn danh mục" value="" />
+            {categories?.map((item) => (
+              <Picker.Item
+                key={item.id?.toString() ?? item.value}
+                label={item.label}
+                value={item.value}
+              />
+            ))}
+          </Picker>
+        </View>
         <TouchableOpacity
           className="border-2 p-2 rounded-md mt-2 border-slate-500"
           onPress={pickImage}
@@ -154,11 +120,11 @@ const CourseEditor = () => {
         </TouchableOpacity>
         <View>
           <TouchableOpacity
-            className=" p-4  mt-4 text-center"
+            className=" p-4  mt-4 text-center rounded-xl"
             style={{
               backgroundColor: theme.colors.slate[400],
             }}
-            onPress={() => console.log("Tạo khóa học nè")}
+            onPress={() => console.log("Tạo khóa học nè ")}
           >
             {isLoading ? (
               <ActivityIndicator size="large" />
@@ -166,7 +132,7 @@ const CourseEditor = () => {
               <TextCustom.TextFocus
                 className="text-center"
                 style={{ color: theme.colors.slate[600] }}
-                text="Tạo khóa học"
+                text="Tạo khóa học asdasd"
               />
             )}
           </TouchableOpacity>
