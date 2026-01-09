@@ -41,7 +41,7 @@ const LessonLearning = () => {
 
     loadData();
     console.log(lesson);
-  }, [id]);
+  }, [id, ensureLessonDetailed]);
   const onStateChange = useCallback((state) => {
     if (state === "ended") {
       setPlaying(false);
