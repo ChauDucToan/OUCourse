@@ -11,10 +11,14 @@ export const CoursesProvider = ({ children }) => {
   const [loadingCourses, setLoadingCourses] = useState(false);
   const [coursesError, setCoursesError] = useState(null);
   const lastFetchdAtRef = useRef(0);
-
+  const coursesRef = useRef([]);
+  const updateCourse = (newCourses) => {
+    setCourses(newCourses);
+    coursesRef.current = newCourses;
+  };
   const ensureCourses = useCallback(async () => {
     const now = Date.now();
-    if (courses.length > 0 && now - lastFetchdAtRef.current < 300000)
+    if (coursesRef.current.length > 0 && now - lastFetchdAtRef.current < 300000)
       return courses;
 
     setLoadingCourses(true);
@@ -22,11 +26,12 @@ export const CoursesProvider = ({ children }) => {
     try {
       const res = await fetchCourse();
       const results = res?.data?.results ?? [];
-      setCourses(results);
+      updateCourse(results);
       lastFetchdAtRef.current = now;
       return results;
     } catch (error) {
       setCoursesError(error.message);
+      updateCourse([]);
       throw error;
     } finally {
       setLoadingCourses(false);

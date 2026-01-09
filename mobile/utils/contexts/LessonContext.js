@@ -13,17 +13,32 @@ export const LessonProvider = ({ children }) => {
   const [lesson, setLesson] = useState({});
   const lastAtRef = useRef(0);
 
+  const lessonsRef = useRef([]);
+  const lessonRef = useRef({});
+
+  const updateLessons = (newLessons) => {
+    setLessons(newLessons);
+    lessonsRef.current = newLessons;
+  };
+  const updateLesson = (newLesson) => {
+    setLesson(newLesson);
+    lessonRef.current = newLesson;
+  };
+
   const ensureLessons = useCallback(async (id) => {
     const now = Date.now();
-    if (lessons.length > 0 && now - lastAtRef.current < 300000) return lessons;
+    if (lessonsRef.current.length > 0 && now - lastAtRef.current < 300000)
+      return lessons;
     setLoading(true);
     try {
       const res = await axiosClient.get(endpoints.lessons(id));
       const results = res?.data?.results ?? [];
-      setLessons(results);
+      updateLessons(results);
       lastAtRef.current = now;
       return results;
     } catch (error) {
+      updateLessons([]);
+
       throw error;
     } finally {
       setLoading(false);
@@ -41,14 +56,16 @@ export const LessonProvider = ({ children }) => {
     try {
       const res = await axiosClient.get(endpoints.lessonDetailed(id));
       const results = res?.data ?? {};
-      setLesson(results);
+      updateLesson(results);
       return results;
     } catch (error) {
+      updateLesson({});
+
       throw error;
     } finally {
       setLoading(false);
     }
-  });
+  }, []);
   return (
     <LessonContext.Provider
       value={{
