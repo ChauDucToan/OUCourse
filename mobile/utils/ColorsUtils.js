@@ -1,11 +1,15 @@
 import colors from "tailwindcss/colors";
 
 const light = {
-  primary: colors.blue[600],
+  primary: colors.gray[600],
   tabInactive: colors.gray[400],
   tabActive: colors.gray[900],
   iconDefault: colors.slate[500],
   danger: colors.red[500],
+  bgColor: colors.slate[200],
+  textFocus: colors.slate[500],
+  textNormal: colors.slate[400],
+  textMuted: colors.slate[200],
   green: {
     100: colors.green[100],
     200: colors.green[200],
@@ -28,6 +32,8 @@ const light = {
     600: colors.slate[600],
     500: colors.slate[500],
     400: colors.slate[400],
+    300: colors.slate[300],
+
     200: colors.slate[200],
     50: colors.slate[50],
   },
@@ -58,11 +64,16 @@ const light = {
 };
 
 const dark = {
-  primary: colors.blue[400],
+  primary: colors.gray[100],
   tabInactive: colors.gray[500],
   tabActive: colors.gray[100],
   iconDefault: colors.slate[300],
   danger: colors.red[400],
+  bgColor: colors.slate[800],
+  textFocus: colors.slate[500],
+  textNormal: colors.slate[600],
+  textMuted: colors.slate[800],
+
   blue: {
     100: colors.blue[800],
     500: colors.blue[300],
@@ -94,6 +105,8 @@ const dark = {
     600: colors.slate[300],
     500: colors.slate[400],
     400: colors.slate[500],
+    300: colors.slate[600],
+
     200: colors.slate[700],
     50: colors.slate[900],
   },

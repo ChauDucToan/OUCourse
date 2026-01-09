@@ -13,14 +13,14 @@ const TermsScreen = ({ navigation }) => {
     <SafeAreaView
       className="flex-1 pt-10"
       style={{
-        backgroundColor: theme.colors.slate[50],
+        backgroundColor: theme.colors.gray[100],
       }}
     >
       <HeaderCustom text="Điều khoản & quy định" />
       <ScrollView
         className="flex-1 px-5"
         style={{
-          backgroundColor: theme.colors.white,
+          backgroundColor: theme.colors.slate[100],
         }}
         showsVerticalScrollIndicator={false}
       >
@@ -34,7 +34,12 @@ const TermsScreen = ({ navigation }) => {
             Cập nhật lần cuối: 05 tháng 01, 2026
           </Text>
           {terms.map((item) => (
-            <Section key={item.id} title={item.title} content={item.content} />
+            <Section
+              key={item.id}
+              theme={theme}
+              title={item.title}
+              content={item.content}
+            />
           ))}
 
           <View className="h-10" />

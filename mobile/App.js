@@ -1,4 +1,4 @@
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { View } from "react-native";
 import "./global.css";
 import MyReducers from "./utils/reducers/MyReducers";
@@ -21,6 +21,13 @@ export default function App() {
   const [user, dispatch] = useReducer(MyReducers, null);
   const [theme, themeDispatch] = useReducer(ThemeReducer, initialThemeState);
   const [loading, setLoading] = useState(true);
+  const navigationTheme = {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      background: theme.colors.gray[100], // Sử dụng màu tối từ theme của bạn
+    },
+  };
   useEffect(() => {
     const cacheUser = async () => {
       const tokens = await getTokens();
@@ -54,7 +61,7 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <AppProvider state={{ theme, themeDispatch, user, dispatch }}>
-        <NavigationContainer>
+        <NavigationContainer theme={navigationTheme}>
           <TabNavigator />
         </NavigationContainer>
       </AppProvider>

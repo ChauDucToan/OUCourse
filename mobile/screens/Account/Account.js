@@ -95,85 +95,69 @@ const Account = ({ navigation }) => {
               theme={theme}
             />
           </View>
-          <View>
-            <ListItem
-              mapJson={jsonAccountData.system}
-              navigation={navigation}
-              header="hệ thống"
-              theme={theme}
-            />
-          </View>
-
-          <View className="p-4 mt-2 mb-3">
-            <Button
-              mode="outlined"
-              textColor={theme.colors.danger}
-              className="rounded-xl  "
-              style={{
-                backgroundColor: theme.colors.gray[100],
-                borderColor: theme.colors.danger,
-              }}
-              contentStyle={{
-                paddingVertical: 4,
-                backgroundColor: theme.colors.gray[100],
-              }}
-              icon="logout"
-              onPress={handleLogout}
-            >
-              Đăng xuất
-            </Button>
-          </View>
-          <Text
-            className="text-center text-xs"
-            style={{
-              color: theme.colors.slate[400],
-            }}
-          >
-            Phiên bản 1.0.0
-          </Text>
         </View>
       )}
-      {!user && (
-        <View>
-          <View>
-            <ListItem
-              mapJson={jsonAccountData.system}
-              navigation={navigation}
-              header="hệ thống"
-              theme={theme}
-            />
-          </View>
-          <View className="p-4 mt-2 mb-8">
-            <Pressable
-              onPress={() => navigation.navigate("Login")}
-              className="flex-row items-center justify-center p-3 border  rounded-xl shadow-sm mt-4"
-              style={{
-                backgroundColor: theme.colors.gray[100],
-                borderColor: theme.colors.slate[200],
-              }}
-            >
-              <List.Icon icon="login" color={theme.colors.slate[500]} />
+      <View>
+        <ListItem
+          mapJson={jsonAccountData.system}
+          navigation={navigation}
+          header="hệ thống"
+          theme={theme}
+        />
+      </View>
 
-              <Text
-                className="font-bold  ml-1"
-                style={{
-                  color: theme.colors.slate[500],
-                }}
-              >
-                Đăng nhập
-              </Text>
-            </Pressable>
-          </View>
-          <Text
-            className="text-center  text-xs mt-4"
+      {user ? (
+        <View className="p-4 mt-2 mb-3">
+          <Button
+            mode="outlined"
+            textColor={theme.colors.danger}
+            className="rounded-xl  "
             style={{
-              color: theme.colors.slate[400],
+              backgroundColor: theme.colors.gray[100],
+              borderColor: theme.colors.danger,
+            }}
+            contentStyle={{
+              paddingVertical: 4,
+              backgroundColor: theme.colors.gray[100],
+            }}
+            icon="logout"
+            onPress={handleLogout}
+          >
+            Đăng xuất
+          </Button>
+        </View>
+      ) : (
+        <View className="p-4 mt-2 mb-8">
+          <Pressable
+            onPress={() => navigation.navigate("Login")}
+            className="flex-row items-center justify-center p-3 border  rounded-xl shadow-sm mt-4"
+            style={{
+              backgroundColor: theme.colors.gray[100],
+              borderColor: theme.colors.slate[200],
             }}
           >
-            Phiên bản 1.0.0
-          </Text>
+            <List.Icon icon="login" color={theme.colors.slate[500]} />
+
+            <Text
+              className="font-bold  ml-1"
+              style={{
+                color: theme.colors.slate[500],
+              }}
+            >
+              Đăng nhập
+            </Text>
+          </Pressable>
         </View>
       )}
+
+      <Text
+        className="text-center text-xs"
+        style={{
+          color: theme.colors.slate[400],
+        }}
+      >
+        Phiên bản 1.0.0
+      </Text>
     </ScrollView>
   );
 };

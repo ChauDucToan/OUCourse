@@ -14,7 +14,8 @@ const CourseEditor = () => {
 
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
-
+  const [hour, setHour] = useState(0);
+  const [minute, setMinute] = useState(0);
   const [image, setImage] = useState(null);
   const [video, setVideo] = useState(null);
   const [isLoading, setLoading] = useState(false);
@@ -31,7 +32,7 @@ const CourseEditor = () => {
     if (status !== "granted") return alert("Permissions denied!");
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaType.Images,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 1,
     });
 
@@ -43,7 +44,7 @@ const CourseEditor = () => {
     if (status !== "granted") return alert("Permissions denied!");
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaType.Videos,
+      mediaTypes: ImagePicker.MediaTypeOptions.Videos,
       quality: 1,
     });
 
@@ -64,29 +65,46 @@ const CourseEditor = () => {
 
       <View
         className="p-4 m-6 rounded-xl"
-        style={{ backgroundColor: theme.colors.gray[200] }}
+        style={{ backgroundColor: theme.colors.slate[200] }}
       >
-        <TextInput placeholder="Nhập tên khóa học" />
-
+        <TextInput
+          className="flex-1 border border-gray-300 rounded-lg p-2 bg-white"
+          placeholder="Nhập tên khóa học"
+          underlineColor="transparent"
+          // mode="outlined"
+          activeOutlineColor={theme.colors.gray[100]}
+          outlineColor={theme.colors.slate[100]}
+        />
+        <View className="h-4"></View>
         <TextInput
           label="Giá khóa học (VNĐ)"
           value={price}
+          keyboardType="numeric"
           onChangeText={(v) => {
             setPrice(v);
             setPriceError(false);
           }}
+          underlineColor="transparent"
+          activeOutlineColor={theme.textMuted}
           onBlur={() => setPriceError(!validatePrice(price))}
           error={priceError}
+          className="flex-1 border  border-gray-300 rounded-lg p-2 bg-white"
         />
 
-        <SelectTime theme={theme} />
+        <SelectTime
+          theme={theme}
+          hour={hour}
+          setHour={setHour}
+          minute={minute}
+          setMinute={setMinute}
+        />
         <View className="rounded-xl">
           <Picker
             selectedValue={selectedCategory}
             onValueChange={(itemValue) => setSelectedCategory(itemValue)}
             style={{
-              backgroundColor: theme.colors.slate[500],
-              color: theme.colors.slate[600],
+              backgroundColor: theme.colors.slate[400],
+              color: theme.textMuted,
               marginTop: 4,
               marginBottom: 4,
             }}
@@ -106,6 +124,7 @@ const CourseEditor = () => {
           onPress={pickImage}
         >
           <TextCustom.TextMuted
+            style={{ color: theme.colors.gray[500] }}
             text={image ? "Đã chọn ảnh" : "Chọn ảnh cho khóa học..."}
           />
         </TouchableOpacity>
@@ -115,6 +134,7 @@ const CourseEditor = () => {
           onPress={pickVideo}
         >
           <TextCustom.TextMuted
+            style={{ color: theme.colors.gray[500] }}
             text={video ? "Đã chọn video" : "Chọn video cho khóa học..."}
           />
         </TouchableOpacity>
@@ -122,7 +142,7 @@ const CourseEditor = () => {
           <TouchableOpacity
             className=" p-4  mt-4 text-center rounded-xl"
             style={{
-              backgroundColor: theme.colors.slate[400],
+              backgroundColor: theme.colors.slate[300],
             }}
             onPress={() => console.log("Tạo khóa học nè ")}
           >
@@ -132,7 +152,7 @@ const CourseEditor = () => {
               <TextCustom.TextFocus
                 className="text-center"
                 style={{ color: theme.colors.slate[600] }}
-                text="Tạo khóa học asdasd"
+                text="Tạo khóa học"
               />
             )}
           </TouchableOpacity>
