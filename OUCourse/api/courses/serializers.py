@@ -57,4 +57,6 @@ class CourseDetailSerializer(CourseSerializer):
 class ManageCourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = ManageCourse
-        fields = '__all__'
+        fields = ['id', 'student', 'course', 'status']
+        
+        read_only_fields = ['student', 'course']

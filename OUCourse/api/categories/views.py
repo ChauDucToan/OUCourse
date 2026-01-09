@@ -1,4 +1,4 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions
 from . import serializers, models
 from .. import perms
 
@@ -6,4 +6,10 @@ from .. import perms
 class CategoryView(viewsets.ModelViewSet):
     queryset = models.Category.objects.all()
     serializer_class = serializers.CategorySerializer
-    permission_classes = [perms.IsNotStudent]
+
+    def get_permission_classes(self):
+        if self.action in ['list', 'retrieve']:
+            permission_classes = [permissions.AllowAny]
+        else:
+            permission_classes = [perms.IsNotStudent]
+        return [permission() for permission in permission_classes]

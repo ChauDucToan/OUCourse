@@ -1,0 +1,126 @@
+{% extends 'unfold/layouts/base_simple.html' %}
+{% load i18n unfold %}
+
+{% block content %}
+    {% component "unfold/components/container.html" %}
+
+        <div class="mb-6 flex flex-wrap gap-2">
+            {% if current_days == 7 %}
+                {% component "unfold/components/button.html" with href="?days=7" %}7 Ngày{% endcomponent %}
+            {% else %}
+                {% component "unfold/components/button.html" with href="?days=7" variant="default" %}7 Ngày{% endcomponent %}
+            {% endif %}
+
+            {% if current_days == 30 %}
+                {% component "unfold/components/button.html" with href="?days=30" %}30 Ngày{% endcomponent %}
+            {% else %}
+                {% component "unfold/components/button.html" with href="?days=30" variant="default" %}30 Ngày{% endcomponent %}
+            {% endif %}
+
+            {% if current_days == 365 %}
+                {% component "unfold/components/button.html" with href="?days=365" %}1 Năm{% endcomponent %}
+            {% else %}
+                {% component "unfold/components/button.html" with href="?days=365" variant="default" %}1 Năm{% endcomponent %}
+            {% endif %}
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            {% for item in kpi %}
+                {% component "unfold/components/card.html" with footer=item.footer %}
+                    {% component "unfold/components/text.html" %}
+                        {{ item.title }}
+                    {% endcomponent %}
+
+                    {% component "unfold/components/title.html" %}
+                        {{ item.metric }}
+                    {% endcomponent %}
+                {% endcomponent %}
+            {% endfor %}
+        </div>
+
+        {% if chart_config %}
+            {% component "unfold/components/card.html" with title=chart_config.title %}
+                <div class="relative h-80">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            {% endcomponent %}
+
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const ctx = document.getElementById('revenueChart').getContext('2d');
+
+                    const commonColor = '#9ca3af';
+                    const gridColor = 'rgba(156, 163, 175, 0.15)';
+
+                    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+                    gradient.addColorStop(0, 'rgba(79, 70, 229, 0.4)');
+                    gradient.addColorStop(1, 'rgba(79, 70, 229, 0)');
+
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: {{ chart_config.labels|safe }},
+                            datasets: [{
+                                label: 'Doanh thu (VND)',
+                                data: {{ chart_config.data|safe }},
+                                borderColor: '#6366f1',
+                                backgroundColor: gradient,
+                                borderWidth: 2,
+                                pointRadius: 4,
+                                pointHoverRadius: 6,
+                                pointBackgroundColor: '#6366f1',
+                                fill: true,
+                                tension: 0.3
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    backgroundColor: 'rgba(17, 24, 39, 0.9)',
+                                    titleColor: '#f3f4f6',
+                                    bodyColor: '#e5e7eb',
+                                    borderColor: 'rgba(75, 85, 99, 0.5)',
+                                    borderWidth: 1,
+                                    padding: 10,
+                                    callbacks: {
+                                        label: function(context) {
+                                            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' })
+                                                .format(context.raw);
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    grid: {
+                                        color: gridColor,
+                                        borderDash: [4, 4],
+                                        drawBorder: false,
+                                    },
+                                    ticks: {
+                                        color: commonColor,
+                                        callback: function(value) {
+                                            return value / 1000000 + ' Tr';
+                                        }
+                                    },
+                                    border: { display: false }
+                                },
+                                x: {
+                                    grid: { display: false },
+                                    ticks: { color: commonColor }
+                                }
+                            }
+                        }
+                    });
+                });
+            </script>
+        {% endif %}
+
+        {{ block.super }}
+    {% endcomponent %}
+{% endblock %}
