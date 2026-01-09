@@ -1,6 +1,6 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { View } from "react-native";
-
+import "./global.css";
 import MyReducers from "./utils/reducers/MyReducers";
 import { ActivityIndicator } from "react-native-paper";
 

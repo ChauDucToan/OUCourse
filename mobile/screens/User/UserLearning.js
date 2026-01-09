@@ -12,14 +12,14 @@ import { FlatList } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useContext } from "react";
 import { MyColorContext } from "../../utils/contexts/MyColorContext";
+import { CourseContext } from "../../utils/contexts/CoursesContext";
 
 const UserLearning = () => {
-  const [corse, setCourse] = useState(null);
+  const { courses, ensureCourses, refreshCourses } = useContext(CourseContext);
+
   useEffect(() => {
-    const loadData = async () => {
-      const res = axiosClient.get(endpoints.courses);
-    };
-  });
+    ensureCourses();
+  }, [ensureCourses]);
   const nav = useNavigation();
   const { theme } = useContext(MyColorContext);
   return (
@@ -30,7 +30,7 @@ const UserLearning = () => {
       <HeaderCustom text="Danh sách bài học của tôi" />
       <View style={{ backgroundColor: theme.colors.slate[300] }}>
         <FlatList
-          data={results}
+          data={courses}
           contentContainerStyle={{
             paddingBottom: 52,
           }}
@@ -39,19 +39,43 @@ const UserLearning = () => {
               key={item.id}
               delayPressIn={0.6}
               activeOpacity={0.6}
-              onPress={() => nav.navigate("Lesson", { item: item })}
+              onPress={() =>
+                nav.navigate("Lesson", {
+                  item: item,
+                })
+              }
             >
-              <View className="flex-row">
-                <View>
-                  <Image className="w-24 h-24" source={{ uri: item.image }} />
-                </View>
-                <View className="justify-end border-b w-full m-2 border-gray-200">
-                  <TextCustom.TextMuted text={item.category} />
-                  <TextCustom.TextSection
-                    className="text-xl"
-                    style={{ color: theme.colors.yellow[500] }}
-                    text={item.subject}
+              <View
+                className="flex-row p-2 items-center border"
+                style={{
+                  backgroundColor: theme.colors.slate[200],
+                  borderColor: theme.colors.gray[700],
+                }}
+              >
+                <View className="mb-2 ml-2">
+                  <Image
+                    className="w-24 h-24 rounded-xl"
+                    source={
+                      item.image
+                        ? { uri: item.image }
+                        : require("../../assets/banner_1.png")
+                    }
                   />
+                </View>
+                <View className="justify-end border-b flex-1 m-2 border-gray-200">
+                  <TextCustom.TextMuted
+                    text={item.category}
+                    style={{
+                      color: theme.colors.slate[500],
+                    }}
+                  />
+                  <View className="item-start">
+                    <TextCustom.TextSection
+                      className="text-base  "
+                      style={{ color: theme.colors.yellow[500] }}
+                      text={item.subject}
+                    />
+                  </View>
                   <TextCustom.TextFocus
                     text={item.instructor}
                     style={{ color: theme.colors.blue[500] }}

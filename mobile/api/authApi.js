@@ -18,7 +18,7 @@ export const authApi = {
         username: user.username,
         password: user.password,
         client_id: CLIENT_ID,
-        client_secret: CLIENT_SECRET,
+        // client_secret: CLIENT_SECRET,
         grant_type: "password",
       });
 

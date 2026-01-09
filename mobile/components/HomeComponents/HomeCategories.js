@@ -4,31 +4,41 @@ import { Icon } from "react-native-paper";
 import { useContext } from "react";
 import { CategoriesContext } from "../../utils/contexts/CategoriesContext";
 import { useEffect } from "react";
-import { useMemo } from "react";
+import { useState } from "react";
 
-export const HomeCategories = ({ iconColor = "", theme }) => {
+export const HomeCategories = ({
+  icon = "",
+  text = "",
+  iconColor = "",
+  theme,
+  sizeIcon = 28,
+}) => {
   const { categories, ensureCategories } = useContext(CategoriesContext);
-  const topCategories = useMemo(() => categories.slice(0, 12), [categories]);
+  const [count, setCount] = useState(20);
+
+  const loadMore = () => {
+    setCount((prev) => prev + 20);
+  };
   useEffect(() => {
     ensureCategories();
   }, [ensureCategories]);
   return (
     <View className="p-5">
-      <View className="flex-row gap-3">
+      <View className={`flex-row gap-3 ${text !== "" ? "mb-3" : ""}`}>
         <Icon
-          source="tag"
-          size={28}
+          source={icon}
+          size={sizeIcon}
           color={iconColor ? iconColor : theme.colors.slate[600]}
         />
         <TextCustom.TextSection
-          text={"Danh mục"}
+          text={text}
           style={{ color: theme.colors.slate[500] }}
         />
       </View>
       <FlatList
-        className="mt-4"
+        className="mt-1"
         horizontal
-        data={topCategories}
+        data={categories.slice(0, count)}
         keyExtractor={(item) => item.id}
         showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => (
@@ -50,6 +60,8 @@ export const HomeCategories = ({ iconColor = "", theme }) => {
             </Text>
           </TouchableOpacity>
         )}
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.7}
       />
     </View>
   );

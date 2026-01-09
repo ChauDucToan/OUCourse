@@ -6,7 +6,7 @@ export const endpoints = {
   courseDetails: (courseId) => `/api/courses/${courseId}/`,
   enrollCourse: (courseId) => `/api/courses/${courseId}/enroll/`,
 
-  lessons: () => `/api/lessons/`,
+  lessons: (coursesId) => `/api/courses/${coursesId}/lessons/`,
   lessonDetailed: (lessonId) => `/api/lessons/${lessonId}`,
   enrollLesson: (lessonId) => `/api/lessons/${lessonId}/enroll/`,
   comments: (lessonId) => `/api/lessons/${lessonId}/comments/`,

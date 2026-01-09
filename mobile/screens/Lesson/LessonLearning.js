@@ -9,6 +9,9 @@ import { ScrollView } from "react-native";
 import { TextInput } from "react-native";
 
 import { ActivityIndicator } from "react-native-paper";
+import { useContext } from "react";
+import { LessonContext } from "../../utils/contexts/LessonContext";
+import { useEffect } from "react";
 
 const extractVideoId = (url) => {
   if (!url) return null;
@@ -24,18 +27,34 @@ const LessonLearning = () => {
   const [playing, setPlaying] = useState(false);
   const playerRef = useRef(null);
   const route = useRoute();
-  const [comments, setComments] = useState([]); // Quản lý danh sách bình luận
   const [content, setContent] = useState("");
-  const [loading, setLoading] = useState(false);
-  const { lesson, theme } = route.params;
-  const videoId = extractVideoId(lesson.video);
+  const [videoId, setVideoId] = useState();
+  const { id, theme } = route.params;
+  const { ensureLessonDetailed, loading, lesson } = useContext(LessonContext);
+  useEffect(() => {
+    const loadData = async () => {
+      const data = await ensureLessonDetailed(id);
+      if (data && data.video_url) {
+        setVideoId(extractVideoId(data.video_url));
+      }
+    };
+
+    loadData();
+    console.log(lesson);
+  }, [id]);
   const onStateChange = useCallback((state) => {
     if (state === "ended") {
       setPlaying(false);
       Alert.alert("Hoàn thành bài học");
     }
   }, []);
-
+  if (loading || !lesson || !lesson.subject) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <ActivityIndicator size="large" color={theme.colors.primary} />
+      </View>
+    );
+  }
   if (!videoId) {
     return (
       <View className="flex-1 justify-center items-center">
@@ -50,7 +69,7 @@ const LessonLearning = () => {
   return (
     <View className="pt-10" style={{ backgroundColor: theme.colors.gray[100] }}>
       <HeaderCustom />
-      {lesson.video !== null ? (
+      {lesson.video_url !== null ? (
         <YoutubePlayer
           ref={playerRef}
           height={220}
@@ -88,6 +107,11 @@ const LessonLearning = () => {
             </View>
           ))}
         </View>
+        <TextCustom.TextFocus
+          style={{ color: theme.colors.slate[600] }}
+          className="pl-4 text-xl"
+          text={lesson.content}
+        />
         <View className="mt-6 mb-10 p-3">
           <TextCustom.TextFocus
             style={{ color: theme.colors.slate[600] }}
