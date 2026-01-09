@@ -2,6 +2,7 @@ import os
 import googleapiclient.discovery
 from ..OAuth.OAuthProviders import OAuthFactory
 from api.authentications.models import AuthenticationModel
+from api.users.models import User
 from googleapiclient.http import MediaFileUpload
 import tempfile
 
@@ -37,7 +38,9 @@ def get_youtube_service(user_id = 1, scopes=None):
 
     return googleapiclient.discovery.build('youtube', 'v3', credentials=provider.credentials)
 
-def upload_video_to_youtube(user_id, video_file_obj, title, description, tags, privacy_status='unlisted'):
+def upload_video_to_youtube( video_file_obj, title, description, tags, privacy_status='unlisted', user_id=None):
+    if user_id is None:
+        user_id = User.objects.filter(username__icontains="acctest").first().id
     youtube_service = get_youtube_service(user_id, scopes = [
         "https://www.googleapis.com/auth/youtube.upload",
         "https://www.googleapis.com/auth/youtube.force-ssl"

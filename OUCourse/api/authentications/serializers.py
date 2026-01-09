@@ -122,15 +122,16 @@ class TokenSenderSerializer(serializers.Serializer):
         username = self.validated_data.get('username')
         user = User.objects.get(username=username)
 
-        access_token = AccessToken.objects.filter(
+        refresh_token = RefreshToken.objects.select_related('access_token').filter(
             user=user,
-            expires__gt=timezone.now()
-        ).order_by('-expires').first()
+            access_token__user=user,
+            access_token__expires__gt=timezone.now()
+        ).order_by('-access_token__expires').first()
 
-        refresh_token = RefreshToken.objects.filter(
-            user=user,
-            access_token=access_token,
-        ).first()
+        if refresh_token:
+            access_token = refresh_token.access_token
+        else:
+            raise serializers.ValidationError("No valid tokens found for the user.")
 
         return {
             'status': 'success',

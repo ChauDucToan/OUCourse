@@ -3,8 +3,6 @@ from .models import Course, ManageCourse
 import services.upload.services as upload_services
     
 class CourseSerializer(serializers.ModelSerializer):
-    instructor = serializers.CharField(source='instructor.username', read_only=True)
-    category = serializers.CharField(source='category.name')
     image = serializers.ImageField(required=False)
     video = serializers.FileField(required=False, write_only=True)
     video_url = serializers.URLField(source='video', read_only=True)
@@ -14,15 +12,13 @@ class CourseSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Price must be a non-negative value.")
         return value
     
-    def validate_instructor(self, value):
-        if getattr(value, "role", None) != 'INSTRUCTOR':
-            raise serializers.ValidationError("Instructor must have the role of INSTRUCTOR.")
-        return value
-    
     def create(self, validated_data):
         video_file = validated_data.pop('video', None)
-        user = self.context['request'].user
-        content = validated_data.get('content', '')
+        description = validated_data.get('description', '')
+
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['instructor'] = request.user
 
         youtube_url = None
         if video_file:
@@ -30,7 +26,7 @@ class CourseSerializer(serializers.ModelSerializer):
                 youtube_url = upload_services.upload_video_to_youtube(
                     video_file_obj=video_file,
                     title=validated_data.get('subject', 'Untitled Lesson'),
-                    description=content,
+                    description=description,
                     tags=["OUCourse Lesson"]
                 )
             except Exception as e:
@@ -39,14 +35,13 @@ class CourseSerializer(serializers.ModelSerializer):
         if youtube_url:
             validated_data['video'] = youtube_url
 
-
         course = Course.objects.create(**validated_data)
         
         return course
     
     class Meta:
         model = Course
-        fields = ['id', 'instructor', 'subject', 'duration', 'image',
+        fields = ['id', 'subject', 'duration', 'image', 'description',
                    'video', 'video_url', 'price', 'category']
     
 class CourseDetailSerializer(CourseSerializer):
