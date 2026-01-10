@@ -52,6 +52,19 @@ class CourseDetailSerializer(CourseSerializer):
 class ManageCourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = ManageCourse
-        fields = ['id', 'student', 'course', 'status']
-        
-        read_only_fields = ['student', 'course']
+        fields = ['id', 'status']
+
+    def create(self, validated_data):
+        course = validated_data.get('course')
+        student = validated_data.get('student')
+        status = validated_data.get('status', ManageCourse.Status.UNENROLLED)
+
+        if ManageCourse.objects.filter(course=course, student=student).exists():
+            raise serializers.ValidationError("The student is already enrolled in this course.")
+
+        manage_course = ManageCourse.objects.create(
+            course=course,
+            student=student,
+            status=status
+        )
+        return manage_course

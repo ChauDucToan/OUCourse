@@ -55,3 +55,7 @@ class ManageCourse(BaseModel):
         on_delete=models.CASCADE,
         related_name="managed_students",
     )
+
+    class Meta:
+        unique_together = ('student', 'course')
+        ordering = ['id']

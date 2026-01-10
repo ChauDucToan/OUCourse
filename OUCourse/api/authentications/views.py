@@ -3,7 +3,7 @@ from rest_framework.decorators import action, authentication_classes,permission_
 from rest_framework.response import Response
 from django.db import transaction
 
-from .serializers import AuthenticationModelSerializer, SocialLoginInputSerializer, TokenSenderSerializer
+from .serializers import AuthenticationModelSerializer, SocialLoginInputSerializer, TokenSenderSerializer, TokenCreatorSerializer
 from .models import AuthenticationModel
 from services.OAuth.OAuthProviders import OAuthFactory
 from .utils import create_oauth_token
@@ -11,6 +11,18 @@ from .utils import create_oauth_token
 class AuthViewSet(viewsets.GenericViewSet):
     queryset = AuthenticationModel.objects.all()
     serializer_class = AuthenticationModelSerializer
+
+    @action(detail=False, methods=['post'], url_path='send-token', serializer_class=TokenCreatorSerializer)
+    def send_token(self, request):
+        serializer = TokenCreatorSerializer(data=request.data)
+        
+        serializer.is_valid(raise_exception=True)
+        res = serializer.send_token()
+
+        return Response(
+            res,
+            status=status.HTTP_200_OK
+        )
 
     @action(detail=False, methods=['post'], url_path='get-token', serializer_class=TokenSenderSerializer)
     def get_token(self, request):

@@ -9,6 +9,7 @@ import os
 from oauth2_provider.models import AccessToken, RefreshToken
 from api.users.models import User
 from oauth2_provider.settings import oauth2_settings
+from .utils import create_oauth_token
 
 class AuthenticationModelSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(write_only=True) 
@@ -80,6 +81,53 @@ class SocialLoginInputSerializer(serializers.Serializer):
             auth_type = data.pop('state')
             data['auth_type'] = auth_type
         return super().validate_empty_values(data)
+    
+class TokenCreatorSerializer(serializers.Serializer):
+    username = serializers.CharField(required=True)
+    password = serializers.CharField(required=True, write_only=True)
+    client_id = serializers.CharField(required=True)
+    mac = serializers.CharField(required=True, help_text="HMAC signature: HMAC_SHA256(username|password|client_id)")
+
+    def validate(self, attrs):
+        username = attrs.get('username')
+        client_id = attrs.get('client_id')
+        received_mac = attrs.get('mac')
+        password = attrs.get('password')
+        internal_client_id = os.getenv("CLIENT_ID")
+
+        data = f"{username}|{password}|{client_id}"
+        expected_mac = self._get_mac(data, internal_client_id)
+        if client_id != internal_client_id:
+            raise serializers.ValidationError("Invalid client ID.")
+        
+        if not hmac.compare_digest(received_mac, expected_mac):
+            raise serializers.ValidationError("Invalid MAC signature.")
+        
+        try:
+            user = User.objects.get(username=username)
+            if not user.check_password(password):
+                raise serializers.ValidationError("Invalid username or password.")
+        except User.DoesNotExist:
+            raise serializers.ValidationError({"username": "User not found."})
+
+        return attrs
+    
+    def _get_mac(self, data, key):
+        mac = hmac.new(
+            key.encode("utf-8"),
+            data.encode("utf-8"),
+            hashlib.sha256
+        ).hexdigest()
+
+        return mac
+    
+    def send_token(self):
+        username = self.validated_data.get('username')
+        user = User.objects.get(username=username)
+
+        token = create_oauth_token(user)
+
+        return token
     
 class TokenSenderSerializer(serializers.Serializer):
     username = serializers.CharField(required=True)

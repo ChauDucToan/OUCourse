@@ -7,7 +7,6 @@ from django.db.models import Q
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.filters import OrderingFilter
-from rest_framework.exceptions import PermissionDenied
 
 UserModel = get_user_model()
 
@@ -31,6 +30,8 @@ class CourseView(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action in ['retrieve']:
             return serializers.CourseDetailSerializer
+        if self.action in ['enroll']:
+            return serializers.ManageCourseSerializer
         return self.serializer_class
 
     def get_queryset(self):
@@ -69,15 +70,14 @@ class CourseView(viewsets.ModelViewSet):
             ).values_list('course_id', flat=True)
             query = query.filter(id__in=manage_courses)
 
-        if self.action == 'my_courses' and self.request.user.is_authenticated:
+        if self.action == 'my_courses' and self.request.user.role == UserModel.Role.INSTRUCTOR:
             return models.Course.objects.filter(instructor=self.request.user, active=True)
 
         return query
     
-    def perform_create(self, serializer):
-        if self.request.user.role != 'INSTRUCTOR':
-            raise PermissionDenied("Bạn không có quyền tạo khóa học.")
-        serializer.save(instructor=self.request.user)
+    def perform_create(self, serializer, **kwargs):
+        if self.action == 'create' and self.request.user.role == UserModel.Role.INSTRUCTOR:
+            serializer.save(instructor=self.request.user)
     
     @action(methods=['get'], permission_classes=[permissions.IsAuthenticated],
             url_path='my-courses', detail=False)
@@ -104,20 +104,15 @@ class CourseView(viewsets.ModelViewSet):
         return Response(LessonSerializer(lessons, many=True).data, status=status.HTTP_200_OK)
 
     @action(methods=['post'], permission_classes=[permissions.IsAuthenticated], url_path='enroll',
-             detail=True, serializer_class=serializers.ManageCourseSerializer)
-    def enroll(self, request):
+             detail=True)
+    def enroll(self, request, pk=None):
         course = self.get_object()
-        u = request.user
+        student = request.user
 
-        status = request.data.get('status', models.ManageCourse.Status.ENROLLED)
-        manage_course, created = models.ManageCourse.objects.get_or_create(
-            student=u,
-            course=course,
-            defaults={'status': status}
-        )
+        data = request.data.copy()
 
-        if not created:
-            return Response({'detail': 'Already enrolled.'}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(course=course, student=student)
 
-        manage_course.save()
-        return Response(serializers.ManageCourseSerializer(manage_course).data, status=status.HTTP_201_CREATED)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

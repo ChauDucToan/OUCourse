@@ -1,8 +1,8 @@
 from django.utils import timezone
 from datetime import timedelta
 from oauth2_provider.settings import oauth2_settings
+from oauthlib.common import generate_token
 from oauth2_provider.models import AccessToken, RefreshToken, Application
-from django.utils.crypto import get_random_string
 
 def create_oauth_token(user):
     try:
@@ -14,7 +14,7 @@ def create_oauth_token(user):
     access_token = AccessToken.objects.create(
         user=user,
         application=application,
-        token=get_random_string(30),
+        token=generate_token(),
         expires=expires,
         scope="read write"
     )
@@ -22,7 +22,7 @@ def create_oauth_token(user):
     refresh_token = RefreshToken.objects.create(
         user=user,
         application=application,
-        token=get_random_string(30),
+        token=generate_token(),
         access_token=access_token
     )
 
