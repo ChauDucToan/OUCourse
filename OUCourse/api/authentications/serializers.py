@@ -108,7 +108,7 @@ class TokenCreatorSerializer(serializers.Serializer):
             if not user.check_password(password):
                 raise serializers.ValidationError("Invalid username or password.")
         except User.DoesNotExist:
-            raise serializers.ValidationError({"username": "User not found."})
+            raise serializers.ValidationError("Invalid username or password.")
 
         return attrs
     

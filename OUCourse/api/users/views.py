@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.utils.dateparse import parse_date
 from django.db.models.functions import TruncMonth, TruncQuarter, TruncYear
-from django.db.models import Sum, Count
+from django.db.models import Sum, Count, F
 from api import perms
 
 from api.payments.models import TransactionDetail, Transaction
@@ -32,9 +32,12 @@ class UserView(viewsets.ViewSet, generics.CreateAPIView):
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            serializer = UserSerializer(u)
+            return Response(serializer.data, status=status.HTTP_200_OK)
     
 class StatisticUserView(viewsets.ViewSet):
-    permission_classes = [perms.IsNotStudent]
+    permission_classes = [perms.IsNotStudent()]
 
     @action(methods=['get'], url_path='revenue', detail=False)
     def get_revenue(self, request):
@@ -85,22 +88,47 @@ class StatisticUserView(viewsets.ViewSet):
         chart_data = (
             base_query
             .annotate(period=trunc_func)
-            .values('period')
-            .annotate(
-                revenue=Sum('price_at_purchase'),
-                students=Count('transaction__user', distinct=True)
+            .values(
+                'period',
+                'price_at_purchase',
+                user_id=F('transaction__user__id'),
+                user_username=F('transaction__user__username'),
+                user_email=F('transaction__user__email')
             )
             .order_by('period')
         )
 
-        formatted_chart_data = []
+        grouped_results = {}
         for item in chart_data:
-            formatted_chart_data.append({
-                "period": item['period'].strftime('%Y-%m-%d'),
-                "revenue": item['revenue'] or 0,
-                "students": item['students'] or 0
-            })
+            period = item['period'].strftime('%Y-%m-%d')
 
+            if period not in grouped_results:
+                grouped_results[period] = {
+                    'period': period,
+                    'revenue': 0,
+                    'students': {}
+                }
+            grouped_results[period]['revenue'] += item['price_at_purchase']
+            
+            user_id = item['user_id']
+            if user_id not in grouped_results[period]['students']:
+                grouped_results[period]['students'][user_id] = {
+                    'id': user_id,
+                    'username': item['user_username'],
+                    'email': item['user_email']
+                }
+
+        formatted_chart_data = []
+        for data in grouped_results.values():
+            student_list = list(data['students'].values())
+
+            formatted_chart_data.append({
+                'period': data['period'],
+                'revenue': data['revenue'],
+                'student_count': len(student_list),
+                'students': student_list
+            })
+            
         return Response({
             "filter": {
                 "course_id": course_id,
