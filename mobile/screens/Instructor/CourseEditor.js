@@ -61,8 +61,12 @@ const CourseEditor = () => {
       className="pt-10 flex-1 "
       style={{ backgroundColor: theme.colors.gray[100] }}
     >
-      <HeaderCustom text={"Tạo mới khóa học"} />
-
+      <HeaderCustom />
+      <TextCustom.TextSection
+        className="text-2xl text-center"
+        text={"Tạo mới khóa học"}
+        style={{ color: theme.colors.slate[400] }}
+      />
       <View
         className="p-4 m-6 rounded-xl"
         style={{ backgroundColor: theme.colors.slate[200] }}

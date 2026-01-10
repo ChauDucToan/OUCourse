@@ -132,6 +132,8 @@ const Login = () => {
             label={item.title}
             secureTextEntry={isPasswordField ? !isVisible : false}
             activeOutlineColor={theme.colors.slate[500]}
+            placeholderTextColor={theme.colors.slate[600]}
+            outlineColor={theme.colors.slate[800]}
             right={
               isPasswordField ? (
                 <TextInput.Icon

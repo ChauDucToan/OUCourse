@@ -47,7 +47,7 @@ const InfoRow = ({
         <Text
           className="text-base pt-2 font-medium text-gray-800 "
           style={{
-            color: theme.colors.gray[800],
+            color: theme.colors.slate[400],
           }}
         >
           {text || "Chưa cập nhật"}
@@ -58,11 +58,12 @@ const InfoRow = ({
           onChangeText={onChangeText}
           className="bg-white border rounded-lg p-2 text-base"
           style={{
-            color: theme.colors.gray[800],
-            backgroundColor: theme.colors.white,
+            color: theme.colors.slate[400],
+            backgroundColor: theme.colors.gray[100],
             borderColor: theme.colors.blue[500],
           }}
           placeholder={`Nhập ${subject.toLowerCase()}`}
+          placeholderTextColor={theme.colors.slate[400]}
         />
       )}
     </View>
@@ -138,7 +139,6 @@ const AccountDetailedScreen = () => {
       const res = await axiosClient.patch(endpoints.current_user, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      console.log("NAY har Account-detaield");
 
       if (res.status === 200 || res.status === 202) {
         dispatch({ type: "login", payload: res.data });
@@ -155,18 +155,19 @@ const AccountDetailedScreen = () => {
 
   return (
     <ScrollView
-      className=" flex-1"
+      className=" flex-1 pt-10"
       style={{
-        backgroundColor: theme.colors.white,
+        backgroundColor: theme.colors.gray[100],
       }}
     >
+      <HeaderCustom text={"HỒ SƠ NGƯỜI DÙNG"} />
+
       <View
         className="pb-8 rounded-b-3xl shadow-sm items-center pt-12 px-5"
         style={{
-          backgroundColor: theme.colors.white,
+          backgroundColor: theme.colors.gray[100],
         }}
       >
-        <HeaderCustom text={"HỒ SƠ NGƯỜI DÙNG"} />
         {!isEdit ? (
           <Avatar.Image
             size={80}
@@ -188,17 +189,26 @@ const AccountDetailedScreen = () => {
               }}
             />
             <View
-              className="absolute bottom-0 right-0 bg-slate-600 rounded-full border-2  p-1"
+              className="absolute bottom-0 right-0 rounded-full border-2  p-1"
               style={{
                 borderColor: theme.colors.white,
+                backgroundColor: theme.colors.slate[600],
               }}
             >
               <Icon source="camera" color="white" size={16} />
             </View>
           </Pressable>
         )}
-        <Text className="text-xl font-bold">{user.username}</Text>
-        <Text className="text-base font-light">
+        <Text
+          className="text-xl font-bold"
+          style={{ color: theme.colors.slate[500] }}
+        >
+          {user.username}
+        </Text>
+        <Text
+          className="text-base font-light"
+          style={{ color: theme.colors.slate[500] }}
+        >
           {user.first_name + " " + user.last_name}
         </Text>
       </View>
@@ -206,7 +216,7 @@ const AccountDetailedScreen = () => {
         <View
           className="rounded-2xl p-4 shadow-sm"
           style={{
-            backgroundColor: theme.colors.white,
+            backgroundColor: theme.colors.gray[200],
           }}
         >
           <InfoRow

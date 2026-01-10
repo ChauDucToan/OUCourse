@@ -10,8 +10,8 @@ import HeaderCustom from "../../components/Header";
 import { MyColorContext } from "../../utils/contexts/MyColorContext";
 
 const InstructorDashboard = () => {
+  const navigation = useNavigation();
   const [selectionInstructor, setSelectionInstructor] = useState([]);
-  const nav = useNavigation();
   const { theme } = useContext(MyColorContext);
   useEffect(() => {
     const data = require("../../mock/data.config.instructor.json");
@@ -28,7 +28,7 @@ const InstructorDashboard = () => {
       <ScrollView className="p-5">
         <ListItem
           mapJson={selectionInstructor}
-          navigation={nav}
+          navigation={navigation}
           header="Quản lý"
           theme={theme}
         />

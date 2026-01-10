@@ -67,6 +67,7 @@ const Register = () => {
       setLoading(true);
 
       try {
+        console.log("DAY");
         let form = new FormData();
         for (let key in user)
           if (key !== "confirm") {
@@ -140,7 +141,7 @@ const Register = () => {
           style={{ width: 100, height: 100, marginTop: 10, borderRadius: 10 }}
         />
       )}
-      <Pressable
+      <TouchableOpacity
         onPress={register}
         disabled={loading}
         className="mt-4 p-3 rounded-xl flex-row justify-center items-center shadow-md"
@@ -169,7 +170,7 @@ const Register = () => {
             </Text>
           </>
         )}
-      </Pressable>
+      </TouchableOpacity>
     </AuthLayout>
   );
 };

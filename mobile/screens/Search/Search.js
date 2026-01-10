@@ -18,7 +18,6 @@ const Search = () => {
   const [keyword, setKeyword] = useState("");
   const { theme } = useContext(MyColorContext);
   const { courses, ensureCourses } = useContext(CourseContext);
-  const { categories, ensureCategories } = useContext(CategoriesContext);
   const [count, setCount] = useState(20);
 
   const loadMore = () => {
@@ -32,9 +31,7 @@ const Search = () => {
     );
   }, [courses, keyword]);
   const nav = useNavigation();
-  useEffect(() => {
-    ensureCategories();
-  }, [ensureCategories]);
+
   useEffect(() => {
     ensureCourses();
   }, [ensureCourses]);

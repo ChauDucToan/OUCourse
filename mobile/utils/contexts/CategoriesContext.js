@@ -25,7 +25,7 @@ export const CategoriesProvider = ({ children }) => {
       categoriesRef.current.length > 0 &&
       now - lastFetchdAtRef.current < 300000
     )
-      return categories;
+      return categoriesRef.current;
     setLoading(true);
     setError(null);
     try {

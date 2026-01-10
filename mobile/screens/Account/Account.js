@@ -30,14 +30,15 @@ const Account = ({ navigation }) => {
         paddingBottom: 80,
       }}
     >
-      <HeaderCustom text="" />
+      <HeaderCustom viewClass="w-24" />
       {user && (
         <View>
           <View
             style={{
               backgroundColor: theme.colors.gray[100],
+              borderColor: theme.colors.gray[200],
             }}
-            className=" p-5 flex flex-row items-center justify-around border-b "
+            className=" p-5 flex flex-row items-center justify-around border-b"
           >
             <View>
               <Avatar.Image

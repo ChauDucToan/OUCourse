@@ -59,17 +59,9 @@ const CourseDetailedScreen = () => {
 
   const handleEnroll = async (course) => {
     try {
-      // "id": 7,
-      // "subject": "Machine Learning căn bản",
-      // "instructor": "Ngô Tiến Đạt",
-      // "image": "https://img.freepik.com/free-vector/machine-learning-concept-illustration_114360-3908.jpg",
-      // "category": "Data Science",
-      // "description": "<strong>Thuật toán và Ứng dụng</strong><p>Tìm hiểu Linear Regression, Decision Trees và cách huấn luyện mô hình dự đoán đầu tiên.</p>",
-      // "price": 800000
-
       const formData = new FormData();
-      formData.append("id", course.id);
       formData.append("status", "ENROLLED");
+      console.log(formData);
       const res = await axiosClient.post(
         endpoints.enrollCourse(course.id),
         formData,
@@ -102,7 +94,11 @@ const CourseDetailedScreen = () => {
         <HeaderCustom text={course.subject} />
         <View>
           <ImageBackground
-            source={{ uri: course.image }}
+            source={
+              course.image
+                ? { uri: course.image }
+                : require("../../assets/banner_1.png")
+            }
             className="w-full h-52 rounded-xl"
             style={{ width: width }}
           ></ImageBackground>

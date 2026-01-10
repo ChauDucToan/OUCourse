@@ -28,7 +28,7 @@ export const LessonProvider = ({ children }) => {
   const ensureLessons = useCallback(async (id) => {
     const now = Date.now();
     if (lessonsRef.current.length > 0 && now - lastAtRef.current < 300000)
-      return lessons;
+      return lessonsRef.current;
     setLoading(true);
     try {
       const res = await axiosClient.get(endpoints.lessons(id));
