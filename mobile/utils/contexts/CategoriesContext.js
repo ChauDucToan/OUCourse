@@ -12,22 +12,31 @@ export const CategoriesProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const lastFetchdAtRef = useRef(0);
+  const categoriesRef = useRef([]);
+
+  const updateCategories = (newCategories) => {
+    setCategories(newCategories);
+    categoriesRef.current = newCategories;
+  };
 
   const ensureCategories = useCallback(async () => {
     const now = Date.now();
-    if (categories.length > 0 && now - lastFetchdAtRef.current < 300000)
-      return categories;
+    if (
+      categoriesRef.current.length > 0 &&
+      now - lastFetchdAtRef.current < 300000
+    )
+      return categoriesRef.current;
     setLoading(true);
     setError(null);
     try {
       const res = await axiosClient.get(endpoints.categories);
       const results = res?.data ?? [];
-      setCategories(results);
+      updateCategories(results);
       lastFetchdAtRef.current = now;
       return results;
     } catch (error) {
       setError(error);
-      setCategories([]);
+      updateCategories([]);
       throw error;
     } finally {
       setLoading(false);

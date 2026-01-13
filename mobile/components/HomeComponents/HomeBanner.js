@@ -7,8 +7,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import { useEffect } from "react";
 
-import { images } from "../../mock/data.mock.banner.json";
-
+import { images } from "../../mock/data.mock.banners.json";
 export const HomeBanner = ({ theme }) => {
   const flatListRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);

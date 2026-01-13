@@ -20,7 +20,6 @@ const HEADER_MAX_HEIGHT = 140;
 const HEADER_MIN_HEIGHT = 80;
 
 const HomeScreen = () => {
-  const [courseData, setCourseData] = useState([]);
   const { theme } = useContext(MyColorContext);
   const scrollY = useRef(new Animated.Value(0)).current;
   const { courses, ensureCourses } = useContext(CourseContext);
@@ -65,7 +64,7 @@ const HomeScreen = () => {
           theme={theme}
         />
         <HomeBanner theme={theme} />
-        <HomeCategories theme={theme} />
+        <HomeCategories icon="tag" text="Danh mục" theme={theme} />
         <HomeCourseList
           data={courseFree}
           text="Top thịnh hành"

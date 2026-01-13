@@ -10,17 +10,16 @@ import HeaderCustom from "../../components/Header";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import TextCustom from "../../components/TextCustom";
 import RenderHTML from "react-native-render-html";
-import { lessons } from "../../mock/data.mock.lessons.json";
 import { FlatList } from "react-native";
 import { useContext } from "react";
 import { MyColorContext } from "../../utils/contexts/MyColorContext";
+import { useCallback } from "react";
+import { LessonContext } from "../../utils/contexts/LessonContext";
+import { useEffect } from "react";
 import { useMemo } from "react";
+import { ImageBackground } from "react-native";
 
-const LessonsRoute = ({ lessons, id, theme }) => {
-  const filterLesson = useMemo(() => {
-    return lessons.filter((lesson) => String(lesson.course) === String(id));
-  }, [lessons, id]);
-
+const LessonsRoute = ({ lessons, theme }) => {
   const nav = useNavigation();
   return (
     <View
@@ -31,10 +30,9 @@ const LessonsRoute = ({ lessons, id, theme }) => {
         style={{ color: theme.colors.slate[800] }}
         text="Danh sách các bài học"
       />
-
       <FlatList
         className="mt-4"
-        data={filterLesson}
+        data={lessons}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item, index }) => (
           <View>
@@ -42,16 +40,24 @@ const LessonsRoute = ({ lessons, id, theme }) => {
               activeOpacity={0.6}
               delayPressIn={0.7}
               onPress={() => {
-                nav.navigate("LessonLearning", { lesson: item, theme: theme });
+                nav.navigate("LessonLearning", { id: item.id, theme: theme });
               }}
             >
               <View
                 className="flex-row item-start gap-3 m-2 border rounded-xl p-2"
                 style={{ borderColor: theme.colors.gray[300] }}
               >
-                <View
-                  className=" p-2 rounded-xl items-center justify-center mr-3 w-24"
-                  style={{ backgroundColor: theme.colors.blue[500] }}
+                <ImageBackground
+                  className=" p-2 rounded-xl items-center justify-center  mr-3 w-24"
+                  style={{
+                    backgroundColor: theme.colors.blue[500],
+                  }}
+                  source={{
+                    uri: item.image || "https://picsum.photos/100/300",
+                  }}
+                  imageStyle={{
+                    borderRadius: 10,
+                  }}
                 >
                   <TextCustom.TextFocus
                     text={`Bài học ${(index + 1).toString()}`}
@@ -60,7 +66,7 @@ const LessonsRoute = ({ lessons, id, theme }) => {
                       color: theme.colors.gray[200],
                     }}
                   />
-                </View>
+                </ImageBackground>
 
                 <View className="flex-1">
                   <TextCustom.TextFocus
@@ -112,32 +118,35 @@ const DescriptionRoute = ({ description, theme }) => {
 
 export const LessonScreen = () => {
   const { theme } = useContext(MyColorContext);
-
   const route = useRoute();
   const { item } = route.params;
   const layout = useWindowDimensions();
-
+  const { lessons, ensureLessons } = useContext(LessonContext);
+  useEffect(() => {
+    ensureLessons(item.id);
+  }, [ensureLessons, item.id]);
   const [index, setIndex] = useState(0);
   const [routes] = useState([
-    { key: "lessons", title: "Bài học", courseId: item.id },
-    { key: "desc", title: "Mô tả", description: item.description },
+    { key: "lessons", title: "Bài học" },
+    { key: "desc", title: "Mô tả" },
   ]);
 
-  console.log("NAY", item);
-  const renderScene = ({ route }) => {
-    switch (route.key) {
-      case "lessons":
-        return (
-          <LessonsRoute lessons={lessons} id={route.courseId} theme={theme} />
-        );
-      case "desc":
-        return (
-          <DescriptionRoute description={route.description} theme={theme} />
-        );
-      default:
-        return null;
-    }
-  };
+  const renderScene = useCallback(
+    ({ route }) => {
+      switch (route.key) {
+        case "lessons":
+          return <LessonsRoute lessons={lessons} theme={theme} />;
+        case "desc":
+          return (
+            <DescriptionRoute description={item.description} theme={theme} />
+          );
+        default:
+          return null;
+      }
+    },
+    [theme, lessons, item.description],
+  );
+
   return (
     <View
       className=" pt-10 flex-1"
@@ -156,7 +165,9 @@ export const LessonScreen = () => {
           style={{ color: theme.colors.slate[600] }}
         />
         <Image
-          source={{ uri: item.image }}
+          source={{
+            uri: item.image || "https://picsum.photos/100/300",
+          }}
           className="w-full h-48 mt-4 rounded-xl"
         />
       </View>

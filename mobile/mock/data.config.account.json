@@ -20,14 +20,7 @@
         "screen": "UserLearning"
       }
     },
-    {
-      "title": "Thành tích & Chứng chỉ",
-      "description": "",
-      "iconLeft": "trophy-outline",
-      "iconColor": "#fbbf24",
-      "navUrl": "Certificates",
-      "navParams": ""
-    },
+
     {
       "title": "Bảng điều khiển giảng viên",
       "description": "Quản lý khóa học, học viên và tiến độ học tập.",

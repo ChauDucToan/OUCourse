@@ -16,6 +16,7 @@ import { useEffect, useState, useContext } from "react";
 import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../../utils/Apis";
 import { MyColorContext } from "../../utils/contexts/MyColorContext";
+import { getMimeType } from "../../utils/imageUtils";
 const InfoRow = ({
   subject,
   text,
@@ -47,7 +48,7 @@ const InfoRow = ({
         <Text
           className="text-base pt-2 font-medium text-gray-800 "
           style={{
-            color: theme.colors.gray[800],
+            color: theme.colors.slate[400],
           }}
         >
           {text || "Chưa cập nhật"}
@@ -58,11 +59,12 @@ const InfoRow = ({
           onChangeText={onChangeText}
           className="bg-white border rounded-lg p-2 text-base"
           style={{
-            color: theme.colors.gray[800],
-            backgroundColor: theme.colors.white,
+            color: theme.colors.slate[400],
+            backgroundColor: theme.colors.gray[100],
             borderColor: theme.colors.blue[500],
           }}
           placeholder={`Nhập ${subject.toLowerCase()}`}
+          placeholderTextColor={theme.colors.slate[400]}
         />
       )}
     </View>
@@ -74,8 +76,9 @@ const AccountDetailedScreen = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [userFirstName, setUserFirstName] = useState("");
   const [userLastName, setUserLastName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
   const [isLoading, setLoading] = useState(false);
-  const [selectedAvatar, setSelectedAvatar] = useState(null); // State lưu ảnh mới chọn
+  const [selectedAvatar, setSelectedAvatar] = useState(null);
   const { theme } = useContext(MyColorContext);
 
   const route = useRoute();
@@ -84,6 +87,7 @@ const AccountDetailedScreen = () => {
   useEffect(() => {
     setUserFirstName(user.first_name);
     setUserLastName(user.last_name);
+    setUserEmail(user.email);
     setIsEdit(isEditParam);
   }, []);
   const pickImage = async () => {
@@ -96,26 +100,12 @@ const AccountDetailedScreen = () => {
       if (!result.canceled) setSelectedAvatar(result.assets[0]);
     }
   };
-  const getMimeType = (fileUri) => {
-    const extension = fileUri.split(".").pop().toLowerCase();
-    switch (extension) {
-      case "jpg":
-      case "jpeg":
-        return "image/jpeg";
-      case "png":
-        return "image/png";
-      case "gif":
-        return "image/gif";
-      case "heic":
-        return "image/heic";
-      default:
-        return "image/jpeg";
-    }
-  };
+
   const handleEditSave = async () => {
     const isChanged =
       userFirstName !== user.first_name ||
       userLastName !== user.last_name ||
+      userEmail !== user.email ||
       selectedAvatar !== null;
 
     if (!isChanged) {
@@ -127,6 +117,7 @@ const AccountDetailedScreen = () => {
       const formData = new FormData();
       formData.append("first_name", userFirstName);
       formData.append("last_name", userLastName);
+      formData.append("email", userEmail);
       if (selectedAvatar) {
         formData.append("avatar", {
           uri: selectedAvatar.uri,
@@ -138,7 +129,6 @@ const AccountDetailedScreen = () => {
       const res = await axiosClient.patch(endpoints.current_user, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      console.log("NAY har Account-detaield");
 
       if (res.status === 200 || res.status === 202) {
         dispatch({ type: "login", payload: res.data });
@@ -155,18 +145,19 @@ const AccountDetailedScreen = () => {
 
   return (
     <ScrollView
-      className=" flex-1"
+      className=" flex-1 pt-10"
       style={{
-        backgroundColor: theme.colors.white,
+        backgroundColor: theme.colors.gray[100],
       }}
     >
+      <HeaderCustom text={"HỒ SƠ NGƯỜI DÙNG"} />
+
       <View
         className="pb-8 rounded-b-3xl shadow-sm items-center pt-12 px-5"
         style={{
-          backgroundColor: theme.colors.white,
+          backgroundColor: theme.colors.gray[100],
         }}
       >
-        <HeaderCustom text={"HỒ SƠ NGƯỜI DÙNG"} />
         {!isEdit ? (
           <Avatar.Image
             size={80}
@@ -188,17 +179,26 @@ const AccountDetailedScreen = () => {
               }}
             />
             <View
-              className="absolute bottom-0 right-0 bg-slate-600 rounded-full border-2  p-1"
+              className="absolute bottom-0 right-0 rounded-full border-2  p-1"
               style={{
                 borderColor: theme.colors.white,
+                backgroundColor: theme.colors.slate[600],
               }}
             >
               <Icon source="camera" color="white" size={16} />
             </View>
           </Pressable>
         )}
-        <Text className="text-xl font-bold">{user.username}</Text>
-        <Text className="text-base font-light">
+        <Text
+          className="text-xl font-bold"
+          style={{ color: theme.colors.slate[500] }}
+        >
+          {user.username}
+        </Text>
+        <Text
+          className="text-base font-light"
+          style={{ color: theme.colors.slate[500] }}
+        >
           {user.first_name + " " + user.last_name}
         </Text>
       </View>
@@ -206,7 +206,7 @@ const AccountDetailedScreen = () => {
         <View
           className="rounded-2xl p-4 shadow-sm"
           style={{
-            backgroundColor: theme.colors.white,
+            backgroundColor: theme.colors.gray[200],
           }}
         >
           <InfoRow
@@ -231,20 +231,21 @@ const AccountDetailedScreen = () => {
           />
 
           <Divider />
-
           <InfoRow
-            subject={"Vai trò"}
-            text={user.role === "admin" ? "Quản trị viên" : "Người dùng"}
-            icon="account-key"
-            isEdit={false}
+            subject={"Email"}
+            value={isEdit ? userEmail : user.email}
+            text={user.email}
+            icon="email"
+            isEdit={isEdit}
+            onChangeText={setUserEmail}
             theme={theme}
           />
           <Divider />
 
           <InfoRow
-            subject={"Email"}
-            text={user.email}
-            icon="email"
+            subject={"Vai trò"}
+            text={user.role === "admin" ? "Quản trị viên" : "Người dùng"}
+            icon="account-key"
             isEdit={false}
             theme={theme}
           />

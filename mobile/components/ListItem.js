@@ -1,10 +1,13 @@
 import { List } from "react-native-paper";
 import TextCustom from "./TextCustom";
 import Appearance from "../screens/Setting/Appearance";
+import { MyUserContext } from "../utils/contexts/MyContext";
+import { useContext } from "react";
 
 const jsonStyle = require("../mock/data.styles.json");
 
 const ListItem = ({ mapJson, navigation, header, theme }) => {
+  const [user] = useContext(MyUserContext);
   return (
     <List.Section
       className="mt-2  border-b "
@@ -24,6 +27,13 @@ const ListItem = ({ mapJson, navigation, header, theme }) => {
       {mapJson &&
         mapJson.map((item, index) => {
           if (item.title !== "Theme") {
+            if (
+              user &&
+              user.role !== "INSTRUCTOR" &&
+              item.iconLeft === "school-outline"
+            ) {
+              return;
+            }
             return (
               <List.Item
                 key={item.id ? item.id.toString() : index.toString()}

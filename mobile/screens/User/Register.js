@@ -10,15 +10,17 @@ import { MyColorContext } from "../../utils/contexts/MyColorContext";
 import { registerApi } from "../../api/registerApi";
 import { useContext, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import FormAuth from "../../components/FormAuth";
+import { Alert } from "react-native";
+import { getMimeType } from "../../utils/imageUtils";
 
 const Register = () => {
   const jsonData = require("../../mock/data.config.register.json");
   const fieldsRender = jsonData.info;
   const { theme } = useContext(MyColorContext);
-  const [user, setUser] = useState({});
   const [err, setErr] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPass, setShowConfirmPass] = useState(false);
+  const [user, setUser] = useState({});
+
   const [loading, setLoading] = useState(false);
   const nav = useNavigation();
 
@@ -36,37 +38,34 @@ const Register = () => {
   };
 
   const validate = () => {
-    if (!user.password || user.password !== user.confirm) {
+    console.info(user);
+    if (!user.username) {
+      setErr(true);
+      Alert("Chưa có tài khoản!");
+      return false;
+    }
+    if (user.password !== user.confirm) {
+      setErr(true);
+      Alert("Mật khẩu khác với mật khẩu xác nhận!");
+      return false;
+    }
+    if (!user.password) {
+      Alert("Chưa nhập mật khẩu");
+
       setErr(true);
       return false;
     }
     setErr(false);
     return true;
   };
-  const getMimeType = (fileUri) => {
-    // 1. Lấy đuôi file (extension) từ URI (ví dụ: .jpeg, .png)
-    const extension = fileUri.split(".").pop().toLowerCase();
 
-    // 2. Check và trả về type chuẩn
-    switch (extension) {
-      case "jpg":
-      case "jpeg":
-        return "image/jpeg";
-      case "png":
-        return "image/png";
-      case "gif":
-        return "image/gif";
-      case "heic": // Định dạng ảnh của iPhone
-        return "image/heic";
-      default:
-        return "image/jpeg"; // Mặc định an toàn nhất là jpeg
-    }
-  };
   const register = async () => {
+    console.log(validate());
     if (validate() === true) {
       setLoading(true);
 
       try {
+        console.log("DAY");
         let form = new FormData();
         for (let key in user)
           if (key !== "confirm") {
@@ -86,7 +85,6 @@ const Register = () => {
           nav.navigate("Login");
         }
         console.log("DANG KY THANH CONG");
-        nav.navigate("Login");
       } catch (ex) {
         console.error(ex);
       } finally {
@@ -96,43 +94,23 @@ const Register = () => {
   };
   return (
     <AuthLayout title="ĐĂNG KÝ NGƯỜI DÙNG">
-      {fieldsRender.map((item) => {
-        const isPasswordField =
-          item.field === "password" || item.field === "confirm";
-
-        const isVisible =
-          item.field === "password" ? showPassword : showConfirmPass;
-        const toggleVisibility = () => {
-          if (item.field === "password") setShowPassword(!showPassword);
-          else setShowConfirmPass(!showConfirmPass);
-        };
-        return (
-          <TextInput
-            key={item.field}
-            value={user[item.field]}
-            onChangeText={(t) => setUser({ ...user, [item.field]: t })}
-            label={item.title}
-            secureTextEntry={isPasswordField ? !isVisible : false}
-            activeOutlineColor={theme.colors.slate[500]}
-            right={
-              isPasswordField ? (
-                <TextInput.Icon
-                  icon={isVisible ? "eye-off" : "eye"}
-                  onPress={toggleVisibility}
-                />
-              ) : (
-                <TextInput.Icon icon={item.icon} />
-              )
-            }
-            mode="outlined"
-          />
-        );
-      })}
+      {fieldsRender.map((item) => (
+        <FormAuth
+          key={item.field}
+          item={item}
+          theme={theme}
+          value={user[item.field]}
+          onChangeText={(t) => setUser({ ...user, [item.field]: t })}
+        />
+      ))}
       <TouchableOpacity
         className="border-2 p-2  rounded-md mt-2 border-slate-500"
         onPress={pickImage}
       >
-        <TextCustom.TextMuted text="Chọn ảnh đại diện..." />
+        <TextCustom.TextMuted
+          style={{ color: theme.colors.slate[400] }}
+          text="Chọn ảnh đại diện..."
+        />
       </TouchableOpacity>
       {user.avatar && (
         <Image
@@ -140,7 +118,7 @@ const Register = () => {
           style={{ width: 100, height: 100, marginTop: 10, borderRadius: 10 }}
         />
       )}
-      <Pressable
+      <TouchableOpacity
         onPress={register}
         disabled={loading}
         className="mt-4 p-3 rounded-xl flex-row justify-center items-center shadow-md"
@@ -169,7 +147,7 @@ const Register = () => {
             </Text>
           </>
         )}
-      </Pressable>
+      </TouchableOpacity>
     </AuthLayout>
   );
 };

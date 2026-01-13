@@ -2,11 +2,10 @@ import { Dimensions } from "react-native";
 import { Text } from "react-native";
 import { ImageBackground } from "react-native";
 import { TouchableOpacity, View } from "react-native";
+import { formatCurrency } from "../utils/formatCurrency";
 const CourseView = ({ navigation, item }) => {
   const { width } = Dimensions.get("window");
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("vi-VN").format(amount) + " đ";
-  };
+
   return (
     <TouchableOpacity
       onPress={() =>

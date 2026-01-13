@@ -1,11 +1,8 @@
-import "./global.css";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { View } from "react-native";
-import { MyColorContext } from "./utils/contexts/MyColorContext";
-
+import "./global.css";
 import MyReducers from "./utils/reducers/MyReducers";
-import { MyUserContext } from "./utils/contexts/MyContext";
-import { ActivityIndicator, Icon } from "react-native-paper";
+import { ActivityIndicator } from "react-native-paper";
 
 import { useEffect, useReducer, useState } from "react";
 import axiosClient from "./api/axiosClient";
@@ -16,17 +13,28 @@ import {
   ThemeReducer,
 } from "./utils/reducers/ThemeReducers";
 import TabNavigator from "./navigation/TabNavigation";
-import { CoursesProvider } from "./utils/contexts/CoursesContext";
-import { CategoriesProvider } from "./utils/contexts/CategoriesContext";
+import { getTokens } from "./utils/tokenUtils";
+import AppProvider from "./utils/AppProvider";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function App() {
   const [user, dispatch] = useReducer(MyReducers, null);
   const [theme, themeDispatch] = useReducer(ThemeReducer, initialThemeState);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const navigationTheme = {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      background: theme.colors.gray[100], // Sử dụng màu tối từ theme của bạn
+    },
+  };
   useEffect(() => {
-    const hydrateAuth = async () => {
-      let token;
-      setLoading(true);
+    const cacheUser = async () => {
+      const tokens = await getTokens();
+      if (!tokens) {
+        setLoading(false);
+        return;
+      }
       try {
         const res = await axiosClient.get(endpoints.current_user);
         dispatch({
@@ -39,8 +47,7 @@ export default function App() {
         setLoading(false);
       }
     };
-
-    hydrateAuth();
+    cacheUser();
   }, []);
 
   if (loading) {
@@ -52,16 +59,12 @@ export default function App() {
   }
 
   return (
-    <MyColorContext.Provider value={{ theme, themeDispatch }}>
-      <MyUserContext.Provider value={[user, dispatch]}>
-        <NavigationContainer>
-          <CoursesProvider>
-            <CategoriesProvider>
-              <TabNavigator />
-            </CategoriesProvider>
-          </CoursesProvider>
+    <SafeAreaProvider>
+      <AppProvider state={{ theme, themeDispatch, user, dispatch }}>
+        <NavigationContainer theme={navigationTheme}>
+          <TabNavigator />
         </NavigationContainer>
-      </MyUserContext.Provider>
-    </MyColorContext.Provider>
+      </AppProvider>
+    </SafeAreaProvider>
   );
 }
