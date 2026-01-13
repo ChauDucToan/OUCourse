@@ -16,6 +16,8 @@ import { useContext, useState, useEffect } from "react";
 import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../../utils/Apis";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { Alert } from "react-native";
+import PaymentSelectionModal from "../../components/ModalPayment";
 
 const CourseDetailedScreen = () => {
   const route = useRoute();
@@ -24,6 +26,8 @@ const CourseDetailedScreen = () => {
   const { theme } = useContext(MyColorContext);
   const { id } = route.params;
   const { width } = Dimensions.get("window");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedMethod, setSelectedMethod] = useState(null);
   const nav = useNavigation();
   useEffect(() => {
     const loadData = async () => {
@@ -57,27 +61,64 @@ const CourseDetailedScreen = () => {
     return new Intl.NumberFormat("vi-VN").format(amount) + " đ";
   };
 
-  const handleEnroll = async (course) => {
+  const handleEnroll = () => {
+    setModalVisible(true);
+  };
+
+  const handlePayment = async (method) => {
     try {
-      const formData = new FormData();
-      formData.append("status", "ENROLLED");
-      console.log(formData);
-      const res = await axiosClient.post(
-        endpoints.enrollCourse(course.id),
-        formData,
+      setLoading(true);
+
+      const paymentPayload = {
+        currency: "vnd",
+        provider: method.id,
+        items: [{ courses: course.id }],
+      };
+      console.log(paymentPayload);
+      const paymentRes = await axiosClient.post(
+        endpoints.payment,
+        paymentPayload,
         {
-          headers: { "Content-Type": "multipart/form-data" },
+          headers: {
+            Referer:
+              "https://paleological-pachydermatously-linnie.ngrok-free.dev",
+          },
         },
       );
 
-      console.log("Enroll DONE");
+      if (paymentRes.data.success) {
+        const formData = new FormData();
+        formData.append("status", "ENROLLED");
 
-      console.log("RES enrroll: ", res);
-      nav.goBack();
+        await axiosClient.post(endpoints.enrollCourse(course.id), formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+
+        Alert.alert("Đăng ký thành công");
+        nav.goBack();
+      } else {
+        Alert.alert("Thanh toán thất bại");
+      }
     } catch (error) {
+      if (error.response) {
+        console.log("Status:", error.response.status);
+        console.log("Data lỗi:", error.response.data); // <-- Quan trọng: Server sẽ báo lý do tại đây
+        console.log("Headers:", error.response.headers);
+      } else {
+        console.error("Lỗi khác:", error.message);
+      }
+      Alert.alert(
+        "Có lỗi xảy ra",
+        JSON.stringify(error.response?.data) || "Lỗi không xác định",
+      );
       console.error(error);
+      Alert.alert("Có lỗi xảy ra khi thanh toán");
+    } finally {
+      setLoading(false);
+      setModalVisible(false);
     }
   };
+
   return (
     <View
       className=" flex-1"
@@ -175,7 +216,11 @@ const CourseDetailedScreen = () => {
                 {course.price < 0 ? "Miễn phí" : formatCurrency(course.price)}
               </Text>
             </View>
-
+            <PaymentSelectionModal
+              isVisible={modalVisible}
+              onClose={() => setModalVisible(false)}
+              onSelect={(method) => handlePayment(method)}
+            />
             <TouchableOpacity
               style={{
                 backgroundColor: isLoading

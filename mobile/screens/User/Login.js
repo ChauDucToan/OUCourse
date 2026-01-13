@@ -19,6 +19,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useContext } from "react";
 import * as AuthSession from "expo-auth-session";
 import { MyColorContext } from "../../utils/contexts/MyColorContext";
+import FormAuth from "../../components/FormAuth";
 
 const Login = () => {
   const jsonData = require("../../mock/data.config.register.json");
@@ -111,45 +112,24 @@ const Login = () => {
 
   return (
     <AuthLayout title="ĐĂNG NHẬP NGƯỜI DÙNG">
+      {fieldsRender.map((item) => (
+        <FormAuth
+          key={item.field}
+          item={item}
+          theme={theme}
+          value={user[item.field]}
+          onChangeText={(t) => setUser({ ...user, [item.field]: t })}
+        />
+      ))}
       <HelperText type="error" visible={err}>
         Mật khẩu KHÔNG khớp!
       </HelperText>
-      {fieldsRender.map((item) => {
-        const isPasswordField =
-          item.field === "password" || item.field === "confirm";
-
-        const isVisible =
-          item.field === "password" ? showPassword : showConfirmPass;
-        const toggleVisibility = () => {
-          if (item.field === "password") setShowPassword(!showPassword);
-          else setShowConfirmPass(!showConfirmPass);
-        };
-        return (
-          <TextInput
-            key={item.field}
-            value={user[item.field]}
-            onChangeText={(t) => setUser({ ...user, [item.field]: t })}
-            label={item.title}
-            secureTextEntry={isPasswordField ? !isVisible : false}
-            activeOutlineColor={theme.colors.slate[500]}
-            placeholderTextColor={theme.colors.slate[600]}
-            outlineColor={theme.colors.slate[800]}
-            right={
-              isPasswordField ? (
-                <TextInput.Icon
-                  icon={isVisible ? "eye-off" : "eye"}
-                  onPress={toggleVisibility}
-                />
-              ) : (
-                <TextInput.Icon icon={item.icon} />
-              )
-            }
-            mode="outlined"
-          />
-        );
-      })}
       <View className="flex mb-2 flex-row-reverse gap-5 mt-3">
-        <Pressable onPress={login} className={jsonStyle["pressable-focus"]}>
+        <Pressable
+          onPress={login}
+          className={jsonStyle["pressable-focus"]}
+          style={{ backgroundColor: theme.colors.gray[700] }}
+        >
           {loading ? (
             <ActivityIndicator
               animating={true}
@@ -157,7 +137,12 @@ const Login = () => {
               size="small"
             />
           ) : (
-            <TextCustom.TextNoFocus text="ĐĂNG NHẬP" />
+            <TextCustom.TextNoFocus
+              style={{
+                color: theme.colors.slate[200],
+              }}
+              text="ĐĂNG NHẬP"
+            />
           )}
         </Pressable>
 
@@ -165,7 +150,10 @@ const Login = () => {
           onPress={() => navigation.navigate("Register")}
           className={jsonStyle["pressable-no-focus"]}
         >
-          <TextCustom.TextFocus text="ĐĂNG KÝ" style={{ fontSize: 12 }} />
+          <TextCustom.TextFocus
+            text="ĐĂNG KÝ"
+            style={{ fontSize: 12, color: theme.colors.slate[400] }}
+          />
         </Pressable>
       </View>
       <View className="flex-row items-center my-6">
@@ -177,7 +165,7 @@ const Login = () => {
         />
         <TextCustom.TextFocus
           text=" Hoặc đăng nhập bằng "
-          style={{ fontSize: 12 }}
+          style={{ fontSize: 12, color: theme.colors.slate[400] }}
         />
         <View
           className="flex-1 h-[1px]"
@@ -186,7 +174,6 @@ const Login = () => {
           }}
         />
       </View>
-
       <View className="flex-row justify-center gap-4">
         <IconButton
           icon="google"

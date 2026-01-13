@@ -16,6 +16,7 @@ import { useEffect, useState, useContext } from "react";
 import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../../utils/Apis";
 import { MyColorContext } from "../../utils/contexts/MyColorContext";
+import { getMimeType } from "../../utils/imageUtils";
 const InfoRow = ({
   subject,
   text,
@@ -75,8 +76,9 @@ const AccountDetailedScreen = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [userFirstName, setUserFirstName] = useState("");
   const [userLastName, setUserLastName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
   const [isLoading, setLoading] = useState(false);
-  const [selectedAvatar, setSelectedAvatar] = useState(null); // State lưu ảnh mới chọn
+  const [selectedAvatar, setSelectedAvatar] = useState(null);
   const { theme } = useContext(MyColorContext);
 
   const route = useRoute();
@@ -85,6 +87,7 @@ const AccountDetailedScreen = () => {
   useEffect(() => {
     setUserFirstName(user.first_name);
     setUserLastName(user.last_name);
+    setUserEmail(user.email);
     setIsEdit(isEditParam);
   }, []);
   const pickImage = async () => {
@@ -97,26 +100,12 @@ const AccountDetailedScreen = () => {
       if (!result.canceled) setSelectedAvatar(result.assets[0]);
     }
   };
-  const getMimeType = (fileUri) => {
-    const extension = fileUri.split(".").pop().toLowerCase();
-    switch (extension) {
-      case "jpg":
-      case "jpeg":
-        return "image/jpeg";
-      case "png":
-        return "image/png";
-      case "gif":
-        return "image/gif";
-      case "heic":
-        return "image/heic";
-      default:
-        return "image/jpeg";
-    }
-  };
+
   const handleEditSave = async () => {
     const isChanged =
       userFirstName !== user.first_name ||
       userLastName !== user.last_name ||
+      userEmail !== user.email ||
       selectedAvatar !== null;
 
     if (!isChanged) {
@@ -128,6 +117,7 @@ const AccountDetailedScreen = () => {
       const formData = new FormData();
       formData.append("first_name", userFirstName);
       formData.append("last_name", userLastName);
+      formData.append("email", userEmail);
       if (selectedAvatar) {
         formData.append("avatar", {
           uri: selectedAvatar.uri,
@@ -241,20 +231,21 @@ const AccountDetailedScreen = () => {
           />
 
           <Divider />
-
           <InfoRow
-            subject={"Vai trò"}
-            text={user.role === "admin" ? "Quản trị viên" : "Người dùng"}
-            icon="account-key"
-            isEdit={false}
+            subject={"Email"}
+            value={isEdit ? userEmail : user.email}
+            text={user.email}
+            icon="email"
+            isEdit={isEdit}
+            onChangeText={setUserEmail}
             theme={theme}
           />
           <Divider />
 
           <InfoRow
-            subject={"Email"}
-            text={user.email}
-            icon="email"
+            subject={"Vai trò"}
+            text={user.role === "admin" ? "Quản trị viên" : "Người dùng"}
+            icon="account-key"
             isEdit={false}
             theme={theme}
           />

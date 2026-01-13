@@ -15,8 +15,8 @@ const EditMyCourse = () => {
 
   const [subject, setSubject] = useState(course.subject);
   const [price, setPrice] = useState(String(course.price));
-  const [image, setImage] = useState(course.image || null);
-  const [video, setVideo] = useState(course.video || null);
+  const [image, setImage] = useState(null);
+  const [video, setVideo] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const pickImage = async () => {
@@ -63,8 +63,6 @@ const EditMyCourse = () => {
       await axiosClient.patch(endpoints.courseDetails(course.id), formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
-      console.log("Update success:", res.data);
       navigation.goBack();
     } catch (error) {
       console.error("Update failed:", error);
@@ -107,7 +105,12 @@ const EditMyCourse = () => {
           <Button>{video ? "Đã chọn video" : "Chọn video khóa học"}</Button>
         </TouchableOpacity>
 
-        <Button mode="contained" onPress={handleUpdateCourse} loading={loading}>
+        <Button
+          mode="contained"
+          onPress={handleUpdateCourse}
+          labelStyle={{ color: theme.colors.slate[400] }}
+          loading={loading}
+        >
           Xác nhận chỉnh sửa
         </Button>
       </View>

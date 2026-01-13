@@ -19,4 +19,5 @@ export const endpoints = {
 
   googleAuth: "/api/auth/url/",
   googleCallback: "/api/auth/callback/",
+payment:"https://paleological-pachydermatously-linnie.ngrok-free.dev/api/payments/"
 };

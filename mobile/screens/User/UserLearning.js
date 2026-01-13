@@ -15,11 +15,11 @@ import { MyColorContext } from "../../utils/contexts/MyColorContext";
 import { CourseContext } from "../../utils/contexts/CoursesContext";
 
 const UserLearning = () => {
-  const { courses, ensureCourses, refreshCourses } = useContext(CourseContext);
+  // const { courses, ensureCourses, refreshCourses } = useContext(CourseContext);
 
-  useEffect(() => {
-    ensureCourses();
-  }, [ensureCourses]);
+  // useEffect(() => {
+  //   ensureCourses();
+  // }, [ensureCourses]);
   const nav = useNavigation();
   const { theme } = useContext(MyColorContext);
   return (
@@ -29,7 +29,7 @@ const UserLearning = () => {
     >
       <HeaderCustom text="Danh sách bài học của tôi" />
       <View style={{ backgroundColor: theme.colors.slate[300] }}>
-        <FlatList
+        {/* <FlatList
           data={courses}
           contentContainerStyle={{
             paddingBottom: 52,
@@ -84,7 +84,7 @@ const UserLearning = () => {
               </View>
             </TouchableOpacity>
           )}
-        />
+        />*/}
       </View>
     </View>
   );

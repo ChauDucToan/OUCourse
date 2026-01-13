@@ -1,5 +1,5 @@
 import { TouchableOpacity, View } from "react-native";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { Picker } from "@react-native-picker/picker";
 import { TextInput } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
@@ -8,11 +8,17 @@ import HeaderCustom from "../../components/Header";
 import SelectTime from "../../components/SelectTime";
 import TextCustom from "../../components/TextCustom";
 import { MyColorContext } from "../../utils/contexts/MyColorContext";
+import { CategoriesContext } from "../../utils/contexts/CategoriesContext";
+import { getMimeType } from "../../utils/imageUtils";
+import axiosClient from "../../api/axiosClient";
+import { endpoints } from "../../utils/Apis";
+import { Alert } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 const CourseEditor = () => {
   const { theme } = useContext(MyColorContext);
-
-  const [categories, setCategories] = useState([]);
+  const nav = useNavigation();
+  const { categories } = useContext(CategoriesContext);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [hour, setHour] = useState(0);
   const [minute, setMinute] = useState(0);
@@ -21,11 +27,8 @@ const CourseEditor = () => {
   const [isLoading, setLoading] = useState(false);
   const [price, setPrice] = useState("");
   const [priceError, setPriceError] = useState(false);
-
-  useEffect(() => {
-    const data = require("../../mock/data.mock.categories.json");
-    setCategories(data);
-  }, []);
+  const [subject, setSubject] = useState("");
+  const [description, setDescription] = useState("");
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -55,7 +58,85 @@ const CourseEditor = () => {
     if (!price) return false;
     return /^\d+([.,]\d+)?$/.test(price);
   };
+  const isFormValid =
+    subject.trim() !== "" &&
+    Number.isInteger(selectedCategory) &&
+    selectedCategory > 0 &&
+    validatePrice(price);
+  const createCourse = async () => {
+    if (!subject || !selectedCategory || !price) {
+      Alert.alert(
+        "Thiếu thông tin",
+        "Vui lòng nhập tên, giá và chọn danh mục.",
+      );
+      return;
+    }
 
+    setLoading(true);
+    try {
+      const formData = new FormData();
+
+      // Append các trường text
+      formData.append("subject", subject);
+      formData.append("description", description || "Chưa có mô tả"); // Backend require description
+      formData.append("price", price);
+      formData.append("category", parseInt(selectedCategory));
+
+      // Tính tổng thời lượng (ví dụ Backend lưu theo phút)
+      const totalDuration = parseInt(hour) * 60 + parseInt(minute);
+      formData.append("duration", totalDuration);
+
+      // Append Image
+      if (image) {
+        formData.append("image", {
+          uri: image.uri,
+          name: image.fileName || `course_img_${Date.now()}.jpg`,
+          type: getMimeType(image.uri),
+        });
+      }
+
+      if (video) {
+        formData.append("video", {
+          uri: video.uri,
+          name: video.fileName || `course_vid_${Date.now()}.mp4`,
+          type: getMimeType(video.uri),
+        });
+      }
+
+      console.log("FormData chuẩn bị gửi:", formData);
+
+      // Gọi API với Content-Type multipart/form-data
+      const res = await axiosClient.post(endpoints.courses, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (res.status === 201) {
+        Alert.alert("Thành công", "Tạo khóa học thành công!");
+        nav.goBack();
+      }
+    } catch (error) {
+      console.error("Error object:", error);
+
+      if (error.response) {
+        console.log("Status:", error.response.status);
+        console.log("Data lỗi:", error.response.data);
+        console.log("Headers:", error.response.headers);
+        Alert.alert("Lỗi", JSON.stringify(error.response.data));
+      } else if (error.request) {
+        // Request đã gửi đi nhưng không nhận được phản hồi
+        console.log("Request object:", error.request);
+        Alert.alert("Lỗi", "Không nhận được phản hồi từ server.");
+      } else {
+        // Lỗi xảy ra trước khi gửi request
+        console.log("Message:", error.message);
+        Alert.alert("Lỗi", error.message);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <View
       className="pt-10 flex-1 "
@@ -75,7 +156,21 @@ const CourseEditor = () => {
           className="flex-1 border border-gray-300 rounded-lg p-2 bg-white"
           placeholder="Nhập tên khóa học"
           underlineColor="transparent"
+          value={subject}
+          onChangeText={setSubject}
           // mode="outlined"
+          activeOutlineColor={theme.colors.gray[100]}
+          outlineColor={theme.colors.slate[100]}
+        />
+        <View className="h-4"></View>
+        <TextInput
+          className="flex-1 border border-gray-300 rounded-lg p-2 bg-white"
+          placeholder="Mô tả khóa học"
+          value={description}
+          onChangeText={setDescription}
+          multiline={true}
+          numberOfLines={3}
+          underlineColor="transparent"
           activeOutlineColor={theme.colors.gray[100]}
           outlineColor={theme.colors.slate[100]}
         />
@@ -117,8 +212,8 @@ const CourseEditor = () => {
             {categories?.map((item) => (
               <Picker.Item
                 key={item.id?.toString() ?? item.value}
-                label={item.label}
-                value={item.value}
+                label={item.name}
+                value={item.id}
               />
             ))}
           </Picker>
@@ -148,7 +243,8 @@ const CourseEditor = () => {
             style={{
               backgroundColor: theme.colors.slate[300],
             }}
-            onPress={() => console.log("Tạo khóa học nè ")}
+            onPress={createCourse}
+            disabled={isLoading || !isFormValid}
           >
             {isLoading ? (
               <ActivityIndicator size="large" />

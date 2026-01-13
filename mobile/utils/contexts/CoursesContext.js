@@ -1,9 +1,7 @@
 import { useRef } from "react";
 import { createContext } from "react";
-import fetchCourse from "../../api/courseApi";
 import { useCallback } from "react";
 import { useState } from "react";
-import { useEffect } from "react";
 import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../Apis";
 

@@ -13,29 +13,86 @@ import { CourseContext } from "../../utils/contexts/CoursesContext";
 import { CategoriesContext } from "../../utils/contexts/CategoriesContext";
 import { useMemo } from "react";
 import { HomeCategories } from "../../components/HomeComponents/HomeCategories";
+import { ScrollView } from "react-native";
+import { Icon } from "react-native-paper";
 
 const Search = () => {
+  const nav = useNavigation();
   const [keyword, setKeyword] = useState("");
   const { theme } = useContext(MyColorContext);
   const { courses, ensureCourses } = useContext(CourseContext);
   const [count, setCount] = useState(20);
-
-  const loadMore = () => {
-    setCount((prev) => prev + 20);
-  };
-  const coursesFilter = useMemo(() => {
-    const q = keyword.trim().toLowerCase();
-    if (!q) return courses;
-    return courses.filter((course) =>
-      (course.subject ?? "").toLowerCase().includes(q),
-    );
-  }, [courses, keyword]);
-  const nav = useNavigation();
-
+  const [sortOption, setSortOption] = useState(null);
   useEffect(() => {
     ensureCourses();
   }, [ensureCourses]);
 
+  const loadMore = () => {
+    if (count < coursesFilter.length) {
+      setCount((prev) => prev + 20);
+    }
+  };
+  const coursesFilter = useMemo(() => {
+    let result = courses;
+    const q = keyword.trim().toLowerCase();
+    if (q) {
+      result = result.filter(
+        (course) =>
+          (course.subject ?? "").toLowerCase().includes(q) ||
+          (course.instructor ?? "").toLowerCase().includes(q),
+      );
+    }
+    result = [...result];
+    switch (sortOption) {
+      case "name_asc":
+        result.sort((a, b) => (a.subject ?? "").localeCompare(b.subject ?? ""));
+        break;
+      case "price_asc":
+        result.sort((a, b) => (a.price || 0) - (b.price || 0));
+        break;
+      case "price_desc":
+        result.sort((a, b) => (b.price || 0) - (a.price || 0));
+        break;
+      default:
+        break;
+    }
+
+    return result;
+  }, [courses, keyword, sortOption]);
+  const SortChip = ({ label, value, icon, theme }) => {
+    const isActive = sortOption === value;
+    return (
+      <TouchableOpacity
+        onPress={() => setSortOption(isActive ? null : value)}
+        className={`flex-row items-center px-3 py-2 rounded-full mr-2 border`}
+        style={{
+          backgroundColor: isActive
+            ? theme.colors.slate[800]
+            : theme.colors.gray[50],
+          borderColor: isActive
+            ? theme.colors.slate[800]
+            : theme.colors.slate[200],
+        }}
+      >
+        <Text
+          style={{
+            color: isActive ? theme.colors.white : theme.colors.slate[600],
+            fontWeight: isActive ? "bold" : "normal",
+          }}
+        >
+          {label}
+        </Text>
+        {isActive && icon && (
+          <Icon
+            name={icon}
+            size={16}
+            color={theme.colors.slate[400]}
+            style={{ marginLeft: 4 }}
+          />
+        )}
+      </TouchableOpacity>
+    );
+  };
   return (
     <View
       className="flex-1  pt-10"
@@ -59,7 +116,9 @@ const Search = () => {
           placeholderTextColor={theme.colors.slate[400]}
           placeholder="Nhập từ khóa..."
           value={keyword}
-          onChangeText={setKeyword}
+          onChangeText={(text) => {
+            (setKeyword(text), setCount(20));
+          }}
         />
       </View>
 
@@ -70,6 +129,28 @@ const Search = () => {
         }}
       >
         <HomeCategories sizeIcon={0} theme={theme} />
+      </View>
+      <View className="px-2 pb-2">
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <SortChip
+            label="Tên A-Z"
+            value="name_asc"
+            icon="sort-alphabetical-ascending"
+            theme={theme}
+          />
+          <SortChip
+            label="Giá thấp nhất"
+            value="price_asc"
+            icon="arrow-up"
+            theme={theme}
+          />
+          <SortChip
+            label="Giá cao nhất"
+            value="price_desc"
+            icon="arrow-down"
+            theme={theme}
+          />
+        </ScrollView>
       </View>
       <View
         className="flex-1"
