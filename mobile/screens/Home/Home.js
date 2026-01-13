@@ -1,8 +1,5 @@
 import { View } from "react-native";
-import { useState } from "react";
 import { useEffect } from "react";
-import fetchCourse from "../../api/courseApi";
-import { results } from "../../mock/data.mock.courses.json";
 import { HomeHeader } from "../../components/HomeComponents/HomeHeader";
 import { HomeCategories } from "../../components/HomeComponents/HomeCategories";
 import { HomeBanner } from "../../components/HomeComponents/HomeBanner";
@@ -14,7 +11,8 @@ import { useContext } from "react";
 import { MyColorContext } from "../../utils/contexts/MyColorContext";
 import { Animated } from "react-native";
 import { useMemo } from "react";
-import { CourseContext } from "../../utils/contexts/CoursesContext";
+import { useCourses } from "../../hooks/useCourses";
+import { ActivityIndicator } from "react-native";
 
 const HEADER_MAX_HEIGHT = 140;
 const HEADER_MIN_HEIGHT = 80;
@@ -22,7 +20,7 @@ const HEADER_MIN_HEIGHT = 80;
 const HomeScreen = () => {
   const { theme } = useContext(MyColorContext);
   const scrollY = useRef(new Animated.Value(0)).current;
-  const { courses, ensureCourses } = useContext(CourseContext);
+  const { courses, ensureCourses, loadingCourses } = useCourses();
 
   const courseFree = useMemo(
     () => courses.filter((c) => (c?.price ?? 0) <= 0),
@@ -44,7 +42,6 @@ const HomeScreen = () => {
     extrapolate: "clamp",
   });
 
-  // 3. Hiệu ứng thu nhỏ Header hoặc bóc tách (Ví dụ: dịch chuyển Header)
   const headerTranslate = scrollY.interpolate({
     inputRange: [0, HEADER_MAX_HEIGHT],
     outputRange: [0, 0],
@@ -65,23 +62,32 @@ const HomeScreen = () => {
         />
         <HomeBanner theme={theme} />
         <HomeCategories icon="tag" text="Danh mục" theme={theme} />
-        <HomeCourseList
-          data={courseFree}
-          text="Top thịnh hành"
-          textClass={{ color: theme.colors.yellow[500] }}
-          iconColor={theme.colors.yellow[500]}
-          icon="star"
-          theme={theme}
-        />
+        {loadingCourses ? (
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+        ) : (
+          <HomeCourseList
+            data={courseFree}
+            text="Top thịnh hành"
+            textClass={{ color: theme.colors.yellow[500] }}
+            iconColor={theme.colors.yellow[500]}
+            icon="star"
+            theme={theme}
+          />
+        )}
+
         <HomePromotion />
-        <HomeCourseList
-          data={courseExpensive}
-          text="Khóa học cao cấp"
-          icon="cash-multiple"
-          textClass={{ color: theme.colors.violet[600] }}
-          iconColor={theme.colors.violet[600]}
-          theme={theme}
-        />
+        {loadingCourses ? (
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+        ) : (
+          <HomeCourseList
+            data={courseExpensive}
+            text="Khóa học cao cấp"
+            icon="cash-multiple"
+            textClass={{ color: theme.colors.violet[600] }}
+            iconColor={theme.colors.violet[600]}
+            theme={theme}
+          />
+        )}
       </View>
     );
   };

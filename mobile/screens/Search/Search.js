@@ -7,22 +7,23 @@ import { useNavigation } from "@react-navigation/native";
 
 import HeaderCustom from "../../components/Header";
 import { ImageBackground } from "react-native";
-import { useContext } from "react";
-import { MyColorContext } from "../../utils/contexts/MyColorContext";
-import { CourseContext } from "../../utils/contexts/CoursesContext";
-import { CategoriesContext } from "../../utils/contexts/CategoriesContext";
 import { useMemo } from "react";
 import { HomeCategories } from "../../components/HomeComponents/HomeCategories";
 import { ScrollView } from "react-native";
 import { Icon } from "react-native-paper";
+import { useCourses } from "../../hooks/useCourses";
+import { useColors } from "../../hooks/useColors";
+import { ActivityIndicator } from "react-native";
 
 const Search = () => {
   const nav = useNavigation();
   const [keyword, setKeyword] = useState("");
-  const { theme } = useContext(MyColorContext);
-  const { courses, ensureCourses } = useContext(CourseContext);
+  const { theme } = useColors();
+  const { courses, ensureCourses, loadingCourses } = useCourses();
+
   const [count, setCount] = useState(20);
   const [sortOption, setSortOption] = useState(null);
+
   useEffect(() => {
     ensureCourses();
   }, [ensureCourses]);
@@ -33,7 +34,8 @@ const Search = () => {
     }
   };
   const coursesFilter = useMemo(() => {
-    let result = courses;
+    // let result = courses;
+    let result = courses.filter((c) => c.status !== "ENROLLED");
     const q = keyword.trim().toLowerCase();
     if (q) {
       result = result.filter(
@@ -152,67 +154,71 @@ const Search = () => {
           />
         </ScrollView>
       </View>
-      <View
-        className="flex-1"
-        style={{
-          backgroundColor: theme.colors.gray[100],
-        }}
-      >
-        <FlatList
-          data={coursesFilter.slice(0, count)}
-          keyExtractor={(item) => item.id}
-          className="p-2 "
-          contentContainerStyle={{
-            paddingBottom: 30,
+      {loadingCourses ? (
+        <ActivityIndicator size="large" color={theme.colors.primary} />
+      ) : (
+        <View
+          className="flex-1"
+          style={{
+            backgroundColor: theme.colors.gray[100],
           }}
-          onEndReached={loadMore}
-          onEndReachedThreshold={0.6}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={{
-                backgroundColor: theme.colors.gray[100],
-                borderColor: theme.colors.gray[200],
-              }}
-              onPress={() =>
-                nav.navigate("CourseDetailedScreen", { id: item.id })
-              }
-            >
-              <View className="rounded-xl overflow-hidden ">
-                <ImageBackground
-                  source={
-                    item.image
-                      ? { uri: item.image }
-                      : require("../../assets/banner_1.png")
-                  }
-                  className="pt-8 pb-8 pl-4 mx-3 rounded-xl overflow-hidden mt-3"
-                >
-                  <View className="absolute inset-0  bg-black/40" />
-                  <View className="p-2">
-                    <Text className="text-base text-white font-medium">
-                      {item.subject}
-                    </Text>
-                    <Text className="text-sm text-white/70">
-                      {item.instructor}
-                    </Text>
-                  </View>
-                </ImageBackground>
-              </View>
-            </TouchableOpacity>
-          )}
-          ListEmptyComponent={
-            keyword.length > 0 ? (
-              <Text
-                className="text-center mt-4"
+        >
+          <FlatList
+            data={coursesFilter.slice(0, count)}
+            keyExtractor={(item) => item.id}
+            className="p-2 "
+            contentContainerStyle={{
+              paddingBottom: 30,
+            }}
+            onEndReached={loadMore}
+            onEndReachedThreshold={0.6}
+            renderItem={({ item }) => (
+              <TouchableOpacity
                 style={{
-                  color: theme.colors.gray[400],
+                  backgroundColor: theme.colors.gray[100],
+                  borderColor: theme.colors.gray[200],
                 }}
+                onPress={() =>
+                  nav.navigate("CourseDetailedScreen", { id: item.id })
+                }
               >
-                Không tìm thấy khóa học phù hợp
-              </Text>
-            ) : null
-          }
-        />
-      </View>
+                <View className="rounded-xl overflow-hidden ">
+                  <ImageBackground
+                    source={
+                      item.image
+                        ? { uri: item.image }
+                        : require("../../assets/banner_1.png")
+                    }
+                    className="pt-8 pb-8 pl-4 mx-3 rounded-xl overflow-hidden mt-3"
+                  >
+                    <View className="absolute inset-0  bg-black/40" />
+                    <View className="p-2">
+                      <Text className="text-base text-white font-medium">
+                        {item.subject}
+                      </Text>
+                      <Text className="text-sm text-white/70">
+                        {item.instructor}
+                      </Text>
+                    </View>
+                  </ImageBackground>
+                </View>
+              </TouchableOpacity>
+            )}
+            ListEmptyComponent={
+              keyword.length > 0 ? (
+                <Text
+                  className="text-center mt-4"
+                  style={{
+                    color: theme.colors.gray[400],
+                  }}
+                >
+                  Không tìm thấy khóa học phù hợp
+                </Text>
+              ) : null
+            }
+          />
+        </View>
+      )}
     </View>
   );
 };

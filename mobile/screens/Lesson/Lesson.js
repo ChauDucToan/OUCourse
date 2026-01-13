@@ -14,10 +14,10 @@ import { FlatList } from "react-native";
 import { useContext } from "react";
 import { MyColorContext } from "../../utils/contexts/MyColorContext";
 import { useCallback } from "react";
-import { LessonContext } from "../../utils/contexts/LessonContext";
 import { useEffect } from "react";
-import { useMemo } from "react";
 import { ImageBackground } from "react-native";
+import axiosClient from "../../api/axiosClient";
+import { endpoints } from "../../utils/Apis";
 
 const LessonsRoute = ({ lessons, theme }) => {
   const nav = useNavigation();
@@ -121,10 +121,22 @@ export const LessonScreen = () => {
   const route = useRoute();
   const { item } = route.params;
   const layout = useWindowDimensions();
-  const { lessons, ensureLessons } = useContext(LessonContext);
+  const [lessons, setLessons] = useState([]);
+
   useEffect(() => {
-    ensureLessons(item.id);
-  }, [ensureLessons, item.id]);
+    const loadData = async () => {
+      try {
+        const res = await axiosClient.get(endpoints.lessons(item.id));
+        const results = res?.data?.results ?? [];
+        setLessons(results);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    loadData();
+  }, [item.id]);
+
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     { key: "lessons", title: "Bài học" },

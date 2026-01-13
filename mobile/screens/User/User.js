@@ -1,13 +1,13 @@
 import { useContext } from "react";
 import { MyUserContext } from "../../utils/contexts/MyContext";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { View } from "react-native";
 import { Button } from "react-native";
+import { removeTokens } from "../../utils/tokenUtils";
 
 const User = () => {
   const [user, dispatch] = useContext(MyUserContext);
   const logout = async () => {
-    AsyncStorage.removeItem("token");
+    removeTokens();
     dispatch({
       type: "logout",
     });

@@ -41,15 +41,18 @@ export const CoursesProvider = ({ children }) => {
     setCourses(newCourses);
     coursesRef.current = newCourses;
   };
-  const ensureCourses = useCallback(async () => {
+  const ensureCourses = useCallback(async (status = "") => {
     const now = Date.now();
     if (coursesRef.current.length > 0 && now - lastFetchdAtRef.current < 300000)
       return coursesRef.current;
 
     setLoadingCourses(true);
     setCoursesError(null);
+    console.log(`${endpoints.courses}`);
     try {
-      const res = await axiosClient.get(endpoints.courses);
+      const res = await axiosClient.get(
+        `${endpoints.courses}?status=${status}`,
+      );
       const results = res?.data?.results ?? [];
       updateCourse(results);
       lastFetchdAtRef.current = now;

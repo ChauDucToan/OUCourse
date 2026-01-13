@@ -25,7 +25,7 @@ const InstructorDashboard = () => {
       }}
     >
       <HeaderCustom text={"Trang quản lý của Giảng viên"} />
-      <ScrollView className="p-5">
+      <ScrollView className="p-5 flex-1">
         <ListItem
           mapJson={selectionInstructor}
           navigation={navigation}

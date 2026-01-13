@@ -9,7 +9,6 @@ export const saveTokens = async (accessToken, refreshToken) => {
       refresh_token: refreshToken,
     });
     await setItemAsync(TOKEN_KEY, keys);
-    console.log("save token success!");
   } catch (error) {
     console.error("save token failed: ", error.message);
   }
@@ -18,8 +17,6 @@ export const saveTokens = async (accessToken, refreshToken) => {
 export const getTokens = async () => {
   try {
     const jsonData = await getItemAsync(TOKEN_KEY);
-    console.log("get token success!");
-
     return jsonData ? JSON.parse(jsonData) : null;
   } catch (error) {
     console.error("get token failed: ", error.message);
@@ -30,7 +27,7 @@ export const getTokens = async () => {
 export const removeTokens = async () => {
   try {
     await deleteItemAsync(TOKEN_KEY);
-    console.log("remove token success!");
+    console.log("Remove successs!");
   } catch (error) {
     console.error("Remove token failed: ", error.message);
   }

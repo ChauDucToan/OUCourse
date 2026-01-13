@@ -16,8 +16,9 @@ import { useContext, useState, useEffect } from "react";
 import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../../utils/Apis";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { Alert } from "react-native";
+import { Alert, Linking } from "react-native";
 import PaymentSelectionModal from "../../components/ModalPayment";
+import PaymentQR from "../../components/QRComponent";
 
 const CourseDetailedScreen = () => {
   const route = useRoute();
@@ -27,6 +28,7 @@ const CourseDetailedScreen = () => {
   const { id } = route.params;
   const { width } = Dimensions.get("window");
   const [modalVisible, setModalVisible] = useState(false);
+  const [paymentUrl, setPaymentUrl] = useState(null);
   const [selectedMethod, setSelectedMethod] = useState(null);
   const nav = useNavigation();
   useEffect(() => {
@@ -42,12 +44,32 @@ const CourseDetailedScreen = () => {
     };
     if (id) loadData();
   }, [id]);
-  useEffect(() => {
-    if (course) {
-      console.log("Dữ liệu khóa học đã cập nhật:", course);
-    }
-  }, [course]);
 
+  useEffect(() => {
+    const handleDeepLink = async (event) => {
+      const url = event.url;
+      if (url.includes("payment-success")) {
+        try {
+          const formData = new FormData();
+          formData.append("status", "ENROLLED");
+
+          await axiosClient.post(endpoints.enrollCourse(course.id), formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+
+          Alert.alert("Đăng ký thành công");
+          nav.goBack();
+        } catch (err) {
+          Alert.alert("Có lỗi khi ghi danh");
+        }
+      }
+    };
+
+    Linking.addEventListener("url", handleDeepLink);
+    return () => {
+      Linking.removeAllListeners("url");
+    };
+  }, [course]);
   if (!course) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -61,10 +83,31 @@ const CourseDetailedScreen = () => {
     return new Intl.NumberFormat("vi-VN").format(amount) + " đ";
   };
 
-  const handleEnroll = () => {
+  const handleEnroll = async (course) => {
+    if (Number(course.price) === 0) {
+      setModalVisible(false);
+      const formData = new FormData();
+      formData.append("status", "ENROLLED");
+
+      await axiosClient.post(endpoints.enrollCourse(course.id), formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      Alert.alert("Đăng ký thành công");
+      nav.goBack();
+      return;
+    }
     setModalVisible(true);
   };
 
+  const openLink = async (url) => {
+    const supported = await Linking.canOpenURL(url);
+    if (supported) {
+      await Linking.openURL(url);
+    } else {
+      Alert.alert("Lỗi", "Không thể mở ứng dụng thanh toán: " + url);
+    }
+  };
   const handlePayment = async (method) => {
     try {
       setLoading(true);
@@ -78,39 +121,14 @@ const CourseDetailedScreen = () => {
       const paymentRes = await axiosClient.post(
         endpoints.payment,
         paymentPayload,
-        {
-          headers: {
-            Referer:
-              "https://paleological-pachydermatously-linnie.ngrok-free.dev",
-          },
-        },
       );
-
-      if (paymentRes.data.success) {
-        const formData = new FormData();
-        formData.append("status", "ENROLLED");
-
-        await axiosClient.post(endpoints.enrollCourse(course.id), formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-
-        Alert.alert("Đăng ký thành công");
-        nav.goBack();
+      console.log(paymentRes.data.payment_url);
+      if (paymentRes.data && paymentRes.data.payment_url) {
+        await openLink(paymentRes.data.payment_url);
       } else {
         Alert.alert("Thanh toán thất bại");
       }
     } catch (error) {
-      if (error.response) {
-        console.log("Status:", error.response.status);
-        console.log("Data lỗi:", error.response.data); // <-- Quan trọng: Server sẽ báo lý do tại đây
-        console.log("Headers:", error.response.headers);
-      } else {
-        console.error("Lỗi khác:", error.message);
-      }
-      Alert.alert(
-        "Có lỗi xảy ra",
-        JSON.stringify(error.response?.data) || "Lỗi không xác định",
-      );
       console.error(error);
       Alert.alert("Có lỗi xảy ra khi thanh toán");
     } finally {
@@ -123,17 +141,23 @@ const CourseDetailedScreen = () => {
     <View
       className=" flex-1"
       style={{
-        backgroundColor: theme.colors.white,
+        backgroundColor: theme.colors.gray[100],
       }}
     >
       <ScrollView
         className="pt-10 "
         style={{
-          backgroundColor: theme.colors.white,
+          backgroundColor: theme.colors.gray[100],
         }}
       >
         <HeaderCustom text={course.subject} />
         <View>
+          {/* {paymentUrl && (
+            <View style={{ alignItems: "center", marginVertical: 20 }}>
+              <PaymentQR paymentUrl={paymentUrl} />
+              <Text style={{ marginTop: 10 }}>Quét mã QR để thanh toán</Text>
+            </View>
+          )}*/}
           <ImageBackground
             source={
               course.image
@@ -186,7 +210,12 @@ const CourseDetailedScreen = () => {
               >
                 Giới thiệu khóa học
               </Text>
-              <Text className="text-xs uppercase  tracking-tight font-semibold">
+              <Text
+                className="text-xs uppercase  tracking-tight font-semibold"
+                style={{
+                  color: theme.colors.slate[400],
+                }}
+              >
                 {course.category}
               </Text>
               <View className="mt-2 ">

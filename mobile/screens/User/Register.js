@@ -12,7 +12,7 @@ import { useContext, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import FormAuth from "../../components/FormAuth";
 import { Alert } from "react-native";
-import { getMimeType } from "../../utils/imageUtils";
+import { getMimeType, pickImage } from "../../utils/imageUtils";
 
 const Register = () => {
   const jsonData = require("../../mock/data.config.register.json");
@@ -23,19 +23,6 @@ const Register = () => {
 
   const [loading, setLoading] = useState(false);
   const nav = useNavigation();
-
-  const pickImage = async () => {
-    let { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (status !== "granted") {
-      alert("Permissions denied!");
-    } else {
-      const result = await ImagePicker.launchImageLibraryAsync();
-      if (!result.canceled) {
-        setUser({ ...user, avatar: result.assets[0] });
-      }
-    }
-  };
 
   const validate = () => {
     console.info(user);
@@ -105,7 +92,10 @@ const Register = () => {
       ))}
       <TouchableOpacity
         className="border-2 p-2  rounded-md mt-2 border-slate-500"
-        onPress={pickImage}
+        onPress={async () => {
+          const img = await pickImage();
+          if (img) setUser({ ...user, avatar: img });
+        }}
       >
         <TextCustom.TextMuted
           style={{ color: theme.colors.slate[400] }}

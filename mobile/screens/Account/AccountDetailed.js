@@ -16,7 +16,7 @@ import { useEffect, useState, useContext } from "react";
 import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../../utils/Apis";
 import { MyColorContext } from "../../utils/contexts/MyColorContext";
-import { getMimeType } from "../../utils/imageUtils";
+import { getMimeType, pickImage } from "../../utils/imageUtils";
 const InfoRow = ({
   subject,
   text,
@@ -90,16 +90,6 @@ const AccountDetailedScreen = () => {
     setUserEmail(user.email);
     setIsEdit(isEditParam);
   }, []);
-  const pickImage = async () => {
-    let { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (status !== "granted") {
-      alert("Permissions denied!");
-    } else {
-      const result = await ImagePicker.launchImageLibraryAsync();
-      if (!result.canceled) setSelectedAvatar(result.assets[0]);
-    }
-  };
 
   const handleEditSave = async () => {
     const isChanged =
@@ -168,7 +158,12 @@ const AccountDetailedScreen = () => {
             }}
           />
         ) : (
-          <Pressable onPress={pickImage}>
+          <Pressable
+            onPress={async () => {
+              const img = await pickImage();
+              if (img) setSelectedAvatar(img);
+            }}
+          >
             <Avatar.Image
               size={80}
               source={{

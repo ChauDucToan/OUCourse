@@ -7,6 +7,7 @@ export const endpoints = {
   enrollCourse: (courseId) => `/api/courses/${courseId}/enroll/`,
   instructorCourse: "/api/courses/my-courses/",
   lessons: (coursesId) => `/api/courses/${coursesId}/lessons/`,
+  createLesson: "/api/lessons/",
   lessonDetailed: (lessonId) => `/api/lessons/${lessonId}`,
   enrollLesson: (lessonId) => `/api/lessons/${lessonId}/enroll/`,
   comments: (lessonId) => `/api/lessons/${lessonId}/comments/`,
@@ -19,5 +20,5 @@ export const endpoints = {
 
   googleAuth: "/api/auth/url/",
   googleCallback: "/api/auth/callback/",
-payment:"https://paleological-pachydermatously-linnie.ngrok-free.dev/api/payments/"
+  payment: "/api/payments/",
 };

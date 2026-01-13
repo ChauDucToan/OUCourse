@@ -40,7 +40,6 @@ const LessonLearning = () => {
     };
 
     loadData();
-    console.log(lesson);
   }, [id, ensureLessonDetailed]);
   const onStateChange = useCallback((state) => {
     if (state === "ended") {
@@ -92,9 +91,9 @@ const LessonLearning = () => {
           text={lesson.subject}
         />
         <View className="flex-row gap-3">
-          {lesson.tags.map((tag) => (
+          {lesson.tags.map((tag, index) => (
             <View
-              key={tag.id}
+              key={tag.id ?? index}
               className=" p-3 rounded-xl m-2"
               style={{ backgroundColor: theme.colors.slate[200] }}
             >

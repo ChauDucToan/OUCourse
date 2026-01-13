@@ -9,7 +9,7 @@ import SelectTime from "../../components/SelectTime";
 import TextCustom from "../../components/TextCustom";
 import { MyColorContext } from "../../utils/contexts/MyColorContext";
 import { CategoriesContext } from "../../utils/contexts/CategoriesContext";
-import { getMimeType } from "../../utils/imageUtils";
+import { getMimeType, pickImage, pickVideo } from "../../utils/imageUtils";
 import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../../utils/Apis";
 import { Alert } from "react-native";
@@ -29,30 +29,6 @@ const CourseEditor = () => {
   const [priceError, setPriceError] = useState(false);
   const [subject, setSubject] = useState("");
   const [description, setDescription] = useState("");
-
-  const pickImage = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== "granted") return alert("Permissions denied!");
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 1,
-    });
-
-    if (!result.canceled) setImage(result.assets[0]);
-  };
-
-  const pickVideo = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== "granted") return alert("Permissions denied!");
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Videos,
-      quality: 1,
-    });
-
-    if (!result.canceled) setVideo(result.assets[0]);
-  };
 
   const validatePrice = (price) => {
     if (!price) return false;
@@ -220,7 +196,10 @@ const CourseEditor = () => {
         </View>
         <TouchableOpacity
           className="border-2 p-2 rounded-md mt-2 border-slate-500"
-          onPress={pickImage}
+          onPress={async () => {
+            const img = await pickImage();
+            if (img) setImage(img);
+          }}
         >
           <TextCustom.TextMuted
             style={{ color: theme.colors.gray[500] }}
@@ -230,7 +209,10 @@ const CourseEditor = () => {
 
         <TouchableOpacity
           className="border-2 p-2 rounded-md mt-2 border-slate-500"
-          onPress={pickVideo}
+          onPress={async () => {
+            const video = await pickVideo();
+            if (video) setVideo(video);
+          }}
         >
           <TextCustom.TextMuted
             style={{ color: theme.colors.gray[500] }}
