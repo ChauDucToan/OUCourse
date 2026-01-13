@@ -1,38 +1,45 @@
-import React from "react";
-import {
-  View,
-  Text,
-  SafeAreaView,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
-import { ArrowLeft } from "lucide-react-native";
-import { styled } from "nativewind";
-import HeaderBack from "../../components/HeaderBack";
+import { View, Text, ScrollView } from "react-native";
+
 import HeaderCustom from "../../components/Header";
 import { terms } from "../../mock/data.config.terms.json";
-// Tạo component Section để tái sử dụng
-const Section = ({ title, content }) => (
-  <View className="mb-6">
-    <Text className="text-gray-900 font-bold text-lg mb-2">{title}</Text>
-    <Text className="text-gray-600 text-base leading-6 text-justify">
-      {content}
-    </Text>
-  </View>
-);
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Section } from "../../components/Section";
+import { useContext } from "react";
+import { MyColorContext } from "../../utils/contexts/MyColorContext";
 
 const TermsScreen = ({ navigation }) => {
+  const { theme } = useContext(MyColorContext);
   return (
-    <SafeAreaView className="flex-1 bg-white pt-10">
+    <SafeAreaView
+      className="flex-1 pt-10"
+      style={{
+        backgroundColor: theme.colors.gray[100],
+      }}
+    >
       <HeaderCustom text="Điều khoản & quy định" />
-      {/* Content */}
-      <ScrollView className="flex-1 px-5" showsVerticalScrollIndicator={false}>
+      <ScrollView
+        className="flex-1 px-5"
+        style={{
+          backgroundColor: theme.colors.slate[100],
+        }}
+        showsVerticalScrollIndicator={false}
+      >
         <View className="py-6">
-          <Text className="text-gray-400 text-sm mb-6 italic">
+          <Text
+            className=" text-sm mb-6 italic"
+            style={{
+              color: theme.colors.gray[400],
+            }}
+          >
             Cập nhật lần cuối: 05 tháng 01, 2026
           </Text>
           {terms.map((item) => (
-            <Section key={item.id} title={item.title} content={item.content} />
+            <Section
+              key={item.id}
+              theme={theme}
+              title={item.title}
+              content={item.content}
+            />
           ))}
 
           <View className="h-10" />

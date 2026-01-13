@@ -1,100 +1,218 @@
 import { useEffect } from "react";
-
 import { useState } from "react";
 import { FlatList } from "react-native";
 import { Text, TextInput, TouchableOpacity } from "react-native";
-import { View, ScrollView } from "react-native";
-import axiosClient from "../../api/axiosClient";
-import { endpoints } from "../../utils/Apis";
+import { View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import HeaderBack from "../../components/HeaderBack";
-import { Icon } from "react-native-paper";
-import HeaderCustom from "../../components/Header";
 
-const mockCourses = [
-  { id: "1", title: "React Native cơ bản", teacher: "Nguyễn Văn A" },
-  { id: "2", title: "Thiết kế UI/UX", teacher: "Trần Thị B" },
-  { id: "3", title: "Python cho người mới", teacher: "Lê Văn C" },
-];
+import HeaderCustom from "../../components/Header";
+import { ImageBackground } from "react-native";
+import { useContext } from "react";
+import { MyColorContext } from "../../utils/contexts/MyColorContext";
+import { CourseContext } from "../../utils/contexts/CoursesContext";
+import { CategoriesContext } from "../../utils/contexts/CategoriesContext";
+import { useMemo } from "react";
+import { HomeCategories } from "../../components/HomeComponents/HomeCategories";
+import { ScrollView } from "react-native";
+import { Icon } from "react-native-paper";
 
 const Search = () => {
-  const [keyword, setKeyword] = useState("");
-  const [results, setResults] = useState([]);
-  const [coursesData, setCoursesData] = useState([]);
   const nav = useNavigation();
+  const [keyword, setKeyword] = useState("");
+  const { theme } = useContext(MyColorContext);
+  const { courses, ensureCourses } = useContext(CourseContext);
+  const [count, setCount] = useState(20);
+  const [sortOption, setSortOption] = useState(null);
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        let res = await axiosClient.get(endpoints.courses);
-        setCoursesData(res.data.results);
+    ensureCourses();
+  }, [ensureCourses]);
 
-        setResults(res.data.results);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    loadData();
-  }, []);
-  const handleSearch = (text) => {
-    setKeyword(text);
-    if (!text.trim()) {
-      setResults(coursesData);
-      return;
+  const loadMore = () => {
+    if (count < coursesFilter.length) {
+      setCount((prev) => prev + 20);
     }
-    const filter = coursesData.filter((course) =>
-      course.subject.toLowerCase().includes(text.toLowerCase()),
+  };
+  const coursesFilter = useMemo(() => {
+    let result = courses;
+    const q = keyword.trim().toLowerCase();
+    if (q) {
+      result = result.filter(
+        (course) =>
+          (course.subject ?? "").toLowerCase().includes(q) ||
+          (course.instructor ?? "").toLowerCase().includes(q),
+      );
+    }
+    result = [...result];
+    switch (sortOption) {
+      case "name_asc":
+        result.sort((a, b) => (a.subject ?? "").localeCompare(b.subject ?? ""));
+        break;
+      case "price_asc":
+        result.sort((a, b) => (a.price || 0) - (b.price || 0));
+        break;
+      case "price_desc":
+        result.sort((a, b) => (b.price || 0) - (a.price || 0));
+        break;
+      default:
+        break;
+    }
+
+    return result;
+  }, [courses, keyword, sortOption]);
+  const SortChip = ({ label, value, icon, theme }) => {
+    const isActive = sortOption === value;
+    return (
+      <TouchableOpacity
+        onPress={() => setSortOption(isActive ? null : value)}
+        className={`flex-row items-center px-3 py-2 rounded-full mr-2 border`}
+        style={{
+          backgroundColor: isActive
+            ? theme.colors.slate[800]
+            : theme.colors.gray[50],
+          borderColor: isActive
+            ? theme.colors.slate[800]
+            : theme.colors.slate[200],
+        }}
+      >
+        <Text
+          style={{
+            color: isActive ? theme.colors.white : theme.colors.slate[600],
+            fontWeight: isActive ? "bold" : "normal",
+          }}
+        >
+          {label}
+        </Text>
+        {isActive && icon && (
+          <Icon
+            name={icon}
+            size={16}
+            color={theme.colors.slate[400]}
+            style={{ marginLeft: 4 }}
+          />
+        )}
+      </TouchableOpacity>
     );
   };
-
   return (
-    <View className="flex-1 bg-slate-50 pt-10">
+    <View
+      className="flex-1  pt-10"
+      style={{
+        backgroundColor: theme.colors.gray[100],
+      }}
+    >
       <HeaderCustom text="Thanh tìm kiếm" />
-      <View className="pl-2  justify-center text-center pr-2 bg-white">
+      <View
+        className="pl-2  justify-center text-center pr-2"
+        style={{
+          backgroundColor: theme.colors.gray[100],
+        }}
+      >
         <TextInput
-          className=" text-base bg-gray-50 border border-gray-200 text-gray-700 mb-4 rounded-2xl p-3"
+          className=" text-base border  rounded-2xl p-3 "
+          style={{
+            backgroundColor: theme.colors.gray[50],
+            borderColor: theme.colors.slate[200],
+          }}
+          placeholderTextColor={theme.colors.slate[400]}
           placeholder="Nhập từ khóa..."
           value={keyword}
-          onChangeText={handleSearch}
+          onChangeText={(text) => {
+            (setKeyword(text), setCount(20));
+          }}
         />
       </View>
-      <View className="flex-row p-4 bg-slate-50 gap-3 border-t border-b border-slate-200 pl-2">
-        <View className="flex-row  gap-3">
-          {["React", "UX/UI", "Golang"].map((tag) => (
-            <TouchableOpacity
-              key={tag}
-              className="bg-gray-200 rounded-full px-3 py-1"
-              onPress={() => handleSearch(tag)}
-            >
-              <Text className="text-sm">{tag}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
 
-      <FlatList
-        data={results}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            className="border-b border-gray-200 bg-white py-3"
-            onPress={() =>
-              nav.navigate("CourseDetailedScreen", { id: item.id })
-            }
-          >
-            <View className="p-2">
-              <Text className="text-base font-medium">{item.subject}</Text>
-              <Text className="text-sm text-gray-500">{item.instructor}</Text>
-            </View>
-          </TouchableOpacity>
-        )}
-        ListEmptyComponent={
-          keyword.length > 0 ? (
-            <Text className="text-center text-gray-400 mt-4">
-              Không tìm thấy khóa học phù hợp
-            </Text>
-          ) : null
-        }
-      />
+      <View
+        style={{
+          backgroundColor: theme.colors.gray[50],
+          borderColor: theme.colors.gray[200],
+        }}
+      >
+        <HomeCategories sizeIcon={0} theme={theme} />
+      </View>
+      <View className="px-2 pb-2">
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <SortChip
+            label="Tên A-Z"
+            value="name_asc"
+            icon="sort-alphabetical-ascending"
+            theme={theme}
+          />
+          <SortChip
+            label="Giá thấp nhất"
+            value="price_asc"
+            icon="arrow-up"
+            theme={theme}
+          />
+          <SortChip
+            label="Giá cao nhất"
+            value="price_desc"
+            icon="arrow-down"
+            theme={theme}
+          />
+        </ScrollView>
+      </View>
+      <View
+        className="flex-1"
+        style={{
+          backgroundColor: theme.colors.gray[100],
+        }}
+      >
+        <FlatList
+          data={coursesFilter.slice(0, count)}
+          keyExtractor={(item) => item.id}
+          className="p-2 "
+          contentContainerStyle={{
+            paddingBottom: 30,
+          }}
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.6}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={{
+                backgroundColor: theme.colors.gray[100],
+                borderColor: theme.colors.gray[200],
+              }}
+              onPress={() =>
+                nav.navigate("CourseDetailedScreen", { id: item.id })
+              }
+            >
+              <View className="rounded-xl overflow-hidden ">
+                <ImageBackground
+                  source={
+                    item.image
+                      ? { uri: item.image }
+                      : require("../../assets/banner_1.png")
+                  }
+                  className="pt-8 pb-8 pl-4 mx-3 rounded-xl overflow-hidden mt-3"
+                >
+                  <View className="absolute inset-0  bg-black/40" />
+                  <View className="p-2">
+                    <Text className="text-base text-white font-medium">
+                      {item.subject}
+                    </Text>
+                    <Text className="text-sm text-white/70">
+                      {item.instructor}
+                    </Text>
+                  </View>
+                </ImageBackground>
+              </View>
+            </TouchableOpacity>
+          )}
+          ListEmptyComponent={
+            keyword.length > 0 ? (
+              <Text
+                className="text-center mt-4"
+                style={{
+                  color: theme.colors.gray[400],
+                }}
+              >
+                Không tìm thấy khóa học phù hợp
+              </Text>
+            ) : null
+          }
+        />
+      </View>
     </View>
   );
 };

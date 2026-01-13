@@ -2,6 +2,9 @@ import axios from "axios";
 import { saveTokens } from "../utils/tokenUtils";
 import { endpoints } from "../utils/Apis";
 import { CLIENT_ID, CLIENT_SECRET } from "@env";
+
+import CryptoJS from "crypto-js";
+
 const authAxios = axios.create({
   baseURL: endpoints.baseUrl,
   headers: {
@@ -12,15 +15,18 @@ const authAxios = axios.create({
 export const authApi = {
   login: async (user) => {
     try {
+      console.log(CLIENT_ID);
+      console.log(CLIENT_SECRET);
+      const secret = user.username + "|" + user.password + "|" + CLIENT_ID;
       let res = await authAxios.post(endpoints["login"], {
         username: user.username,
         password: user.password,
         client_id: CLIENT_ID,
-        client_secret: CLIENT_SECRET,
+        mac: CryptoJS.HmacSHA256(secret, CLIENT_ID).toString(CryptoJS.enc.Hex),
+
+        // client_secret: CLIENT_SECRET,
         grant_type: "password",
       });
-      console.log(CLIENT_ID);
-      console.log(CLIENT_SECRET);
 
       await saveTokens(res.data.access_token, res.data.refresh_token);
 

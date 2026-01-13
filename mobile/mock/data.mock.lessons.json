@@ -1,0 +1,92 @@
+{
+  "lessons": [
+    {
+      "id": 1,
+      "subject": "Giới thiệu về React Native",
+      "content": "<p>Bài học này sẽ giúp bạn hiểu các khái niệm cơ bản về React Native và cách thiết lập môi trường.</p>",
+      "image": "https://res.cloudinary.com/demo/image/upload/v1/samples/lesson1.jpg",
+      "video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "course": 1,
+      "order": 1,
+      "created_date": "2024-01-10T08:00:00Z",
+      "tags": ["React Native", "Javascript"]
+    },
+    {
+      "id": 2,
+      "subject": "Cấu trúc thư mục và Component",
+      "content": "<h2>Tìm hiểu về Component</h2><p>Cách tổ chức thư mục trong một dự án di động thực tế.</p>",
+      "image": null,
+      "video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "course": 1,
+      "order": 2,
+      "created_date": "2024-01-10T09:30:00Z",
+      "tags": ["Frontend"]
+    },
+    {
+      "id": 3,
+      "subject": "Thiết kế UI với Tailwind CSS",
+      "content": "<p>Sử dụng NativeWind để tạo giao diện đẹp mắt và nhanh chóng.</p>",
+      "image": "https://res.cloudinary.com/demo/image/upload/v1/samples/lesson3.jpg",
+      "video": null,
+      "course": 2,
+      "order": 1,
+      "created_date": "2024-01-11T10:00:00Z",
+      "tags": ["UI/UX", "Tailwind"]
+    },
+    {
+      "id": 4,
+      "subject": "Kết nối API với Axios",
+      "content": "<p>Hướng dẫn cách sử dụng Axios để lấy dữ liệu từ Backend Django.</p>",
+      "image": "https://res.cloudinary.com/demo/image/upload/v1/samples/lesson4.jpg",
+      "video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "course": 1,
+      "order": 3,
+      "created_date": "2024-01-12T14:00:00Z",
+      "tags": ["API", "Axios"]
+    },
+    {
+      "id": 5,
+      "subject": "Sử dụng Figma cho Mobile",
+      "content": "<p>Cách tạo prototype nhanh chóng cho ứng dụng Android và iOS.</p>",
+      "image": "https://res.cloudinary.com/demo/image/upload/v1/samples/figma.jpg",
+      "video": "https://www.youtube.com/watch?v=3qQ6E98I8vA",
+      "course": 2,
+      "order": 2,
+      "created_date": "2024-03-06T15:30:00Z",
+      "tags": ["Design", "Tools"]
+    },
+    {
+      "id": 6,
+      "subject": "Xây dựng Brand Identity",
+      "content": "<p>Lựa chọn màu sắc và font chữ phù hợp cho thương hiệu công nghệ.</p>",
+      "image": null,
+      "video": null,
+      "course": 2,
+      "order": 3,
+      "created_date": "2024-03-07T11:00:00Z",
+      "tags": ["Marketing", "Branding"]
+    },
+    {
+      "id": 7,
+      "subject": "Phân tích đối thủ cạnh tranh",
+      "content": "<p>Các bước để nghiên cứu thị trường trước khi tung chiến dịch Marketing.</p>",
+      "image": "https://res.cloudinary.com/demo/image/upload/v1/samples/marketing-analysis.jpg",
+      "video": "https://www.youtube.com/watch?v=rnZldT_AnK0",
+      "course": 3,
+      "order": 1,
+      "created_date": "2024-03-10T09:00:00Z",
+      "tags": ["Research", "Marketing"]
+    },
+    {
+      "id": 8,
+      "subject": "Quảng cáo Facebook cơ bản",
+      "content": "<p>Thiết lập tài khoản Business Suite và tạo chiến dịch đầu tiên.</p>",
+      "image": "https://res.cloudinary.com/demo/image/upload/v1/samples/facebook-ads.jpg",
+      "video": "https://www.youtube.com/watch?v=rnZldT_AnK0",
+      "course": 3,
+      "order": 2,
+      "created_date": "2024-03-12T16:00:00Z",
+      "tags": ["Ads", "Social Media"]
+    }
+  ]
+}
