@@ -34,6 +34,12 @@ class UserAdmin(ModelAdmin):
             'all': ('/static/css/admin_user.css',)
         }
 
+    def save_model(self, request, obj, form, change):
+        password = form.cleaned_data.get('password')
+        if password:
+            obj.set_password(password)
+        return super().save_model(request, obj, form, change)
+
     @admin.display(description='Avatar')
     def small_avatar_view(self, user):
         if user.avatar:
