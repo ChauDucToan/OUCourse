@@ -1,8 +1,14 @@
+from time import timezone
 from rest_framework import serializers
 from .models import AuthenticationModel
-from ..users.models import User
 from cloudinary.uploader import upload
 import requests
+import hmac
+import hashlib
+import os
+from oauth2_provider.models import AccessToken, RefreshToken
+from api.users.models import User
+from oauth2_provider.settings import oauth2_settings
 
 class AuthenticationModelSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(write_only=True) 
@@ -41,12 +47,12 @@ class AuthenticationModelSerializer(serializers.ModelSerializer):
         if created:
             if avatar_url:
                 response = requests.get(avatar_url)
+
                 if response.status_code == 200:
-                        avatar_url_ext = avatar_url.split('.')[-1]
-                        file_name = f"avatar_{user.id}.{avatar_url_ext}"
-                        upload_result = upload(response.content, public_id=file_name)
-                        user.avatar = upload_result.get('public_id')
-                        user.save()
+                    file_name = f"avatar_{user.id}"
+                    upload_result = upload(response.content, public_id=file_name)
+                    user.avatar = upload_result.get('public_id')
+                    user.save()
 
         defaults_data = {
             'user': user,
@@ -74,3 +80,71 @@ class SocialLoginInputSerializer(serializers.Serializer):
             auth_type = data.pop('state')
             data['auth_type'] = auth_type
         return super().validate_empty_values(data)
+    
+class TokenSenderSerializer(serializers.Serializer):
+    username = serializers.CharField(required=True)
+    client_id = serializers.CharField(required=True)
+    mac = serializers.CharField(required=True)
+
+    def _get_mac(self, data, key):
+        mac = hmac.new(
+            key.encode("utf-8"),
+            data.encode("utf-8"),
+            hashlib.sha256
+        ).hexdigest()
+
+        return mac
+
+    def validate(self, attrs):
+        username = attrs.get('username')
+        client_id = attrs.get('client_id')
+        received_mac = attrs.get('mac')
+
+        internal_client_id = os.getenv("CLIENT_ID")
+
+        data = f"{username}|{client_id}"
+        expected_mac = self._get_mac(data, internal_client_id)
+        if client_id != internal_client_id:
+            raise serializers.ValidationError("Invalid client ID.")
+        
+        if not hmac.compare_digest(received_mac, expected_mac):
+            raise serializers.ValidationError("Invalid MAC signature.")
+        
+        try:
+            user = User.objects.get(username=username)
+            attrs['user'] = user
+        except User.DoesNotExist:
+            raise serializers.ValidationError({"username": "User not found."})
+
+        return attrs
+
+    def get_token(self):
+        username = self.validated_data.get('username')
+        user = User.objects.get(username=username)
+
+        access_token = AccessToken.objects.filter(
+            user=user,
+            expires__gt=timezone.now()
+        ).order_by('-expires').first()
+
+        refresh_token = RefreshToken.objects.filter(
+            user=user,
+            access_token=access_token,
+        ).first()
+
+        return {
+            'status': 'success',
+            'user': {
+                "id": user.id,
+                "email": user.email,
+                "name": user.first_name,
+                "avatar": user.profile.avatar if hasattr(user, 'profile') else ""
+            },
+            'tokens': {
+                'access_token': access_token.token,
+                'refresh_token': refresh_token.token,
+                'expires_in': oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS,
+                'token_type': 'Bearer',
+                'scope': access_token.scope
+            }
+        }

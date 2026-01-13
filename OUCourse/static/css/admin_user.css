@@ -1,0 +1,6 @@
+th.column-small_avatar_view,
+td.field-small_avatar_view {
+    width: 60px !important;
+    white-space: nowrap;
+    text-align: center;
+}

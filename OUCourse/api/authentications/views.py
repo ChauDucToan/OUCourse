@@ -3,7 +3,7 @@ from rest_framework.decorators import action, authentication_classes,permission_
 from rest_framework.response import Response
 from django.db import transaction
 
-from .serializers import AuthenticationModelSerializer, SocialLoginInputSerializer
+from .serializers import AuthenticationModelSerializer, SocialLoginInputSerializer, TokenSenderSerializer
 from .models import AuthenticationModel
 from services.OAuth.OAuthProviders import OAuthFactory
 from .utils import create_oauth_token
@@ -11,6 +11,23 @@ from .utils import create_oauth_token
 class AuthViewSet(viewsets.GenericViewSet):
     queryset = AuthenticationModel.objects.all()
     serializer_class = AuthenticationModelSerializer
+
+    @action(detail=False, methods=['post'], url_path='get-token', serializer_class=TokenSenderSerializer)
+    def get_token(self, request):
+        serializer = TokenSenderSerializer(data=request.data)
+        
+        serializer.is_valid(raise_exception=True)
+
+        result = serializer.get_token_response()
+
+        if result is None:
+            return Response(
+                {"error": "No valid token found for this user"}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+            
+        return Response(result, status=status.HTTP_200_OK)
+
 
     @action(detail=False, methods=['get'], url_path='url')
     @authentication_classes([])
@@ -70,7 +87,7 @@ class AuthViewSet(viewsets.GenericViewSet):
                     "id": auth_instance.user.id,
                     "email": auth_instance.user.email,
                     "name": auth_instance.user.first_name,
-                    "avatar": auth_instance.user.profile.avatar.url if hasattr(auth_instance.user, 'profile') else ""
+                    "avatar": auth_instance.user.profile.avatar if hasattr(auth_instance.user, 'profile') else ""
                 },
                 "tokens": oauth_token
             }, status=status.HTTP_200_OK)
