@@ -48,6 +48,10 @@ ALLOWED_HOSTS = [
     'localhost',
 ]
 
+INTERNAL_IPS = [
+    '127.0.0.1'
+]
+
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 OAUTH2_PROVIDER = {
@@ -71,6 +75,9 @@ CORS_ALLOW_ALL_ORIGINS = True
 # Application definition
 
 INSTALLED_APPS = [
+    "unfold",  # before django.contrib.admin
+    "unfold.contrib.filters",  # optional, if special filters are needed
+    "unfold.contrib.forms",  # optional, if special form elements are needed
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -82,12 +89,14 @@ INSTALLED_APPS = [
     'ckeditor',
     'corsheaders',
     'oauth2_provider',
+    'api',
     'api.courses.apps.CoursesConfig',
     'api.users.apps.UsersConfig',
     'api.lessons.apps.LessonsConfig',
     'api.comments.apps.CommentsConfig',
     'api.categories.apps.CategoriesConfig',
     'api.authentications.apps.AuthenticationsConfig',
+    'api.payments.apps.PaymentsConfig',
 ]
 AUTH_USER_MODEL = "users.User"
 
@@ -96,6 +105,10 @@ REST_FRAMEWORK = {
         'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
         'rest_framework.authentication.SessionAuthentication',
     )
+}
+
+UNFOLD = {
+    "DASHBOARD_CALLBACK": "api.admin.dashboard_callback",
 }
 
 MIDDLEWARE = [

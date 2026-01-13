@@ -1,6 +1,7 @@
 from rest_framework import viewsets, permissions, status, parsers
 from .. import perms
 from . import serializers, paginators, models
+from api.lessons.serializers import LessonSerializer
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 from rest_framework.decorators import action
@@ -68,18 +69,19 @@ class CourseView(viewsets.ModelViewSet):
     def get_lessons(self, request, pk):
         lessons = self.get_object().lesson_set.filter(active=True)
 
-        return Response(serializers.LessonSerializer(lessons, many=True).data, status=status.HTTP_200_OK)
+        return Response(LessonSerializer(lessons, many=True).data, status=status.HTTP_200_OK)
 
     @action(methods=['post'], permission_classes=[permissions.IsAuthenticated], url_path='enroll',
-             detail=True)
+             detail=True, serializer_class=serializers.ManageCourseSerializer)
     def enroll(self, request):
         course = self.get_object()
         u = request.user
 
+        status = request.data.get('status', models.ManageCourse.Status.ENROLLED)
         manage_course, created = models.ManageCourse.objects.get_or_create(
             student=u,
             course=course,
-            defaults={'status': models.ManageCourse.Status.ENROLLED}
+            defaults={'status': status}
         )
 
         if not created:

@@ -11,7 +11,8 @@ class CommentView(viewsets.ViewSet, generics.DestroyAPIView, generics.UpdateAPIV
     serializer_class = serializers.CommentSerializer
     permission_classes = [perms.CommentOwner]
 
-    @action(detail=True, methods=['post'], url_path='react', permission_classes=[IsAuthenticated])
+    @action(detail=True, methods=['post'], url_path='react', permission_classes=[IsAuthenticated],
+            serializer_class=serializers.EmotionSerializer)
     def react(self, request, pk=None):
         comment = self.get_object() 
         
@@ -28,7 +29,8 @@ class CommentView(viewsets.ViewSet, generics.DestroyAPIView, generics.UpdateAPIV
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=True, methods=['delete'], url_path='unreact', permission_classes=[IsAuthenticated])
+    @action(detail=True, methods=['delete'], url_path='unreact', permission_classes=[IsAuthenticated],
+            serializer_class=serializers.EmotionSerializer)
     def unreact(self, request, pk=None):
         comment = self.get_object()
         c_type = ContentType.objects.get_for_model(comment)

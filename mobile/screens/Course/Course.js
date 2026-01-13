@@ -118,7 +118,6 @@ const CourseDetailedScreen = () => {
       setModalVisible(false);
     }
   };
-
   return (
     <View
       className=" flex-1"

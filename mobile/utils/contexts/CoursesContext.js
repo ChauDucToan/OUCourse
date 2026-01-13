@@ -76,10 +76,13 @@ export const CoursesProvider = ({ children }) => {
         coursesError,
         ensureCourses,
         refreshCourses,
+<<<<<<< HEAD
         instructorCourse,
         ensureInstructorCourse,
         loadingInstructorCourses,
         instructorCoursesError,
+=======
+>>>>>>> main
       }}
     >
       {children}

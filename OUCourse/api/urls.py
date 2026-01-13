@@ -9,4 +9,5 @@ urlpatterns = [
     path('categories/', include('api.categories.urls')),
     path('auth/', include('api.authentications.urls')),
     path('user-info/', views.UserInfoAPI.as_view({'get': 'list'})),
+    path('payments/', include('api.payments.urls')),
 ]
