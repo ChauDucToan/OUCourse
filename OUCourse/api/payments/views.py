@@ -3,10 +3,12 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from api.payments import serializers, models
 from services.payments.PaymentProviders import PaymentFactory
+from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 # Create your views here.
 
 class TransactionViewSet(viewsets.ViewSet, generics.CreateAPIView, generics.ListAPIView):
     serializer_class = serializers.TransactionSerializer
+    authentication_classes = [OAuth2Authentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):

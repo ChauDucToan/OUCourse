@@ -9,6 +9,7 @@ import os
 from oauth2_provider.models import AccessToken, RefreshToken
 from api.users.models import User
 from oauth2_provider.settings import oauth2_settings
+from .utils import create_oauth_token
 
 class AuthenticationModelSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(write_only=True) 
@@ -81,6 +82,53 @@ class SocialLoginInputSerializer(serializers.Serializer):
             data['auth_type'] = auth_type
         return super().validate_empty_values(data)
     
+class TokenCreatorSerializer(serializers.Serializer):
+    username = serializers.CharField(required=True)
+    password = serializers.CharField(required=True, write_only=True)
+    client_id = serializers.CharField(required=True)
+    mac = serializers.CharField(required=True, help_text="HMAC signature: HMAC_SHA256(username|password|client_id)")
+
+    def validate(self, attrs):
+        username = attrs.get('username')
+        client_id = attrs.get('client_id')
+        received_mac = attrs.get('mac')
+        password = attrs.get('password')
+        internal_client_id = os.getenv("CLIENT_ID")
+
+        data = f"{username}|{password}|{client_id}"
+        expected_mac = self._get_mac(data, internal_client_id)
+        if client_id != internal_client_id:
+            raise serializers.ValidationError("Invalid client ID.")
+        
+        if not hmac.compare_digest(received_mac, expected_mac):
+            raise serializers.ValidationError("Invalid MAC signature.")
+        
+        try:
+            user = User.objects.get(username=username)
+            if not user.check_password(password):
+                raise serializers.ValidationError("Invalid username or password.")
+        except User.DoesNotExist:
+            raise serializers.ValidationError("Invalid username or password.")
+
+        return attrs
+    
+    def _get_mac(self, data, key):
+        mac = hmac.new(
+            key.encode("utf-8"),
+            data.encode("utf-8"),
+            hashlib.sha256
+        ).hexdigest()
+
+        return mac
+    
+    def send_token(self):
+        username = self.validated_data.get('username')
+        user = User.objects.get(username=username)
+
+        token = create_oauth_token(user)
+
+        return token
+    
 class TokenSenderSerializer(serializers.Serializer):
     username = serializers.CharField(required=True)
     client_id = serializers.CharField(required=True)
@@ -122,15 +170,16 @@ class TokenSenderSerializer(serializers.Serializer):
         username = self.validated_data.get('username')
         user = User.objects.get(username=username)
 
-        access_token = AccessToken.objects.filter(
+        refresh_token = RefreshToken.objects.select_related('access_token').filter(
             user=user,
-            expires__gt=timezone.now()
-        ).order_by('-expires').first()
+            access_token__user=user,
+            access_token__expires__gt=timezone.now()
+        ).order_by('-access_token__expires').first()
 
-        refresh_token = RefreshToken.objects.filter(
-            user=user,
-            access_token=access_token,
-        ).first()
+        if refresh_token:
+            access_token = refresh_token.access_token
+        else:
+            raise serializers.ValidationError("No valid tokens found for the user.")
 
         return {
             'status': 'success',
