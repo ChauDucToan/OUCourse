@@ -14,7 +14,7 @@ class LessonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Lesson
-        fields = ['id', 'subject', 'video', 'video_url', 'image']
+        fields = ['id', 'subject', 'video', 'video_url', 'image', 'course']
         extra_kwargs = {
             'image': {'required': False},
         }

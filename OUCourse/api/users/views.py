@@ -37,7 +37,7 @@ class UserView(viewsets.ViewSet, generics.CreateAPIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
     
 class StatisticUserView(viewsets.ViewSet):
-    permission_classes = [perms.IsNotStudent()]
+    permission_classes = [perms.IsNotStudent]
 
     @action(methods=['get'], url_path='revenue', detail=False)
     def get_revenue(self, request):
