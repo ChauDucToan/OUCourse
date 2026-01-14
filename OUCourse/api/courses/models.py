@@ -1,17 +1,17 @@
 from django.conf import settings
 from django.db import models
 from ..models import BaseModel
-from django.contrib.auth import get_user_model
 from ckeditor.fields import RichTextField
 from cloudinary.models import CloudinaryField
-
-UserModel = get_user_model()
+from api.users.models import User
 
 class Course(BaseModel):
     instructor = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        User,
         on_delete=models.RESTRICT,
+        limit_choices_to={'role': User.Role.INSTRUCTOR},
         related_name="owned_courses",
+
     )
     category = models.ForeignKey(
         "categories.Category", 
@@ -55,3 +55,7 @@ class ManageCourse(BaseModel):
         on_delete=models.CASCADE,
         related_name="managed_students",
     )
+
+    class Meta:
+        unique_together = ('student', 'course')
+        ordering = ['id']

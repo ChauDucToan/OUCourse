@@ -127,6 +127,17 @@ const CourseDetailedScreen = () => {
         Alert.alert("Thanh toán thất bại");
       }
     } catch (error) {
+      if (error.response) {
+        console.log("Status:", error.response.status);
+        console.log("Data lỗi:", error.response.data); // <-- Quan trọng: Server sẽ báo lý do tại đây
+        console.log("Headers:", error.response.headers);
+      } else {
+        console.error("Lỗi khác:", error.message);
+      }
+      Alert.alert(
+        "Có lỗi xảy ra",
+        JSON.stringify(error.response?.data) || "Lỗi không xác định",
+      );
       console.error(error);
       Alert.alert("Có lỗi xảy ra khi thanh toán");
     } finally {
