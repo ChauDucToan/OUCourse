@@ -3,19 +3,16 @@ import AccountStack from "./AccountStack";
 import HomeStack from "./HomeStack";
 import LearningStack from "./LearningStack";
 import SearchStack from "./SearchStack";
-import { useContext } from "react";
-import { MyUserContext } from "../utils/contexts/MyContext";
-import { MyColorContext } from "../utils/contexts/MyColorContext";
+
 import { Icon } from "react-native-paper";
 
 const Tab = createBottomTabNavigator();
 const TabNavigator = () => {
-  const [user] = useContext(MyUserContext);
-  const { theme } = useContext(MyColorContext);
+  const { theme } = useColors();
   return (
     <Tab.Navigator
       screenOptions={{
-        headerShown: false, // ẩn header của tab
+        headerShown: false,
         tabBarStyle: {
           backgroundColor: theme.colors.gray[100],
           borderTopColor: theme.colors.slate[200],

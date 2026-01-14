@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   View,
   Image,
@@ -11,8 +11,6 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import TextCustom from "../../components/TextCustom";
 import RenderHTML from "react-native-render-html";
 import { FlatList } from "react-native";
-import { useContext } from "react";
-import { MyColorContext } from "../../utils/contexts/MyColorContext";
 import { useCallback } from "react";
 import { useEffect } from "react";
 import { ImageBackground } from "react-native";
@@ -117,7 +115,7 @@ const DescriptionRoute = ({ description, theme }) => {
 };
 
 export const LessonScreen = () => {
-  const { theme } = useContext(MyColorContext);
+  const { theme } = useColors();
   const route = useRoute();
   const { item } = route.params;
   const layout = useWindowDimensions();

@@ -1,11 +1,10 @@
-import { useContext } from "react";
-import { MyUserContext } from "../../utils/contexts/MyContext";
 import { View } from "react-native";
 import { Button } from "react-native";
 import { removeTokens } from "../../utils/tokenUtils";
+import { useUser } from "../../hooks/useUser";
 
 const User = () => {
-  const [user, dispatch] = useContext(MyUserContext);
+  const [user, dispatch] = useUser();
   const logout = async () => {
     removeTokens();
     dispatch({

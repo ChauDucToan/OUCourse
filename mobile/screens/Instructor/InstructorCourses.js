@@ -2,8 +2,6 @@ import { View, Text, FlatList } from "react-native";
 import { Button } from "react-native-paper";
 import HeaderCustom from "../../components/Header";
 import { useNavigation } from "@react-navigation/native";
-import { useContext } from "react";
-import { MyColorContext } from "../../utils/contexts/MyColorContext";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { useEffect } from "react";
 import { useState } from "react";
@@ -77,7 +75,6 @@ const CourseCard = ({ course, onDelete, theme, navigation }) => (
   </View>
 );
 
-// Component chính: InstructorCourses
 const InstructorCourses = () => {
   const {
     instructorCourse,
@@ -93,7 +90,7 @@ const InstructorCourses = () => {
   const loadMore = () => {
     setCount((prev) => prev + 20);
   };
-  const { theme } = useContext(MyColorContext);
+  const { theme } = useColors();
   const handleDelete = async (courseId) => {
     try {
       await axiosClient.delete(`${endpoints.courses}${courseId}/`);

@@ -10,21 +10,19 @@ import {
 import RenderHTML from "react-native-render-html";
 import { Icon } from "react-native-paper";
 import HeaderCustom from "../../components/Header";
-import { MyColorContext } from "../../utils/contexts/MyColorContext";
 
-import { useContext, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../../utils/Apis";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Alert, Linking } from "react-native";
 import PaymentSelectionModal from "../../components/ModalPayment";
-import PaymentQR from "../../components/QRComponent";
 
 const CourseDetailedScreen = () => {
   const route = useRoute();
   const [course, setCourse] = useState();
   const [isLoading, setLoading] = useState(false);
-  const { theme } = useContext(MyColorContext);
+  const { theme } = useColors();
   const { id } = route.params;
   const { width } = Dimensions.get("window");
   const [modalVisible, setModalVisible] = useState(false);

@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import { ScrollView } from "react-native";
-import { useContext } from "react";
 import ListItem from "../../components/ListItem";
 import HeaderCustom from "../../components/Header";
 import { MyColorContext } from "../../utils/contexts/MyColorContext";
@@ -12,7 +11,7 @@ import { MyColorContext } from "../../utils/contexts/MyColorContext";
 const InstructorDashboard = () => {
   const navigation = useNavigation();
   const [selectionInstructor, setSelectionInstructor] = useState([]);
-  const { theme } = useContext(MyColorContext);
+  const { theme } = useColors();
   useEffect(() => {
     const data = require("../../mock/data.config.instructor.json");
     setSelectionInstructor(data);

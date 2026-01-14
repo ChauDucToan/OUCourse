@@ -1,10 +1,8 @@
 import { View } from "react-native";
-import { useContext } from "react";
-import { MyColorContext } from "../../utils/contexts/MyColorContext";
 import HeaderCustom from "../../components/Header";
 
 const InstructorTrackStudent = () => {
-  const { theme } = useContext(MyColorContext);
+  const { theme } = useColors();
 
   return (
     <View

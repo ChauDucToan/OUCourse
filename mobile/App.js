@@ -25,7 +25,7 @@ export default function App() {
     ...DefaultTheme,
     colors: {
       ...DefaultTheme.colors,
-      background: theme.colors.gray[100], // Sử dụng màu tối từ theme của bạn
+      background: theme.colors.gray[100],
     },
   };
   useEffect(() => {

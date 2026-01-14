@@ -1,23 +1,22 @@
 import { Pressable, View, Modal, Alert } from "react-native";
 import { ActivityIndicator, HelperText, IconButton } from "react-native-paper";
-import { MyUserContext } from "../../utils/contexts/MyContext";
 import TextCustom from "../../components/TextCustom";
 import AuthLayout from "../../components/AuthLayout";
-import { useState, useContext } from "react";
+import { useState } from "react";
 import { authApi } from "../../api/authApi";
 import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../../utils/Apis";
 import { useNavigation } from "@react-navigation/native";
 import * as AuthSession from "expo-auth-session";
-import { MyColorContext } from "../../utils/contexts/MyColorContext";
 import FormAuth from "../../components/FormAuth";
 import { WebView } from "react-native-webview";
 import { saveTokens } from "../../utils/tokenUtils";
+import { useUser } from "../../hooks/useUser";
 
 const Login = () => {
   const jsonData = require("../../mock/data.config.register.json");
   const jsonStyle = require("../../mock/data.styles.json");
-  const { theme } = useContext(MyColorContext);
+  const { theme } = useColors();
   const fieldsRender = jsonData.info.filter(
     (item) => item.field === "username" || item.field === "password",
   );
@@ -27,7 +26,7 @@ const Login = () => {
   const [isLoginVisible, setIsLoginVisible] = useState(false);
   const [authUrl, setAuthUrl] = useState(null);
   const nav = useNavigation();
-  const [, dispatch] = useContext(MyUserContext);
+  const [, dispatch] = useUser();
 
   const validate = () => {
     if (!user.password || !user.username) {
@@ -132,16 +131,12 @@ const Login = () => {
           userAgent="Mozilla/5.0 (Linux; Android 10; Android SDK built for x86) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36"
           onNavigationStateChange={async (navState) => {
             if (navState.url.includes("google-login-success")) {
-              // parse token...
-              //
               await saveTokens(access_token, refresh_token);
               const userRes = await axiosClient.get(endpoints["current_user"]);
               dispatch({ type: "login", payload: userRes.data });
 
-              // đóng WebView ngay
               setIsLoginVisible(false);
 
-              // điều hướng vào Home
               nav.navigate("HomeTab");
             }
           }}

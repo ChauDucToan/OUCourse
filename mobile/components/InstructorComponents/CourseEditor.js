@@ -1,7 +1,6 @@
 import { TouchableOpacity, View } from "react-native";
 import HeaderCustom from "../Header";
-import { MyColorContext } from "../../utils/contexts/MyColorContext";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Picker } from "@react-native-picker/picker";
 import { TextInput } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
@@ -49,7 +48,7 @@ const SelectTime = ({ theme }) => {
 };
 
 const CourseEditor = () => {
-  const { theme } = useContext(MyColorContext);
+  const { theme } = useColors();
 
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");

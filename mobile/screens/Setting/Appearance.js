@@ -1,11 +1,10 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { View } from "react-native";
 import { SegmentedButtons } from "react-native-paper";
-import { MyColorContext } from "../../utils/contexts/MyColorContext";
 
 const Appearance = () => {
   const [value, setValue] = useState("light");
-  const { theme, themeDispatch } = useContext(MyColorContext);
+  const { theme, themeDispatch } = useColors();
   const jsonData = require("../../mock/data.config.apperance.json");
 
   return (
@@ -25,9 +24,9 @@ const Appearance = () => {
         }}
         theme={{
           colors: {
-            primary: theme.colors.slate[400], // border (checked)
-            secondaryContainer: theme.colors.slate[400], // nền (checked)
-            onSecondaryContainer: theme.colors.slate[600], // chữ (checked)
+            primary: theme.colors.slate[400],
+            secondaryContainer: theme.colors.slate[400],
+            onSecondaryContainer: theme.colors.slate[600],
             onSurface: theme.colors.gray[400],
           },
         }}

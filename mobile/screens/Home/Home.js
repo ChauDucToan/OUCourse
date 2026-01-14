@@ -7,8 +7,6 @@ import { HomeCourseList } from "../../components/HomeComponents/HomeCourseList";
 import HomePromotion from "../../components/HomeComponents/HomePromotion";
 import { useRef } from "react";
 import TextCustom from "../../components/TextCustom";
-import { useContext } from "react";
-import { MyColorContext } from "../../utils/contexts/MyColorContext";
 import { Animated } from "react-native";
 import { useMemo } from "react";
 import { useCourses } from "../../hooks/useCourses";
@@ -18,7 +16,7 @@ const HEADER_MAX_HEIGHT = 140;
 const HEADER_MIN_HEIGHT = 80;
 
 const HomeScreen = () => {
-  const { theme } = useContext(MyColorContext);
+  const { theme } = useColors();
   const scrollY = useRef(new Animated.Value(0)).current;
   const { courses, ensureCourses, loadingCourses } = useCourses();
 

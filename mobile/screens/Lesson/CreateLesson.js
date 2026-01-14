@@ -1,17 +1,16 @@
 import { TouchableOpacity, View, Alert, ActivityIndicator } from "react-native";
-import { useContext, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { TextInput } from "react-native-paper";
 import { useNavigation, useRoute } from "@react-navigation/native";
 
 import HeaderCustom from "../../components/Header";
 import TextCustom from "../../components/TextCustom";
-import { MyColorContext } from "../../utils/contexts/MyColorContext";
 import { getMimeType, pickImage, pickVideo } from "../../utils/imageUtils";
 import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../../utils/Apis";
 
 const CreateLesson = () => {
-  const { theme } = useContext(MyColorContext);
+  const { theme } = useColors();
   const nav = useNavigation();
   const route = useRoute();
   const courseId = route.params?.courseId;

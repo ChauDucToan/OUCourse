@@ -1,14 +1,12 @@
 import AuthLayout from "../../components/AuthLayout";
-import { Image, Text, TouchableOpacity, Pressable } from "react-native";
-import { List, TextInput } from "react-native-paper";
-import * as ImagePicker from "expo-image-picker";
+import { Image, Text, TouchableOpacity } from "react-native";
+import { List } from "react-native-paper";
 
 import TextCustom from "../../components/TextCustom";
 import { ActivityIndicator } from "react-native";
-import { MyColorContext } from "../../utils/contexts/MyColorContext";
 
 import { registerApi } from "../../api/registerApi";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import FormAuth from "../../components/FormAuth";
 import { Alert } from "react-native";
@@ -17,7 +15,7 @@ import { getMimeType, pickImage } from "../../utils/imageUtils";
 const Register = () => {
   const jsonData = require("../../mock/data.config.register.json");
   const fieldsRender = jsonData.info;
-  const { theme } = useContext(MyColorContext);
+  const { theme } = useColors();
   const [err, setErr] = useState(false);
   const [user, setUser] = useState({});
 

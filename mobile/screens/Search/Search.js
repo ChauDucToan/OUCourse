@@ -34,7 +34,6 @@ const Search = () => {
     }
   };
   const coursesFilter = useMemo(() => {
-    // let result = courses;
     let result = courses.filter((c) => c.status !== "ENROLLED");
     const q = keyword.trim().toLowerCase();
     if (q) {

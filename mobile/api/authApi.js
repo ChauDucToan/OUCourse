@@ -23,8 +23,6 @@ export const authApi = {
         password: user.password,
         client_id: CLIENT_ID,
         mac: CryptoJS.HmacSHA256(secret, CLIENT_ID).toString(CryptoJS.enc.Hex),
-
-        // client_secret: CLIENT_SECRET,
         grant_type: "password",
       });
 

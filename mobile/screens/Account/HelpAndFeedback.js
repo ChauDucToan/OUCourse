@@ -13,12 +13,10 @@ import { KeyboardAvoidingView } from "react-native";
 import { Platform } from "react-native";
 
 import { faqs } from "../../mock/data.config.faq.json";
-import { useContext } from "react";
-import { MyColorContext } from "../../utils/contexts/MyColorContext";
 
 const HelpAndFeedbackScreen = ({ navigation }) => {
   const [feedback, setFeedback] = useState("");
-  const { theme } = useContext(MyColorContext);
+  const { theme } = useColors();
   const handleSendFeedback = () => {
     Alert.alert(
       "Thông báo",

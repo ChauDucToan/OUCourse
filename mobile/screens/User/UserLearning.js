@@ -5,20 +5,20 @@ import { Image } from "react-native";
 import TextCustom from "../../components/TextCustom";
 import { FlatList } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { useContext } from "react";
-import { MyColorContext } from "../../utils/contexts/MyColorContext";
 import { ActivityIndicator } from "react-native-paper";
 import { useCourses } from "../../hooks/useCourses";
 import { useState } from "react";
-import { MyUserContext } from "../../utils/contexts/MyContext";
+
 import { Text } from "react-native";
+import { useColors } from "../../hooks/useColors";
+import { useUser } from "../../hooks/useUser";
 
 const UserLearning = () => {
   const { courses, ensureCourses, setCourses } = useCourses();
   const [loading, setLoading] = useState(false);
   const nav = useNavigation();
-  const [user] = useContext(MyUserContext);
-  const { theme } = useContext(MyColorContext);
+  const [user] = useUser();
+  const { theme } = useColors();
   useEffect(() => {
     if (!user) {
       setCourses([]);

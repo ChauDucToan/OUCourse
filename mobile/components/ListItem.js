@@ -1,13 +1,12 @@
 import { List } from "react-native-paper";
 import TextCustom from "./TextCustom";
 import Appearance from "../screens/Setting/Appearance";
-import { MyUserContext } from "../utils/contexts/MyContext";
-import { useContext } from "react";
+import { useUser } from "../hooks/useUser";
 
 const jsonStyle = require("../mock/data.styles.json");
 
 const ListItem = ({ mapJson, navigation, header, theme }) => {
-  const [user] = useContext(MyUserContext);
+  const [user] = useUser();
   return (
     <List.Section
       className="mt-2  border-b "
