@@ -7,7 +7,7 @@ MSG="$(cat "$MSG_FILE")"
 # 1) Cấu hình type + scope bạn muốn
 ALLOWED_TYPES="feat|fix|docs|refactor|test|chore"
 # Các folder scope chính (đổi theo repo bạn)
-ALLOWED_SCOPES=("oucourse" "infra" "root" "multi")
+ALLOWED_SCOPES=("oucourse" "infra" "root" "multi" "mobile")
 
 # 2) Kiểm tra format type(scope): message
 PATTERN="^(${ALLOWED_TYPES})\(([a-z0-9_-]+)\): .+"
@@ -54,6 +54,8 @@ while IFS= read -r d; do
   dl="$(echo "$d" | tr '[:upper:]' '[:lower:]')"
   if [[ "$dl" == "oucourse" ]]; then
     NORMALIZED_DIRS+=("oucourse")
+  elif [[ "$dl" == "mobile" ]]; then
+    NORMALIZED_DIRS+=("mobile")
   elif [[ "$d" == ".github" || "$d" == ".githooks" ]]; then
     NORMALIZED_DIRS+=("infra")
   elif [[ -d "$d" ]]; then
