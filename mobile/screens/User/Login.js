@@ -29,6 +29,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [isLoginVisible, setIsLoginVisible] = useState(false);
   const [authUrl, setAuthUrl] = useState(null);
+  const [requestRedirectUri, setRequestRedirectUri] = useState("");
 
   const nav = useNavigation();
   const [, dispatch] = useUser();
@@ -69,97 +70,62 @@ const Login = () => {
       params.append("redirect_uri", redirectUri);
 
       const res = await axiosClient.get(endpoints["googleAuth"], { params });
-      const url = res.data?.auth_url;
-      if (!url) throw new Error("Missing auth_url from backend");
-
-      setAuthUrl(url);
-      setIsLoginVisible(true);
+      if (res.data?.auth_url) {
+        setAuthUrl(res.data.auth_url);
+        setIsLoginVisible(true);
+      }
     } catch (ex) {
       console.error("Lỗi Google Auth:", ex);
     }
   };
-  const decode = (url) => {
-    const regex = /[?&]([^=#]+)=([^&#]*)/g;
-    let params = {};
-    let match;
-    while ((match = regex.exec(url))) {
-      params[match[1]] = decodeURIComponent(match[2]);
-    }
-    return params;
-  };
-  const handleWebViewNavigation = async (navState) => {
-    const { url } = navState;
-    if (url.includes("access_token")) {
-      try {
-        const params = decode(url);
-        const { access_token, refresh_token, error } = params;
-        if (error) {
-          setIsLoginVisible(false);
-          return;
-        }
-        if (access_token && refresh_token) {
-          await processLoginSuccess(access_token, refresh_token);
-        }
-      } catch (error) {
-        console.error(error);
+
+  const stunAndGetCode = (request) => {
+    const { url } = request;
+    if (url.includes("code=") && url.includes(endpoints["googleCallback"])) {
+      const regex = /[?&]code=([^&#]*)/;
+      const match = regex.exec(url);
+      if (match && match[1]) {
+        const code = decodeURIComponent(match[1]);
+        setIsLoginVisible(false);
+        fromCodeToTokens(code);
+        return false;
       }
     }
+    return true;
   };
 
-  const processLoginSuccess = async (accessToken, refreshToken) => {
+  const fromCodeToTokens = async (code) => {
     try {
-      setIsLoginVisible(false);
-      setLoading(true);
-      await saveTokens(accessToken, refreshToken);
-      const userRes = await axiosClient.get(endpoints["current_user"]);
-      dispatch({ type: "login", payload: userRes.data });
-
-      nav.reset({ index: 0, routes: [{ name: "TabNavigation" }] });
-    } catch (e) {
-      console.error("Lỗi sau khi có token:", e);
-      Alert.alert("Lỗi", "Không thể lấy thông tin người dùng");
-    } finally {
-      setLoading(false);
+      const res = await axiosClient.get(
+        endpoints["googleCallback"],
+        {
+          params: {
+            code: code,
+            auth_type: "google",
+          },
+        },
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      );
+      if (res.status === 200) {
+        const responeData = res.data;
+        if (responeData.status === "success" && responeData.tokens) {
+          await saveTokens(
+            responeData.tokens.access_token,
+            responeData.tokens.refresh_token,
+          );
+          let userRes = await axiosClient.get(endpoints["current_user"]);
+          dispatch({ type: "login", payload: userRes.data });
+          nav.reset({ index: 0, routes: [{ name: "Home" }] });
+        }
+      }
+    } catch (error) {
+      console.error("From Code to token failed", error);
     }
   };
-
-  useEffect(() => {
-    let interVal;
-    if (isLoginVisible) {
-      interVal = setInterval(async () => {
-        console.log("CHAY NAO");
-        try {
-          const username = "";
-          const clientId = CLIENT_ID;
-          const data = `${username}|${clientId}`;
-
-          const mac = HmacSHA256(data, CLIENT_ID).toString(Hex);
-          console.log(mac);
-          const payload = {
-            username: username,
-            client_id: clientId,
-            mac: mac,
-          };
-          const res = await axiosClient.post(
-            endpoints["googleGetToken"],
-            payload,
-          );
-          if (res.status === 200 && res.data?.access_token) {
-            clearInterval(interVal);
-            await processLoginSuccess(
-              res.data.access_token,
-              res.data.refresh_token,
-            );
-          }
-        } catch (error) {}
-      }, 5000);
-    }
-    return () => {
-      if (interVal) {
-        clearInterval(interVal);
-      }
-    };
-  }, [isLoginVisible]);
 
   return (
     <AuthLayout title="ĐĂNG NHẬP NGƯỜI DÙNG">
@@ -188,7 +154,7 @@ const Login = () => {
           <WebView
             source={{ uri: authUrl }}
             userAgent="Mozilla/5.0 (Linux; Android 10; Android SDK built for x86) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36"
-            onNavigationStateChange={handleWebViewNavigation}
+            onShouldStartLoadWithRequest={stunAndGetCode}
             startInLoadingState={true}
             renderLoading={() => (
               <ActivityIndicator size="large" className="mt-10" />
