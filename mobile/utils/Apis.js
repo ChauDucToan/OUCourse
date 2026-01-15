@@ -20,5 +20,6 @@ export const endpoints = {
 
   googleAuth: "/api/auth/url/",
   googleCallback: "/api/auth/callback/",
+  googleGetToken: "/api/auth/get-tokens/",
   payment: "/api/payments/",
 };

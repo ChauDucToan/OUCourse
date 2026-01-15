@@ -54,21 +54,11 @@ const LessonLearning = () => {
       </View>
     );
   }
-  if (!videoId) {
-    return (
-      <View className="flex-1 justify-center items-center">
-        <TextCustom.TextSection
-          style={{ color: theme.colors.slate[800] }}
-          text="URL Video không hợp lệ"
-        />
-      </View>
-    );
-  }
 
   return (
     <View className="pt-10" style={{ backgroundColor: theme.colors.gray[100] }}>
       <HeaderCustom />
-      {lesson.video_url !== null ? (
+      {videoId && lesson.video_url !== null ? (
         <YoutubePlayer
           ref={playerRef}
           height={220}
@@ -79,7 +69,8 @@ const LessonLearning = () => {
         />
       ) : (
         <TextCustom.TextSection
-          text="KHông có video"
+          text="Không có video"
+          className="p-4"
           style={{ color: theme.colors.slate[800] }}
         />
       )}

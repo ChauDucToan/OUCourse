@@ -13,7 +13,10 @@ import { WebView } from "react-native-webview";
 import { saveTokens } from "../../utils/tokenUtils";
 import { useUser } from "../../hooks/useUser";
 import { useColors } from "../../hooks/useColors";
-
+import { useEffect } from "react";
+import { CLIENT_ID } from "@env";
+import { HmacSHA256 } from "crypto-js";
+import Hex from "crypto-js/enc-hex";
 const Login = () => {
   const jsonData = require("../../mock/data.config.register.json");
   const jsonStyle = require("../../mock/data.styles.json");
@@ -26,6 +29,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [isLoginVisible, setIsLoginVisible] = useState(false);
   const [authUrl, setAuthUrl] = useState(null);
+
   const nav = useNavigation();
   const [, dispatch] = useUser();
 
@@ -74,42 +78,88 @@ const Login = () => {
       console.error("Lỗi Google Auth:", ex);
     }
   };
-
+  const decode = (url) => {
+    const regex = /[?&]([^=#]+)=([^&#]*)/g;
+    let params = {};
+    let match;
+    while ((match = regex.exec(url))) {
+      params[match[1]] = decodeURIComponent(match[2]);
+    }
+    return params;
+  };
   const handleWebViewNavigation = async (navState) => {
     const { url } = navState;
-    if (
-      url.includes("google-login-success") ||
-      (url.includes("access_token") && url.includes("refresh_token"))
-    ) {
+    if (url.includes("access_token")) {
       try {
-        const regex = /[?&]([^=#]+)=([^&#]*)/g;
-        let params = {};
-        let match;
-        while ((match = regex.exec(url))) {
-          params[match[1]] = match[2];
-        }
-
+        const params = decode(url);
         const { access_token, refresh_token, error } = params;
         if (error) {
-          Alert.alert("Đăng nhập thất bại", "Lỗi xác thực từ Server");
+          setIsLoginVisible(false);
           return;
         }
-
         if (access_token && refresh_token) {
-          await saveTokens(access_token, refresh_token);
-          const userRes = await axiosClient.get(endpoints["current_user"]);
-          dispatch({ type: "login", payload: userRes.data });
-
-          setIsLoginVisible(false);
-          nav.navigate("HomeTab");
+          await processLoginSuccess(access_token, refresh_token);
         }
       } catch (error) {
-        console.error("Lỗi xử lý token:", error);
-        setIsLoginVisible(false);
-        nav.navigate("HomeTab");
+        console.error(error);
       }
     }
   };
+
+  const processLoginSuccess = async (accessToken, refreshToken) => {
+    try {
+      setIsLoginVisible(false);
+      setLoading(true);
+      await saveTokens(accessToken, refreshToken);
+      const userRes = await axiosClient.get(endpoints["current_user"]);
+      dispatch({ type: "login", payload: userRes.data });
+
+      nav.reset({ index: 0, routes: [{ name: "TabNavigation" }] });
+    } catch (e) {
+      console.error("Lỗi sau khi có token:", e);
+      Alert.alert("Lỗi", "Không thể lấy thông tin người dùng");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    let interVal;
+    if (isLoginVisible) {
+      interVal = setInterval(async () => {
+        console.log("CHAY NAO");
+        try {
+          const username = "";
+          const clientId = CLIENT_ID;
+          const data = `${username}|${clientId}`;
+
+          const mac = HmacSHA256(data, CLIENT_ID).toString(Hex);
+          console.log(mac);
+          const payload = {
+            username: username,
+            client_id: clientId,
+            mac: mac,
+          };
+          const res = await axiosClient.post(
+            endpoints["googleGetToken"],
+            payload,
+          );
+          if (res.status === 200 && res.data?.access_token) {
+            clearInterval(interVal);
+            await processLoginSuccess(
+              res.data.access_token,
+              res.data.refresh_token,
+            );
+          }
+        } catch (error) {}
+      }, 5000);
+    }
+    return () => {
+      if (interVal) {
+        clearInterval(interVal);
+      }
+    };
+  }, [isLoginVisible]);
 
   return (
     <AuthLayout title="ĐĂNG NHẬP NGƯỜI DÙNG">
@@ -127,21 +177,24 @@ const Login = () => {
       </HelperText>
 
       <Modal visible={isLoginVisible} animationType="slide">
-        <WebView
-          source={{ uri: authUrl }}
-          userAgent="Mozilla/5.0 (Linux; Android 10; Android SDK built for x86) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36"
-          onNavigationStateChange={async (navState) => {
-            if (navState.url.includes("google-login-success")) {
-              await saveTokens(access_token, refresh_token);
-              const userRes = await axiosClient.get(endpoints["current_user"]);
-              dispatch({ type: "login", payload: userRes.data });
+        <View className="flex-1 pt-10 bg-white">
+          <Pressable
+            onPress={() => setIsLoginVisible(false)}
+            className="p-4 items-end"
+          >
+            <TextCustom.TextMuted text="Đóng" />
+          </Pressable>
 
-              setIsLoginVisible(false);
-
-              nav.navigate("HomeTab");
-            }
-          }}
-        />
+          <WebView
+            source={{ uri: authUrl }}
+            userAgent="Mozilla/5.0 (Linux; Android 10; Android SDK built for x86) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36"
+            onNavigationStateChange={handleWebViewNavigation}
+            startInLoadingState={true}
+            renderLoading={() => (
+              <ActivityIndicator size="large" className="mt-10" />
+            )}
+          />
+        </View>
       </Modal>
 
       {/* Nút đăng nhập thường */}
