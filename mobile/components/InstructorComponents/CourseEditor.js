@@ -6,6 +6,7 @@ import { TextInput } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import TextCustom from "../TextCustom";
 import { ActivityIndicator } from "react-native";
+import { useColors } from "../../hooks/useColors";
 
 const SelectTime = ({ theme }) => {
   const hours = Array.from({ length: 24 }, (_, i) => i);

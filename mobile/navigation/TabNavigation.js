@@ -5,6 +5,7 @@ import LearningStack from "./LearningStack";
 import SearchStack from "./SearchStack";
 
 import { Icon } from "react-native-paper";
+import { useColors } from "../hooks/useColors";
 
 const Tab = createBottomTabNavigator();
 const TabNavigator = () => {

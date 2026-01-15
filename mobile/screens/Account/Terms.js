@@ -4,6 +4,7 @@ import HeaderCustom from "../../components/Header";
 import { terms } from "../../mock/data.config.terms.json";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Section } from "../../components/Section";
+import { useColors } from "../../hooks/useColors";
 
 const TermsScreen = ({ navigation }) => {
   const { theme } = useColors();

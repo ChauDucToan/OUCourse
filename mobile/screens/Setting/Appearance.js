@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { View } from "react-native";
 import { SegmentedButtons } from "react-native-paper";
+import { useColors } from "../../hooks/useColors";
 
 const Appearance = () => {
   const [value, setValue] = useState("light");

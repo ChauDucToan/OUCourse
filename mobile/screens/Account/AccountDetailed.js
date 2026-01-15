@@ -15,6 +15,7 @@ import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../../utils/Apis";
 import { getMimeType, pickImage } from "../../utils/imageUtils";
 import { useUser } from "../../hooks/useUser";
+import { useColors } from "../../hooks/useColors";
 const InfoRow = ({
   subject,
   text,

@@ -11,6 +11,7 @@ import { Animated } from "react-native";
 import { useMemo } from "react";
 import { useCourses } from "../../hooks/useCourses";
 import { ActivityIndicator } from "react-native";
+import { useColors } from "../../hooks/useColors";
 
 const HEADER_MAX_HEIGHT = 140;
 const HEADER_MIN_HEIGHT = 80;
@@ -18,7 +19,7 @@ const HEADER_MIN_HEIGHT = 80;
 const HomeScreen = () => {
   const { theme } = useColors();
   const scrollY = useRef(new Animated.Value(0)).current;
-  const { courses, ensureCourses, loadingCourses } = useCourses();
+  const { courses, ensureHomeCourses, loadingCourses } = useCourses();
 
   const courseFree = useMemo(
     () => courses.filter((c) => (c?.price ?? 0) <= 0),
@@ -31,8 +32,8 @@ const HomeScreen = () => {
   );
 
   useEffect(() => {
-    ensureCourses();
-  }, [ensureCourses]);
+    ensureHomeCourses();
+  }, [ensureHomeCourses]);
 
   const headerTitleOpacity = scrollY.interpolate({
     inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],

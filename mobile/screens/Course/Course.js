@@ -17,11 +17,14 @@ import { endpoints } from "../../utils/Apis";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Alert, Linking } from "react-native";
 import PaymentSelectionModal from "../../components/ModalPayment";
+import { useColors } from "../../hooks/useColors";
+import { useCourses } from "../../hooks/useCourses";
 
 const CourseDetailedScreen = () => {
   const route = useRoute();
   const [course, setCourse] = useState();
   const [isLoading, setLoading] = useState(false);
+  const { refreshCourses } = useCourses();
   const { theme } = useColors();
   const { id } = route.params;
   const { width } = Dimensions.get("window");
@@ -56,6 +59,7 @@ const CourseDetailedScreen = () => {
           });
 
           Alert.alert("Đăng ký thành công");
+          refreshCourses();
           nav.goBack();
         } catch (err) {
           Alert.alert("Có lỗi khi ghi danh");
@@ -67,7 +71,7 @@ const CourseDetailedScreen = () => {
     return () => {
       Linking.removeAllListeners("url");
     };
-  }, [course]);
+  }, [course, refreshCourses]);
   if (!course) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>

@@ -9,6 +9,7 @@ import { useCourses } from "../../hooks/useCourses";
 import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../../utils/Apis";
 import { ActivityIndicator } from "react-native";
+import { useColors } from "../../hooks/useColors";
 
 const CourseCard = ({ course, onDelete, theme, navigation }) => (
   <View

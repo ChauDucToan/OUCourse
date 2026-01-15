@@ -19,14 +19,14 @@ const Search = () => {
   const nav = useNavigation();
   const [keyword, setKeyword] = useState("");
   const { theme } = useColors();
-  const { courses, ensureCourses, loadingCourses } = useCourses();
+  const { courses, ensureHomeCourses, loadingCourses } = useCourses();
 
   const [count, setCount] = useState(20);
   const [sortOption, setSortOption] = useState(null);
 
   useEffect(() => {
-    ensureCourses();
-  }, [ensureCourses]);
+    ensureHomeCourses();
+  }, [ensureHomeCourses]);
 
   const loadMore = () => {
     if (count < coursesFilter.length) {

@@ -8,6 +8,7 @@ import TextCustom from "../../components/TextCustom";
 import { getMimeType, pickImage, pickVideo } from "../../utils/imageUtils";
 import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../../utils/Apis";
+import { useColors } from "../../hooks/useColors";
 
 const CreateLesson = () => {
   const { theme } = useColors();

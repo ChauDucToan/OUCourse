@@ -11,6 +11,7 @@ import { useNavigation } from "@react-navigation/native";
 import FormAuth from "../../components/FormAuth";
 import { Alert } from "react-native";
 import { getMimeType, pickImage } from "../../utils/imageUtils";
+import { useColors } from "../../hooks/useColors";
 
 const Register = () => {
   const jsonData = require("../../mock/data.config.register.json");
@@ -26,16 +27,16 @@ const Register = () => {
     console.info(user);
     if (!user.username) {
       setErr(true);
-      Alert("Chưa có tài khoản!");
+      Alert.alert("Chưa có tài khoản!");
       return false;
     }
     if (user.password !== user.confirm) {
       setErr(true);
-      Alert("Mật khẩu khác với mật khẩu xác nhận!");
+      Alert.alert("Mật khẩu khác với mật khẩu xác nhận!");
       return false;
     }
     if (!user.password) {
-      Alert("Chưa nhập mật khẩu");
+      Alert.alert("Chưa nhập mật khẩu");
 
       setErr(true);
       return false;
@@ -84,7 +85,7 @@ const Register = () => {
           key={item.field}
           item={item}
           theme={theme}
-          value={user[item.field]}
+          value={user[item.field] || ""}
           onChangeText={(t) => setUser({ ...user, [item.field]: t })}
         />
       ))}

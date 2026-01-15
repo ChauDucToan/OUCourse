@@ -12,6 +12,7 @@ import FormAuth from "../../components/FormAuth";
 import { WebView } from "react-native-webview";
 import { saveTokens } from "../../utils/tokenUtils";
 import { useUser } from "../../hooks/useUser";
+import { useColors } from "../../hooks/useColors";
 
 const Login = () => {
   const jsonData = require("../../mock/data.config.register.json");
@@ -20,7 +21,7 @@ const Login = () => {
   const fieldsRender = jsonData.info.filter(
     (item) => item.field === "username" || item.field === "password",
   );
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState({ username: "", password: "" });
   const [err, setErr] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isLoginVisible, setIsLoginVisible] = useState(false);
@@ -117,7 +118,7 @@ const Login = () => {
           key={item.field}
           item={item}
           theme={theme}
-          value={user[item.field]}
+          value={user[item.field] || ""}
           onChangeText={(t) => setUser({ ...user, [item.field]: t })}
         />
       ))}

@@ -16,6 +16,7 @@ import { useEffect } from "react";
 import { ImageBackground } from "react-native";
 import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../../utils/Apis";
+import { useColors } from "../../hooks/useColors";
 
 const LessonsRoute = ({ lessons, theme }) => {
   const nav = useNavigation();

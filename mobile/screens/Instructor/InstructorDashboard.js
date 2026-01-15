@@ -7,6 +7,7 @@ import { ScrollView } from "react-native";
 import ListItem from "../../components/ListItem";
 import HeaderCustom from "../../components/Header";
 import { MyColorContext } from "../../utils/contexts/MyColorContext";
+import { useColors } from "../../hooks/useColors";
 
 const InstructorDashboard = () => {
   const navigation = useNavigation();

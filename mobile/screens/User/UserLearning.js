@@ -14,29 +14,30 @@ import { useColors } from "../../hooks/useColors";
 import { useUser } from "../../hooks/useUser";
 
 const UserLearning = () => {
-  const { courses, ensureCourses, setCourses } = useCourses();
+  const { enrollCourses, ensureEnrollCourses, setEnrollCourses } = useCourses();
   const [loading, setLoading] = useState(false);
   const nav = useNavigation();
   const [user] = useUser();
   const { theme } = useColors();
   useEffect(() => {
     if (!user) {
-      setCourses([]);
+      setEnrollCourses([]);
       return;
     }
-    let mounted = true;
-    (async () => {
+    const loadData = async () => {
       setLoading(true);
       try {
-        await ensureCourses("ENROLLED");
+        await ensureEnrollCourses();
       } finally {
-        if (mounted) setLoading(false);
+        setLoading(false);
       }
-    })();
-    return () => {
-      mounted = false;
     };
-  }, [ensureCourses]);
+    loadData();
+    const unsubscribe = nav.addListener("focus", () => {
+      loadData();
+    });
+    return unsubscribe;
+  }, [ensureEnrollCourses, user, nav]);
 
   if (!user) {
     return (
@@ -51,12 +52,12 @@ const UserLearning = () => {
       style={{ backgroundColor: theme.colors.gray[100] }}
     >
       <HeaderCustom text="Danh sách bài học của tôi" />
-      <View style={{ backgroundColor: theme.colors.slate[300] }}>
+      <View>
         {loading ? (
           <ActivityIndicator size="large" color={theme.colors.primary} />
         ) : (
           <FlatList
-            data={courses}
+            data={enrollCourses}
             contentContainerStyle={{
               paddingBottom: 52,
             }}
@@ -71,7 +72,7 @@ const UserLearning = () => {
                 }
               >
                 <View
-                  className="flex-row p-2 items-center border"
+                  className="flex-row p-2 items-center border-b"
                   style={{
                     backgroundColor: theme.colors.slate[200],
                     borderColor: theme.colors.gray[700],
@@ -87,17 +88,18 @@ const UserLearning = () => {
                       }
                     />
                   </View>
-                  <View className="justify-end border-b flex-1 m-2 border-gray-200">
+                  <View className="justify-end border-b flex-1 m-2 ">
                     <TextCustom.TextMuted
                       text={item.category}
                       style={{
                         color: theme.colors.slate[500],
+                        borderColor: theme.colors.gray[200],
                       }}
                     />
                     <View className="item-start">
                       <TextCustom.TextSection
                         className="text-base  "
-                        style={{ color: theme.colors.yellow[500] }}
+                        style={{ color: theme.colors.slate[500] }}
                         text={item.subject}
                       />
                     </View>

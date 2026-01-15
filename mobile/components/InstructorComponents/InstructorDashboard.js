@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import { ScrollView } from "react-native";
+import { useColors } from "../../hooks/useColors";
 
 const InstructorDashboard = () => {
   const [selectionInstructor, setSelectionInstructor] = useState([]);

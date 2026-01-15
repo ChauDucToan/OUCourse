@@ -1,5 +1,6 @@
 import { View } from "react-native";
 import HeaderCustom from "../Header";
+import { useColors } from "../../hooks/useColors";
 
 const InstructorCourses = () => {
   const { theme } = useColors();

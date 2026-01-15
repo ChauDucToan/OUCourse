@@ -3,6 +3,7 @@ import HeaderBack from "./HeaderBack";
 import TextCustom from "./TextCustom";
 
 import { Divider } from "react-native-paper";
+import { useColors } from "../hooks/useColors";
 
 const HeaderCustom = ({ text = "", viewClass = "" }) => {
   const { theme } = useColors();
