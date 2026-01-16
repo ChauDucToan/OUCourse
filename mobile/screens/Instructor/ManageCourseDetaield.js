@@ -32,7 +32,7 @@ const StudentsTab = ({ theme, totalStudent, chartData }) => {
   const uniqueStudents = useMemo(() => {
     const allStudents = [];
     const seenIds = new Set();
-    chartData.forEach((period) => {
+    chartData?.forEach((period) => {
       period?.students.forEach((student) => {
         if (student && !seenIds.has(student.id)) {
           seenIds.add(student.id);

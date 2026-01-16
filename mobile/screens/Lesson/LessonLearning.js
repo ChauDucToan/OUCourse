@@ -16,6 +16,7 @@ import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../../utils/Apis";
 import { useUser } from "../../hooks/useUser";
 import { errorConsole } from "../../utils/errorUtils";
+import Comments from "../../components/Comments";
 
 const extractVideoId = (url) => {
   if (!url) return null;
@@ -79,7 +80,10 @@ const LessonLearning = () => {
   }
 
   return (
-    <View className="pt-10" style={{ backgroundColor: theme.colors.gray[100] }}>
+    <View
+      className="pt-10 flex-1"
+      style={{ backgroundColor: theme.colors.gray[200] }}
+    >
       <HeaderCustom />
       {videoId && lesson.video_url !== null ? (
         <YoutubePlayer
@@ -98,65 +102,42 @@ const LessonLearning = () => {
         />
       )}
 
-      <ScrollView>
+      <ScrollView
+        contentContainerStyle={{
+          paddingBottom: 6,
+        }}
+      >
         <TextCustom.TextFocus
           style={{ color: theme.colors.slate[600] }}
           className="pl-4 text-xl"
           text={lesson.subject}
         />
-        <View className="flex-row gap-3">
-          {lesson.tags.map((tag, index) => (
-            <View
-              key={tag.id ?? index}
-              className=" p-3 rounded-xl m-2"
-              style={{ backgroundColor: theme.colors.slate[200] }}
-            >
-              <TextCustom.TextFocus
-                style={{
-                  color: theme.colors.slate[600],
-                }}
-                text={tag}
-              />
-            </View>
-          ))}
-        </View>
+        {lesson?.tags?.length > 0 && (
+          <View className="flex-row gap-3">
+            {lesson?.tags.map((tag, index) => (
+              <View
+                key={tag.id ?? index}
+                className=" p-3 rounded-xl m-2"
+                style={{ backgroundColor: theme.colors.slate[200] }}
+              >
+                <TextCustom.TextFocus
+                  style={{
+                    color: theme.colors.slate[600],
+                  }}
+                  text={tag}
+                />
+              </View>
+            ))}
+          </View>
+        )}
+
         <TextCustom.TextFocus
           style={{ color: theme.colors.slate[600] }}
           className="pl-4 text-xl"
           text={lesson.content}
         />
-        <View className="mt-6 mb-10 p-3">
-          <TextCustom.TextFocus
-            style={{ color: theme.colors.slate[600] }}
-            className="text-lg font-bold mb-4"
-            text="Bình luận"
-          />
-
-          <View className="flex-row items-center mb-6 ">
-            <TextInput
-              className="flex-1 border border-gray-300 rounded-lg px-4 py-2 mr-2 bg-gray-50"
-              placeholder="Viết bình luận..."
-              value={content}
-              onChangeText={setContent}
-              multiline
-            />
-            <TouchableOpacity
-              className="bg-blue-500 px-4 py-2 rounded-lg"
-              onPress={() => setContent("")}
-              disabled={loading || !content.trim()}
-              style={{ opacity: loading || !content.trim() ? 0.6 : 1 }}
-            >
-              {loading ? (
-                <ActivityIndicator color="white" size="small" />
-              ) : (
-                <TextCustom.TextFocus
-                  style={{ color: theme.colors.slate[600] }}
-                  className="text-white"
-                  text="Gửi"
-                />
-              )}
-            </TouchableOpacity>
-          </View>
+        <View>
+          <Comments lessonId={lesson.id} theme={theme} user={user} />
         </View>
       </ScrollView>
     </View>

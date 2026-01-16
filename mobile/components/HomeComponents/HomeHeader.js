@@ -11,7 +11,7 @@ export const HomeHeader = ({ text = "", subText = "", theme }) => {
       <Text
         className="text-2xl font-bold mt-12"
         style={{
-          color: theme.colors.black,
+          color: theme.colors.slate[500],
         }}
       >
         {text}
@@ -19,7 +19,7 @@ export const HomeHeader = ({ text = "", subText = "", theme }) => {
       <Text
         className="text-base mb-4"
         style={{
-          color: theme.colors.black,
+          color: theme.colors.slate[500],
         }}
       >
         {subText}

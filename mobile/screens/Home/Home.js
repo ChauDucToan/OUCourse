@@ -118,7 +118,7 @@ const HomeScreen = () => {
         }}
       >
         <TextCustom.TextSection
-          style={{ color: theme.colors.black }}
+          style={{ color: theme.colors.slate[500] }}
           className="mt-8"
           text="OUCourse"
         />

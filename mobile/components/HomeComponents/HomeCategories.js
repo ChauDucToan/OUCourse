@@ -15,7 +15,6 @@ export const HomeCategories = ({
 }) => {
   const { categories, ensureCategories } = useCategories();
   const [count, setCount] = useState(20);
-
   const loadMore = () => {
     setCount((prev) => prev + 20);
   };
@@ -45,15 +44,12 @@ export const HomeCategories = ({
           <TouchableOpacity
             className=" rounded-lg px-4 py-3 mr-3 "
             style={{
-              backgroundColor: theme.colors.slate[500],
-            }}
-            onPress={() => {
-              setActiveId(item.id);
+              backgroundColor: theme.colors.slate[200],
             }}
           >
             <Text
               style={{
-                color: theme.colors.slate[200],
+                color: theme.colors.slate[600],
               }}
             >
               {item.name}

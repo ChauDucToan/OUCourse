@@ -13,7 +13,11 @@ export const endpoints = {
   lessonLearning: (lessonId) => `/api/lessons/${lessonId}/progress/`,
   lessonDetailed: (lessonId) => `/api/lessons/${lessonId}`,
   enrollLesson: (lessonId) => `/api/lessons/${lessonId}/enroll/`,
-  comments: (lessonId) => `/api/lessons/${lessonId}/comments/`,
+
+  createComment: (lessonId) => `/api/lessons/${lessonId}/comments/`,
+  deleteComment: (commentId) => `/api/comments/${commentId}/`,
+  createCommentReact: (commentId) => `/api/comments/${commentId}/react/`,
+  deleteCommentReact: (commentId) => `/api/comments/${commentId}/unreact/`,
 
   register: "/api/users/",
   login: "/api/auth/send-token/",

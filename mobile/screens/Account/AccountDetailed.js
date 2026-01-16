@@ -137,7 +137,7 @@ const AccountDetailedScreen = () => {
     <ScrollView
       className=" flex-1 pt-10"
       style={{
-        backgroundColor: theme.colors.gray[100],
+        backgroundColor: theme.colors.slate[200],
       }}
     >
       <HeaderCustom text={"HỒ SƠ NGƯỜI DÙNG"} />
@@ -145,7 +145,7 @@ const AccountDetailedScreen = () => {
       <View
         className="pb-8 rounded-b-3xl shadow-sm items-center pt-12 px-5"
         style={{
-          backgroundColor: theme.colors.gray[100],
+          backgroundColor: theme.colors.slate[300],
         }}
       >
         {!isEdit ? (
@@ -177,7 +177,6 @@ const AccountDetailedScreen = () => {
               className="absolute bottom-0 right-0 rounded-full border-2  p-1"
               style={{
                 borderColor: theme.colors.white,
-                backgroundColor: theme.colors.slate[600],
               }}
             >
               <Icon source="camera" color="white" size={16} />
@@ -197,11 +196,11 @@ const AccountDetailedScreen = () => {
           {user.first_name + " " + user.last_name}
         </Text>
       </View>
-      <View className="p-5 pt-0">
+      <View className="p-5">
         <View
           className="rounded-2xl p-4 shadow-sm"
           style={{
-            backgroundColor: theme.colors.gray[200],
+            backgroundColor: theme.colors.slate[300],
           }}
         >
           <InfoRow

@@ -16,10 +16,10 @@ const CourseView = ({ navigation, item, theme }) => {
           params: { id: item.id },
         })
       }
-      className=" mb-4 mt-4 mx-4 rounded-3xl overflow-hidden shadown-sm border flex-row p-5"
+      className=" mb-4 mt-4 mx-4 rounded-3xl border-2 overflow-hidden shadown-sm  flex-row p-5"
       style={{
-        backgroundColor: theme.colors.slate[50],
-        borderColor: theme.colors.slate[100],
+        backgroundColor: theme.colors.slate[200],
+        borderColor: theme.colors.gray[500],
       }}
     >
       <View className="relative">
@@ -41,7 +41,7 @@ const CourseView = ({ navigation, item, theme }) => {
             <Text
               className="text-[10px] font-bold"
               style={{
-                color: theme.colors.white,
+                color: theme.colors.slate[400],
               }}
             >
               FREE
@@ -60,10 +60,9 @@ const CourseView = ({ navigation, item, theme }) => {
             {item?.category || "Khóa học"}
           </Text>
           <Text
-            numberOfLines={2}
             className="text-base font-bold w-60 leading-5 mt-1"
             style={{
-              color: theme.colors.slate[800],
+              color: theme.colors.slate[500],
             }}
           >
             {item?.subject}

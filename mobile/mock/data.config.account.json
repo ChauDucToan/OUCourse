@@ -21,16 +21,6 @@
       }
     },
     {
-      "title": "Khóa học đã hoàn thành",
-      "description": "",
-      "iconLeft": "check-circle",
-      "iconColor": "#16a34a",
-      "navUrl": "Learning",
-      "navParams": {
-        "screen": "CourseCompletedLearning"
-      }
-    },
-    {
       "title": "Bảng điều khiển giảng viên",
       "description": "Quản lý khóa học, học viên và tiến độ học tập.",
       "iconLeft": "school-outline",

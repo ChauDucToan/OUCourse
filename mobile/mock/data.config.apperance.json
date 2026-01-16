@@ -3,13 +3,19 @@
     {
       "value": "light",
       "label": "Sáng",
-      "icon": "white-balance-sunny"
+      "icon": "white-balance-sunny",
+      "style": {
+        "borderWidth": 2
+      }
     },
 
     {
       "value": "dark",
       "label": "Tối",
-      "icon": "weather-night"
+      "icon": "weather-night",
+      "style": {
+        "borderWidth": 2
+      }
     }
   ]
 }

@@ -65,14 +65,14 @@ const Search = () => {
     return (
       <TouchableOpacity
         onPress={() => setSortOption(isActive ? null : value)}
-        className={`flex-row items-center px-3 py-2 rounded-full mr-2 border`}
+        className={`flex-row items-center px-3 py-2 rounded-full mr-2 border-2`}
         style={{
           backgroundColor: isActive
-            ? theme.colors.slate[800]
-            : theme.colors.gray[50],
+            ? theme.colors.slate[700]
+            : theme.colors.gray[100],
           borderColor: isActive
-            ? theme.colors.slate[800]
-            : theme.colors.slate[200],
+            ? theme.colors.slate[300]
+            : theme.colors.slate[500],
         }}
       >
         <Text
@@ -109,10 +109,10 @@ const Search = () => {
         }}
       >
         <TextInput
-          className=" text-base border  rounded-2xl p-3 "
+          className=" text-base border-2 mb-4  rounded-2xl p-3 "
           style={{
             backgroundColor: theme.colors.gray[50],
-            borderColor: theme.colors.slate[200],
+            borderColor: theme.colors.slate[500],
           }}
           placeholderTextColor={theme.colors.slate[400]}
           placeholder="Nhập từ khóa..."
@@ -129,9 +129,9 @@ const Search = () => {
           borderColor: theme.colors.gray[200],
         }}
       >
-        <HomeCategories sizeIcon={0} theme={theme} />
+        {/* <HomeCategories sizeIcon={0} theme={theme} />*/}
       </View>
-      <View className="px-2 pb-2">
+      <View className="px-3">
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <SortChip
             label="Tên A-Z"
@@ -165,7 +165,7 @@ const Search = () => {
           <FlatList
             data={coursesFilter.slice(0, count)}
             keyExtractor={(item) => item.id}
-            className="p-2 "
+            className="p-2"
             contentContainerStyle={{
               paddingBottom: 30,
             }}
@@ -188,7 +188,10 @@ const Search = () => {
                         ? { uri: item.image }
                         : require("../../assets/banner_1.png")
                     }
-                    className="pt-8 pb-8 pl-4 mx-3 rounded-xl overflow-hidden mt-3"
+                    style={{
+                      borderColor: theme.colors.slate[500],
+                    }}
+                    className="pt-8 pb-8 pl-4 border-2 mx-3 rounded-xl overflow-hidden mt-3"
                   >
                     <View className="absolute inset-0  bg-black/40" />
                     <View className="p-2">
