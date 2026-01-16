@@ -19,7 +19,7 @@ import { endpoints } from "../../utils/Apis";
 import { useColors } from "../../hooks/useColors";
 import { errorConsole } from "../../utils/errorUtils";
 
-const LessonsRoute = ({ lessons, theme }) => {
+const LessonsRoute = ({ lessons, theme, courseId }) => {
   const nav = useNavigation();
   return (
     <View
@@ -40,7 +40,11 @@ const LessonsRoute = ({ lessons, theme }) => {
               activeOpacity={0.6}
               delayPressIn={0.7}
               onPress={() => {
-                nav.navigate("LessonLearning", { id: item.id, theme: theme });
+                nav.navigate("LessonLearning", {
+                  id: item.id,
+                  theme: theme,
+                  courseId: courseId,
+                });
               }}
             >
               <View
@@ -147,7 +151,9 @@ export const LessonScreen = () => {
     ({ route }) => {
       switch (route.key) {
         case "lessons":
-          return <LessonsRoute lessons={lessons} theme={theme} />;
+          return (
+            <LessonsRoute lessons={lessons} theme={theme} courseId={item.id} />
+          );
         case "desc":
           return (
             <DescriptionRoute description={item.description} theme={theme} />

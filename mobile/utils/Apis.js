@@ -6,8 +6,11 @@ export const endpoints = {
   courseDetails: (courseId) => `/api/courses/${courseId}/`,
   enrollCourse: (courseId) => `/api/courses/${courseId}/enroll/`,
   instructorCourse: "/api/courses/my-courses/",
+  courseStats: (courseId) => `/api/courses/${courseId}/stats/`,
+
   lessons: (coursesId) => `/api/courses/${coursesId}/lessons/`,
   createLesson: "/api/lessons/",
+  lessonLearning: (lessonId) => `/api/lessons/${lessonId}/progress/`,
   lessonDetailed: (lessonId) => `/api/lessons/${lessonId}`,
   enrollLesson: (lessonId) => `/api/lessons/${lessonId}/enroll/`,
   comments: (lessonId) => `/api/lessons/${lessonId}/comments/`,

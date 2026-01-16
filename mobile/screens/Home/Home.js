@@ -12,6 +12,7 @@ import { useMemo } from "react";
 import { useCourses } from "../../hooks/useCourses";
 import { ActivityIndicator } from "react-native";
 import { useColors } from "../../hooks/useColors";
+import { useUser } from "../../hooks/useUser";
 
 const HEADER_MAX_HEIGHT = 140;
 const HEADER_MIN_HEIGHT = 80;
@@ -20,7 +21,7 @@ const HomeScreen = () => {
   const { theme } = useColors();
   const scrollY = useRef(new Animated.Value(0)).current;
   const { courses, ensureHomeCourses, loadingCourses } = useCourses();
-
+  const [user] = useUser();
   const courseFree = useMemo(
     () => courses.filter((c) => (c?.price ?? 0) <= 0),
     [courses],
@@ -46,7 +47,7 @@ const HomeScreen = () => {
     outputRange: [0, 0],
     extrapolate: "clamp",
   });
-
+  console.log(user);
   const render = () => {
     return (
       <View
@@ -55,7 +56,7 @@ const HomeScreen = () => {
         }}
       >
         <HomeHeader
-          text={"Hôm nay bạn muốn học gì?"}
+          text={`Hôm nay ${user?.last_name ? user.last_name : "bạn"} muốn học gì?`}
           subText={"Tiếp tục hành trình khai phá tri thức"}
           theme={theme}
         />

@@ -101,7 +101,7 @@ const Search = () => {
         backgroundColor: theme.colors.gray[100],
       }}
     >
-      <HeaderCustom text="Thanh tìm kiếm" />
+      <HeaderCustom text="Thanh tìm kiếm" targetScreen="Home" />
       <View
         className="pl-2  justify-center text-center pr-2"
         style={{

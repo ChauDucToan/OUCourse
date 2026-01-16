@@ -46,6 +46,7 @@ const Login = () => {
         await authApi.login(user);
         let userRes = await axiosClient.get(endpoints["current_user"]);
         dispatch({ type: "login", payload: userRes.data });
+        alert("Đăng nhập thành công!");
         nav.reset({ index: 0, routes: [{ name: "Home" }] });
       } catch (error) {
         errorConsole(error, "Login:login");
@@ -115,6 +116,7 @@ const Login = () => {
           );
           let userRes = await axiosClient.get(endpoints["current_user"]);
           dispatch({ type: "login", payload: userRes.data });
+          alert("Đăng nhập thành công!");
           nav.reset({ index: 0, routes: [{ name: "Home" }] });
         }
       }
@@ -159,7 +161,6 @@ const Login = () => {
         </View>
       </Modal>
 
-      {/* Nút đăng nhập thường */}
       <View className="flex mb-2 flex-row-reverse gap-5 mt-3">
         <Pressable
           onPress={login}

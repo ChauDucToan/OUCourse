@@ -14,11 +14,13 @@ import { useNavigation } from "@react-navigation/native";
 import { useCategories } from "../../hooks/useCategories";
 import { useColors } from "../../hooks/useColors";
 import { errorConsole } from "../../utils/errorUtils";
+import { useCourses } from "../../hooks/useCourses";
 
 const CourseEditor = () => {
   const { theme } = useColors();
   const nav = useNavigation();
   const { categories } = useCategories();
+  const { ensureInstructorCourses } = useCourses();
   const [selectedCategory, setSelectedCategory] = useState("");
 
   const [hour, setHour] = useState(0);
@@ -87,6 +89,7 @@ const CourseEditor = () => {
 
       if (res.status === 201) {
         Alert.alert("Thành công", "Tạo khóa học thành công!");
+        ensureInstructorCourses();
         nav.goBack();
       }
     } catch (error) {

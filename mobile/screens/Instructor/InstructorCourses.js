@@ -39,7 +39,7 @@ const CourseCard = ({ course, onDelete, theme, navigation }) => (
         }}
         onPress={() =>
           navigation.navigate("MangeCourseDetailed", {
-            course: course,
+            courseId: course.id,
             theme: theme,
           })
         }
@@ -80,13 +80,13 @@ const CourseCard = ({ course, onDelete, theme, navigation }) => (
 const InstructorCourses = () => {
   const {
     instructorCourse,
-    ensureInstructorCourse,
+    ensureInstructorCourses,
     loadingCourses,
-    setInstructorCourse,
+    loadingInstructorCourses,
   } = useCourses();
   useEffect(() => {
-    ensureInstructorCourse();
-  }, [ensureInstructorCourse]);
+    ensureInstructorCourses();
+  }, [ensureInstructorCourses]);
   const [count, setCount] = useState(20);
 
   const loadMore = () => {
@@ -96,7 +96,7 @@ const InstructorCourses = () => {
   const handleDelete = async (courseId) => {
     try {
       await axiosClient.delete(`${endpoints.courses}${courseId}/`);
-      setInstructorCourse((prev) => prev.filter((c) => c.id !== courseId));
+      ensureInstructorCourses();
       alert("Xóa khóa học thành công!");
     } catch (error) {
       errorConsole(error, "InstructorCourses:handleDelete");
@@ -126,7 +126,7 @@ const InstructorCourses = () => {
         className="flex-1"
         style={{ backgroundColor: theme.colors.gray[100] }}
       >
-        {loadingCourses ? (
+        {loadingInstructorCourses ? (
           <ActivityIndicator
             size="large"
             color={theme.colors.slate[600]}

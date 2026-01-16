@@ -52,7 +52,6 @@ const Register = () => {
       setLoading(true);
 
       try {
-        console.log("DAY");
         let form = new FormData();
         for (let key in user)
           if (key !== "confirm") {
@@ -64,14 +63,12 @@ const Register = () => {
               });
             } else form.append(key, user[key]);
           }
-        console.info(user);
-        console.log(form);
         const res = await registerApi.register(form);
-        console.log(res.status);
+
         if (res.status === 201) {
+          alert("Đăng ký thành công!");
           nav.navigate("Login");
         }
-        console.log("DANG KY THANH CONG");
       } catch (error) {
         errorConsole(error, "Register:register");
       } finally {

@@ -19,8 +19,8 @@ import { Alert, Linking } from "react-native";
 import PaymentSelectionModal from "../../components/ModalPayment";
 import { useColors } from "../../hooks/useColors";
 import { useCourses } from "../../hooks/useCourses";
-import { WebView } from "react-native-webview";
-import { View, Modal } from "react-native";
+// import { WebView } from "react-native-webview";
+// import { Modal } from "react-native";
 import { errorConsole } from "../../utils/errorUtils";
 
 const CourseDetailedScreen = () => {
@@ -32,8 +32,6 @@ const CourseDetailedScreen = () => {
   const { id } = route.params;
   const { width } = Dimensions.get("window");
   const [modalVisible, setModalVisible] = useState(false);
-  const [paymentUrl, setPaymentUrl] = useState(null);
-  const [selectedMethod, setSelectedMethod] = useState(null);
   const nav = useNavigation();
   useEffect(() => {
     const loadData = async () => {
@@ -98,7 +96,7 @@ const CourseDetailedScreen = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      Alert.alert("Đăng ký thành công");
+      alert("Đăng ký thành công");
       nav.goBack();
       return;
     }
@@ -110,7 +108,7 @@ const CourseDetailedScreen = () => {
     if (supported) {
       await Linking.openURL(url);
     } else {
-      Alert.alert("Lỗi", "Không thể mở ứng dụng thanh toán: " + url);
+      alert("Lỗi", "Không thể mở ứng dụng thanh toán: " + url);
     }
   };
   const handlePayment = async (method) => {
@@ -131,7 +129,7 @@ const CourseDetailedScreen = () => {
       if (paymentRes.data && paymentRes.data.payment_url) {
         await openLink(paymentRes.data.payment_url);
       } else {
-        Alert.alert("Thanh toán thất bại");
+        alert("Thanh toán thất bại");
       }
     } catch (error) {
       errorConsole(error, "CourseDetailedScreen:handlePayment");
@@ -153,34 +151,8 @@ const CourseDetailedScreen = () => {
           backgroundColor: theme.colors.gray[100],
         }}
       >
-        <HeaderCustom text={course.subject} />
+        <HeaderCustom targetScreen="SearchScreen" text={course.subject} />
         <View>
-          {/* {paymentUrl && (
-            <View style={{ alignItems: "center", marginVertical: 20 }}>
-              <PaymentQR paymentUrl={paymentUrl} />
-              <Text style={{ marginTop: 10 }}>Quét mã QR để thanh toán</Text>
-            </View>
-          )}*/}
-          <Modal visible={isLoginVisible} animationType="slide">
-            <View className="flex-1 pt-10 bg-white">
-              <TouchableOpacity
-                onPress={() => setIsLoginVisible(false)}
-                className="p-4 items-end"
-              >
-                <TextCustom.TextMuted text="Đóng" />
-              </TouchableOpacity>
-
-              <WebView
-                source={{ uri: authUrl }}
-                userAgent="Mozilla/5.0 (Linux; Android 10; Android SDK built for x86) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36"
-                onShouldStartLoadWithRequest={stunAndGetCode}
-                startInLoadingState={true}
-                renderLoading={() => (
-                  <ActivityIndicator size="large" className="mt-10" />
-                )}
-              />
-            </View>
-          </Modal>
           <ImageBackground
             source={
               course.image

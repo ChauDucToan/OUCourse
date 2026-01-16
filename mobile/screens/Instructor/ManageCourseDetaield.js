@@ -8,48 +8,39 @@ import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../../utils/Apis";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { errorConsole } from "../../utils/errorUtils";
+import { ActivityIndicator } from "react-native-paper";
 
-const StudentsTab = ({ theme }) => {
-  const [students, setStudents] = useState([]);
-
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const res = await axiosClient.get(endpoints.user_view);
-        setStudents(res?.data?.results ?? []);
-      } catch (error) {
-        errorConsole(error, "ManageCourseDetaield:loadData");
-      }
-    };
-    loadData();
-  }, []);
-
+const StudentsTab = ({ theme, totalStudent }) => {
   return (
     <View
       style={{ flex: 1, backgroundColor: theme.colors.gray[100], padding: 10 }}
     >
-      {students.length === 0 ? (
+      {totalStudent === 0 ? (
         <TextCustom.TextMuted
           text="Chưa có học sinh"
           style={{ color: theme.colors.slate[800] }}
         />
       ) : (
-        students.map((s) => (
-          <View
-            key={s.id}
-            style={{
-              padding: 10,
-              marginBottom: 8,
-              backgroundColor: theme.colors.slate[200],
-              borderRadius: 8,
-            }}
-          >
-            <TextCustom.TextFocus
-              text={s.username}
-              style={{ color: theme.colors.slate[600] }}
-            />
-          </View>
-        ))
+        // students.map((s) => (
+        //   <View
+        //     key={s.id}
+        //     style={{
+        //       padding: 10,
+        //       marginBottom: 8,
+        //       backgroundColor: theme.colors.slate[200],
+        //       borderRadius: 8,
+        //     }}
+        //   >
+        //     <TextCustom.TextFocus
+        //       text={s.username}
+        //       style={{ color: theme.colors.slate[600] }}
+        //     />
+        //   </View>
+        // ))
+        <TextCustom.TextMuted
+          text={`Khóa học này có ${totalStudent} học sinh`}
+          style={{ color: theme.colors.slate[800] }}
+        />
       )}
     </View>
   );
@@ -57,14 +48,19 @@ const StudentsTab = ({ theme }) => {
 
 const LessonsTab = ({ courseId, theme }) => {
   const [lessons, setLessons] = useState([]);
-
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     const loadData = async () => {
+      setLoading(true);
       try {
-        const res = await axiosClient.get(endpoints.lessons(courseId));
+        console.log(courseId);
+        const res = await axiosClient.get(endpoints["lessons"](courseId));
         setLessons(res?.data?.results ?? []);
+        setLoading(false);
       } catch (error) {
         errorConsole(error, "ManageCourseDetaield:loadData");
+      } finally {
+        setLoading(false);
       }
     };
     loadData();
@@ -74,7 +70,9 @@ const LessonsTab = ({ courseId, theme }) => {
     <View
       style={{ flex: 1, backgroundColor: theme.colors.gray[100], padding: 10 }}
     >
-      {lessons.length === 0 ? (
+      {loading ? (
+        <ActivityIndicator />
+      ) : lessons.length === 0 ? (
         <TextCustom.TextMuted
           text="Chưa có bài học"
           style={{ color: theme.colors.slate[800] }}
@@ -103,17 +101,32 @@ const LessonsTab = ({ courseId, theme }) => {
 
 const ManageCourseDetailed = () => {
   const route = useRoute();
-  const { course, theme } = route.params;
-
+  const { courseId, theme } = route.params;
+  const [loading, setLoading] = useState(false);
   const [index, setIndex] = useState(0);
+  const [courseStats, setCourseStats] = useState({});
   const [routes] = useState([
     { key: "students", title: "Sinh viên" },
     { key: "lessons", title: "Bài học" },
   ]);
-
+  useEffect(() => {
+    setLoading(true);
+    const loadData = async () => {
+      try {
+        const res = await axiosClient.get(endpoints["courseStats"](courseId));
+        if (res.status === 200) {
+          setCourseStats(res.data);
+          console.log(res);
+        }
+      } catch (error) {}
+    };
+    loadData();
+  }, [courseId]);
   const renderScene = SceneMap({
-    students: () => <StudentsTab theme={theme} />,
-    lessons: () => <LessonsTab courseId={course.id} theme={theme} />,
+    students: () => (
+      <StudentsTab theme={theme} totalStudent={courseStats?.total_students} />
+    ),
+    lessons: () => <LessonsTab courseId={courseId} theme={theme} />,
   });
 
   return (
@@ -123,14 +136,14 @@ const ManageCourseDetailed = () => {
     >
       <HeaderCustom />
       <View style={{ padding: 16 }}>
-        <TextCustom.TextSection
+        {/* <TextCustom.TextSection
           text={course.subject}
           style={{ fontSize: 20, color: theme.colors.slate[600] }}
         />
         <TextCustom.TextMuted
           text={`Học phí: ${course.price > 0 ? formatCurrency(course.price) : "Miễn phí"}`}
           style={{ color: theme.colors.slate[500], marginTop: 4 }}
-        />
+        />*/}
       </View>
 
       <TabView

@@ -12,6 +12,10 @@ import { ActivityIndicator } from "react-native-paper";
 import { useContext } from "react";
 import { LessonContext } from "../../utils/contexts/LessonContext";
 import { useEffect } from "react";
+import axiosClient from "../../api/axiosClient";
+import { endpoints } from "../../utils/Apis";
+import { useUser } from "../../hooks/useUser";
+import { errorConsole } from "../../utils/errorUtils";
 
 const extractVideoId = (url) => {
   if (!url) return null;
@@ -29,6 +33,7 @@ const LessonLearning = () => {
   const route = useRoute();
   const [content, setContent] = useState("");
   const [videoId, setVideoId] = useState();
+  const [user] = useUser();
   const { id, theme } = route.params;
   const { ensureLessonDetailed, loading, lesson } = useContext(LessonContext);
   useEffect(() => {
@@ -41,10 +46,28 @@ const LessonLearning = () => {
 
     loadData();
   }, [id, ensureLessonDetailed]);
-  const onStateChange = useCallback((state) => {
+  const onStateChange = useCallback(async (state) => {
     if (state === "ended") {
       setPlaying(false);
-      Alert.alert("Hoàn thành bài học");
+      try {
+        const formData = new FormData();
+        formData.append("status", "COMPLETED");
+        const res = await axiosClient.patch(
+          endpoints["lessonLearning"](id),
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          },
+        );
+        console.log("RES", res);
+        if (res.status === 200) {
+          alert("Hoàn thành bài học");
+        }
+      } catch (error) {
+        errorConsole(error, "LessonLearning:onStageChange");
+      }
     }
   }, []);
   if (loading || !lesson || !lesson.subject) {

@@ -9,12 +9,13 @@ import { endpoints } from "../../utils/Apis";
 import TextCustom from "../../components/TextCustom";
 import { pickImage, pickVideo } from "../../utils/imageUtils";
 import { errorConsole } from "../../utils/errorUtils";
+import { useCourses } from "../../hooks/useCourses";
 
 const EditMyCourse = () => {
   const route = useRoute();
-  const navigation = useNavigation();
+  const nav = useNavigation();
   const { course, theme } = route.params;
-
+  const { ensureInstructorCourses } = useCourses();
   const [subject, setSubject] = useState(course.subject);
   const [price, setPrice] = useState(String(course.price));
   const [image, setImage] = useState(null);
@@ -42,10 +43,18 @@ const EditMyCourse = () => {
         });
       }
 
-      await axiosClient.patch(endpoints.courseDetails(course.id), formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      navigation.goBack();
+      const res = await axiosClient.patch(
+        endpoints.courseDetails(course.id),
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        },
+      );
+      if (res.status === 200) {
+        alert("Thành công", "Tạo khóa học thành công!");
+        ensureInstructorCourses();
+        nav.goBack();
+      }
     } catch (error) {
       errorConsole(error, "Instructor:handleUpdateCourse");
     } finally {
