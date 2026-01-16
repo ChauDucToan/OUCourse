@@ -4,15 +4,14 @@ import { useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import { ScrollView } from "react-native";
-import { useContext } from "react";
 import ListItem from "../../components/ListItem";
 import HeaderCustom from "../../components/Header";
-import { MyColorContext } from "../../utils/contexts/MyColorContext";
+import { useColors } from "../../hooks/useColors";
 
 const InstructorDashboard = () => {
   const navigation = useNavigation();
   const [selectionInstructor, setSelectionInstructor] = useState([]);
-  const { theme } = useContext(MyColorContext);
+  const { theme } = useColors();
   useEffect(() => {
     const data = require("../../mock/data.config.instructor.json");
     setSelectionInstructor(data);
@@ -25,7 +24,7 @@ const InstructorDashboard = () => {
       }}
     >
       <HeaderCustom text={"Trang quản lý của Giảng viên"} />
-      <ScrollView className="p-5">
+      <ScrollView className="p-5 flex-1">
         <ListItem
           mapJson={selectionInstructor}
           navigation={navigation}

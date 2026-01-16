@@ -4,11 +4,10 @@ import HeaderCustom from "../../components/Header";
 import { terms } from "../../mock/data.config.terms.json";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Section } from "../../components/Section";
-import { useContext } from "react";
-import { MyColorContext } from "../../utils/contexts/MyColorContext";
+import { useColors } from "../../hooks/useColors";
 
 const TermsScreen = ({ navigation }) => {
-  const { theme } = useContext(MyColorContext);
+  const { theme } = useColors();
   return (
     <SafeAreaView
       className="flex-1 pt-10"

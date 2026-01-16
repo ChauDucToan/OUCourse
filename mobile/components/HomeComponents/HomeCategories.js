@@ -1,10 +1,10 @@
 import { TouchableOpacity, View, FlatList, Text } from "react-native";
 import TextCustom from "../TextCustom";
 import { Icon } from "react-native-paper";
-import { useContext } from "react";
-import { CategoriesContext } from "../../utils/contexts/CategoriesContext";
+
 import { useEffect } from "react";
 import { useState } from "react";
+import { useCategories } from "../../hooks/useCategories";
 
 export const HomeCategories = ({
   icon = "",
@@ -13,7 +13,7 @@ export const HomeCategories = ({
   theme,
   sizeIcon = 28,
 }) => {
-  const { categories, ensureCategories } = useContext(CategoriesContext);
+  const { categories, ensureCategories } = useCategories();
   const [count, setCount] = useState(20);
 
   const loadMore = () => {

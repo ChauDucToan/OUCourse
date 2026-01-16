@@ -1,4 +1,3 @@
-import { MyUserContext } from "../../utils/contexts/MyContext";
 import { ActivityIndicator, Avatar, Divider, Icon } from "react-native-paper";
 import {
   ScrollView,
@@ -8,15 +7,16 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import * as ImagePicker from "expo-image-picker";
 import HeaderCustom from "../../components/Header";
 
 import { useRoute } from "@react-navigation/native";
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../../utils/Apis";
-import { MyColorContext } from "../../utils/contexts/MyColorContext";
-import { getMimeType } from "../../utils/imageUtils";
+import { getMimeType, pickImage } from "../../utils/imageUtils";
+import { useUser } from "../../hooks/useUser";
+import { useColors } from "../../hooks/useColors";
+import { errorConsole } from "../../utils/errorUtils";
 const InfoRow = ({
   subject,
   text,
@@ -72,14 +72,14 @@ const InfoRow = ({
 );
 
 const AccountDetailedScreen = () => {
-  const [user, dispatch] = useContext(MyUserContext);
+  const [user, dispatch] = useUser();
   const [isEdit, setIsEdit] = useState(false);
   const [userFirstName, setUserFirstName] = useState("");
   const [userLastName, setUserLastName] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [isLoading, setLoading] = useState(false);
   const [selectedAvatar, setSelectedAvatar] = useState(null);
-  const { theme } = useContext(MyColorContext);
+  const { theme } = useColors();
 
   const route = useRoute();
   const { isEditParam } = route.params || {};
@@ -90,16 +90,6 @@ const AccountDetailedScreen = () => {
     setUserEmail(user.email);
     setIsEdit(isEditParam);
   }, []);
-  const pickImage = async () => {
-    let { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (status !== "granted") {
-      alert("Permissions denied!");
-    } else {
-      const result = await ImagePicker.launchImageLibraryAsync();
-      if (!result.canceled) setSelectedAvatar(result.assets[0]);
-    }
-  };
 
   const handleEditSave = async () => {
     const isChanged =
@@ -137,7 +127,7 @@ const AccountDetailedScreen = () => {
         setSelectedAvatar(null);
       }
     } catch (error) {
-      console.error(error);
+      errorConsole(error, "AccountDetailedScreen:handleEditSave");
     } finally {
       setLoading(false);
     }
@@ -168,7 +158,12 @@ const AccountDetailedScreen = () => {
             }}
           />
         ) : (
-          <Pressable onPress={pickImage}>
+          <Pressable
+            onPress={async () => {
+              const img = await pickImage();
+              if (img) setSelectedAvatar(img);
+            }}
+          >
             <Avatar.Image
               size={80}
               source={{

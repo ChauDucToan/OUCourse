@@ -4,6 +4,7 @@ import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../Apis";
 import { createContext } from "react";
 import { useRef } from "react";
+import { errorConsole } from "../errorUtils";
 
 export const CategoriesContext = createContext(null);
 

@@ -16,6 +16,7 @@ import TabNavigator from "./navigation/TabNavigation";
 import { getTokens } from "./utils/tokenUtils";
 import AppProvider from "./utils/AppProvider";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { errorConsole } from "./utils/errorUtils";
 
 export default function App() {
   const [user, dispatch] = useReducer(MyReducers, null);
@@ -25,7 +26,7 @@ export default function App() {
     ...DefaultTheme,
     colors: {
       ...DefaultTheme.colors,
-      background: theme.colors.gray[100], // Sử dụng màu tối từ theme của bạn
+      background: theme.colors.gray[100],
     },
   };
   useEffect(() => {
@@ -42,7 +43,7 @@ export default function App() {
           payload: res?.data,
         });
       } catch (error) {
-        console.error("Use effect App", error);
+        errorConsole(error, "App");
       } finally {
         setLoading(false);
       }

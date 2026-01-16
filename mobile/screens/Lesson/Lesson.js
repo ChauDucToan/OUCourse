@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   View,
   Image,
@@ -11,15 +11,15 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import TextCustom from "../../components/TextCustom";
 import RenderHTML from "react-native-render-html";
 import { FlatList } from "react-native";
-import { useContext } from "react";
-import { MyColorContext } from "../../utils/contexts/MyColorContext";
 import { useCallback } from "react";
-import { LessonContext } from "../../utils/contexts/LessonContext";
 import { useEffect } from "react";
-import { useMemo } from "react";
 import { ImageBackground } from "react-native";
+import axiosClient from "../../api/axiosClient";
+import { endpoints } from "../../utils/Apis";
+import { useColors } from "../../hooks/useColors";
+import { errorConsole } from "../../utils/errorUtils";
 
-const LessonsRoute = ({ lessons, theme }) => {
+const LessonsRoute = ({ lessons, theme, courseId }) => {
   const nav = useNavigation();
   return (
     <View
@@ -40,7 +40,11 @@ const LessonsRoute = ({ lessons, theme }) => {
               activeOpacity={0.6}
               delayPressIn={0.7}
               onPress={() => {
-                nav.navigate("LessonLearning", { id: item.id, theme: theme });
+                nav.navigate("LessonLearning", {
+                  id: item.id,
+                  theme: theme,
+                  courseId: courseId,
+                });
               }}
             >
               <View
@@ -117,14 +121,26 @@ const DescriptionRoute = ({ description, theme }) => {
 };
 
 export const LessonScreen = () => {
-  const { theme } = useContext(MyColorContext);
+  const { theme } = useColors();
   const route = useRoute();
   const { item } = route.params;
   const layout = useWindowDimensions();
-  const { lessons, ensureLessons } = useContext(LessonContext);
+  const [lessons, setLessons] = useState([]);
+
   useEffect(() => {
-    ensureLessons(item.id);
-  }, [ensureLessons, item.id]);
+    const loadData = async () => {
+      try {
+        const res = await axiosClient.get(endpoints.lessons(item.id));
+        const results = res?.data?.results ?? [];
+        setLessons(results);
+      } catch (error) {
+        errorConsole(error, "Lesson:loadData");
+      }
+    };
+
+    loadData();
+  }, [item.id]);
+
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     { key: "lessons", title: "Bài học" },
@@ -135,7 +151,9 @@ export const LessonScreen = () => {
     ({ route }) => {
       switch (route.key) {
         case "lessons":
-          return <LessonsRoute lessons={lessons} theme={theme} />;
+          return (
+            <LessonsRoute lessons={lessons} theme={theme} courseId={item.id} />
+          );
         case "desc":
           return (
             <DescriptionRoute description={item.description} theme={theme} />

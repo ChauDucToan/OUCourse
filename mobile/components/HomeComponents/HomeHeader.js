@@ -1,6 +1,4 @@
-import { useContext } from "react";
 import { Text, View } from "react-native";
-import { MyColorContext } from "../../utils/contexts/MyColorContext";
 
 export const HomeHeader = ({ text = "", subText = "", theme }) => {
   return (

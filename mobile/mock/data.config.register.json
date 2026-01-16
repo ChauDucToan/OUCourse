@@ -11,6 +11,11 @@
       "icon": "account-outline"
     },
     {
+      "title": "Email",
+      "field": "email",
+      "icon": "email-outline"
+    },
+    {
       "title": "Tên đăng nhập",
       "field": "username",
       "icon": "account"

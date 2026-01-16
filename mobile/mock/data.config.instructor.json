@@ -34,16 +34,5 @@
     "navParams": {
       "screen": "InstructorTrackStudent"
     }
-  },
-  {
-    "key": "instructor_progress",
-    "title": "Tiến độ học tập",
-    "description": "Xem chi tiết tiến độ học của từng sinh viên theo khóa.",
-    "iconLeft": "progress-pencil",
-    "iconColor": "#06b6d4",
-    "navUrl": "InstructorStack",
-    "navParams": {
-      "screen": "StudentProgress"
-    }
   }
 ]

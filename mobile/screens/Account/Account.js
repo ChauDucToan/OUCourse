@@ -1,25 +1,29 @@
-import { View, ScrollView, Text, Pressable, Image } from "react-native";
+import { View, ScrollView, Text, Pressable } from "react-native";
 import { Avatar, Button, List } from "react-native-paper";
 import ListItem from "../../components/ListItem";
-import { useContext } from "react";
-import { MyUserContext } from "../../utils/contexts/MyContext";
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import HeaderCustom from "../../components/Header";
-import { MyColorContext } from "../../utils/contexts/MyColorContext";
+import { useCategories } from "../../hooks/useCategories";
+import { useColors } from "../../hooks/useColors";
+import { useCourses } from "../../hooks/useCourses";
+import { useUser } from "../../hooks/useUser";
+import { errorConsole } from "../../utils/errorUtils";
 
 const Account = ({ navigation }) => {
   const jsonAccountData = require("../../mock/data.config.account.json");
-  const [user, dispatch] = useContext(MyUserContext);
-  const { theme } = useContext(MyColorContext);
+  const [user, dispatch] = useUser();
+  const { theme } = useColors();
+  const { setCategories } = useCategories();
+  const { setCourses } = useCourses();
   const handleLogout = async () => {
     try {
       await AsyncStorage.removeItem("token");
       dispatch({ type: "logout" });
     } catch (error) {
-      console.error("Lỗi đăng xuất:", error);
+      errorConsole(error, "Account:handlelogout");
     }
   };
-  console.log("user ne", user);
   return (
     <ScrollView
       className="flex-1 pt-10"

@@ -1,17 +1,18 @@
-import React from "react";
 import { View, Text, FlatList } from "react-native";
 import { Button } from "react-native-paper";
 import HeaderCustom from "../../components/Header";
 import { useNavigation } from "@react-navigation/native";
-import { useContext } from "react";
-import { MyColorContext } from "../../utils/contexts/MyColorContext";
-import { CourseContext } from "../../utils/contexts/CoursesContext";
-import { formatCurrency } from "../../utils/formatCurrency";
 import { useEffect } from "react";
 import { useState } from "react";
+import { useCourses } from "../../hooks/useCourses";
+import axiosClient from "../../api/axiosClient";
+import { endpoints } from "../../utils/Apis";
+import { ActivityIndicator } from "react-native";
+import { useColors } from "../../hooks/useColors";
+import { errorConsole } from "../../utils/errorUtils";
+import { formatCurrency } from "../../utils/formatNumber";
 
-// Component hiển thị từng khóa học
-const CourseCard = ({ course, onEdit, onView, theme, navigation }) => (
+const CourseCard = ({ course, onDelete, theme, navigation }) => (
   <View
     className="border border-gray-300 rounded-xl p-4 mb-3 bg-white"
     style={{
@@ -28,14 +29,8 @@ const CourseCard = ({ course, onEdit, onView, theme, navigation }) => (
     <Text className="text-sm " style={{ color: theme.colors.gray[400] }}>
       Giá: {course.price > 0 ? formatCurrency(course.price) : "Miễn phí"} VNĐ
     </Text>
-    {/* <Text className="text-sm " style={{ color: theme.colors.gray[400] }}>
-      Học viên: {course.students}
-    </Text>*/}
-    {/* <Text className="text-sm " style={{ color: theme.colors.gray[400] }}>
-      Trạng thái: {course.status}
-    </Text>*/}
 
-    <View className="flex-row gap-3 mt-3">
+    <View className="flex-row flex-wrap  gap-3 mt-3">
       <Button
         mode="outlined"
         style={{
@@ -49,7 +44,7 @@ const CourseCard = ({ course, onEdit, onView, theme, navigation }) => (
           })
         }
       >
-        Xem chi tiết
+        Xem
       </Button>
       <Button
         mode="contained"
@@ -58,28 +53,55 @@ const CourseCard = ({ course, onEdit, onView, theme, navigation }) => (
           navigation.navigate("EditMyCourse", { course: course, theme: theme })
         }
       >
-        Chỉnh sửa
+        Sửa
+      </Button>
+      <Button
+        mode="outlined"
+        className=""
+        onPress={() =>
+          navigation.navigate("CreateLesson", {
+            courseId: course.id,
+          })
+        }
+      >
+        Thêm
+      </Button>
+      <Button
+        mode="outlined"
+        textColor={theme.colors.danger}
+        onPress={() => onDelete(course.id)}
+      >
+        Xóa
       </Button>
     </View>
   </View>
 );
 
-// Component chính: InstructorCourses
 const InstructorCourses = () => {
-  const { instructorCourse, ensureInstructorCourse, loadingCourses } =
-    useContext(CourseContext);
+  const {
+    instructorCourse,
+    ensureInstructorCourses,
+    loadingCourses,
+    loadingInstructorCourses,
+  } = useCourses();
   useEffect(() => {
-    ensureInstructorCourse();
-    console.log("INSTRUCTOR COURSE", instructorCourse);
-  }, []);
+    ensureInstructorCourses();
+  }, [ensureInstructorCourses]);
   const [count, setCount] = useState(20);
 
   const loadMore = () => {
     setCount((prev) => prev + 20);
   };
-  const { theme } = useContext(MyColorContext);
-  const handleEdit = (id) => console.log("Chỉnh sửa khóa học", id);
-  const handleView = (id) => console.log("Xem chi tiết khóa học", id);
+  const { theme } = useColors();
+  const handleDelete = async (courseId) => {
+    try {
+      await axiosClient.delete(`${endpoints.courses}${courseId}/`);
+      ensureInstructorCourses();
+      alert("Xóa khóa học thành công!");
+    } catch (error) {
+      errorConsole(error, "InstructorCourses:handleDelete");
+    }
+  };
   const nav = useNavigation();
   return (
     <View
@@ -104,7 +126,7 @@ const InstructorCourses = () => {
         className="flex-1"
         style={{ backgroundColor: theme.colors.gray[100] }}
       >
-        {loadingCourses ? (
+        {loadingInstructorCourses ? (
           <ActivityIndicator
             size="large"
             color={theme.colors.slate[600]}
@@ -117,9 +139,16 @@ const InstructorCourses = () => {
             contentContainerStyle={{ paddingBottom: 30 }}
             onEndReached={loadMore}
             onEndReachedThreshold={0.6}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item, index) =>
+              item?.id ? item.id.toString() : index.toString()
+            }
             renderItem={({ item }) => (
-              <CourseCard theme={theme} course={item} navigation={nav} />
+              <CourseCard
+                theme={theme}
+                course={item}
+                navigation={nav}
+                onDelete={handleDelete}
+              />
             )}
           />
         )}

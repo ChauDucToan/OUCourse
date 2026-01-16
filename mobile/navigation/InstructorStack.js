@@ -6,6 +6,7 @@ import CourseEditor from "../screens/Instructor/CourseEditor";
 import InstructorTrackStudent from "../screens/Instructor/InstructorTrackStudent";
 import MangeCourseDetailed from "../screens/Instructor/ManageCourseDetaield";
 import EditMyCourse from "../screens/Instructor/EditMyCourse";
+import CreateLesson from "../screens/Lesson/CreateLesson";
 
 const Stack = createNativeStackNavigator();
 
@@ -27,6 +28,7 @@ const InstructorStack = () => {
         name="MangeCourseDetailed"
         component={MangeCourseDetailed}
       />
+      <Stack.Screen name="CreateLesson" component={CreateLesson} />
     </Stack.Navigator>
   );
 };
