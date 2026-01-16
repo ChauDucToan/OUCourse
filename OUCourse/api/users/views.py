@@ -37,7 +37,7 @@ class UserView(viewsets.ViewSet, generics.CreateAPIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
     
 class StatisticUserView(viewsets.ViewSet):
-    permission_classes = [perms.IsNotStudent()]
+    permission_classes = [perms.IsNotStudent]
 
     @action(methods=['get'], url_path='revenue', detail=False)
     def get_revenue(self, request):
@@ -49,19 +49,21 @@ class StatisticUserView(viewsets.ViewSet):
         course_id = request.query_params.get('course_id', None)
         group_by = request.query_params.get('group_by', 'month')
 
-        base_query = TransactionDetail.objects.filter(
+        base_query = TransactionDetail.objects.select_related(
+            'transaction', 'transaction__user', 'course'
+        ).filter(
             transaction__status=Transaction.statuses.COMPLETED
         )
 
         if user.role == User.Role.INSTRUCTOR:
-            base_query = base_query.filter(courses__instructor=user)
+            base_query = base_query.filter(course__instructor=user)
         elif user.role == User.Role.ADMIN:
             pass
         else:
             return Response({"detail": "Permission denied"}, status=status.HTTP_403_FORBIDDEN)
         
         if course_id:
-            base_query = base_query.filter(courses__id=course_id)
+            base_query = base_query.filter(course__id=course_id)
 
         if from_date_str:
             d = parse_date(from_date_str)

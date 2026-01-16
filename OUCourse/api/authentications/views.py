@@ -26,6 +26,7 @@ class AuthViewSet(viewsets.GenericViewSet):
 
     @action(detail=False, methods=['post'], url_path='get-token', serializer_class=TokenSenderSerializer)
     def get_token(self, request):
+        print(request.data)
         serializer = TokenSenderSerializer(data=request.data)
         
         serializer.is_valid(raise_exception=True)

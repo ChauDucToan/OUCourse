@@ -4,11 +4,12 @@ from rest_framework.decorators import action
 from api.payments import serializers, models
 from services.payments.PaymentProviders import PaymentFactory
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
+from rest_framework.authentication import SessionAuthentication
 # Create your views here.
 
 class TransactionViewSet(viewsets.ViewSet, generics.CreateAPIView, generics.ListAPIView):
     serializer_class = serializers.TransactionSerializer
-    authentication_classes = [OAuth2Authentication]
+    authentication_classes = [OAuth2Authentication, SessionAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
@@ -23,10 +24,10 @@ class TransactionViewSet(viewsets.ViewSet, generics.CreateAPIView, generics.List
         items_for_provider = []
         for detail in transaction.items.all():
             items_for_provider.append({
-                'name': detail.courses.subject,
+                'name': detail.course.subject,
                 'amount': float(detail.price_at_purchase),
                 'quantity': 1,
-                'description': f"{detail.courses.description[:50]}..." if detail.courses.description else "",
+                'description': f"{detail.course.description[:50]}..." if detail.course.description else "",
             })
 
         provider_name = request.data.get('provider')
