@@ -2,6 +2,7 @@ from rest_framework import viewsets, permissions
 from rest_framework.response import Response
 
 
+
 class UserInfoAPI(viewsets.ViewSet):
     permission_classes = [permissions.IsAuthenticated]
 

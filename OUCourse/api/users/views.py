@@ -1,12 +1,14 @@
 from rest_framework import viewsets, generics, status, parsers, permissions
-from .models import User
-from .serializers import UserSerializer, UserCreateSerializer
+from .models import User, FireBaseUser
+from .serializers import UserSerializer, UserCreateSerializer, ChatRoomSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.utils.dateparse import parse_date
 from django.db.models.functions import TruncMonth, TruncQuarter, TruncYear
-from django.db.models import Sum, Count, F
+from django.db.models import Sum, Count
 from api import perms
+from firebase_admin.auth import UidAlreadyExistsError, EmailAlreadyExistsError
+from firebase_admin import auth, db
 
 from api.payments.models import TransactionDetail, Transaction
 
@@ -14,12 +16,14 @@ from api.payments.models import TransactionDetail, Transaction
 class UserView(viewsets.ViewSet, generics.CreateAPIView):
     queryset = User.objects.filter(is_active=True)
     serializer_class = UserSerializer
-    parser_classes = [parsers.MultiPartParser, parsers.FormParser]
+    parser_classes = [parsers.MultiPartParser, parsers.FormParser, parsers.JSONParser]
     permission_classes = [permissions.AllowAny]
 
     def get_serializer_class(self):
         if self.action == 'create':
             return UserCreateSerializer
+        elif self.action == 'create_chat_room':
+            return ChatRoomSerializer
         return UserSerializer
 
     @action(methods=['get', 'patch'], url_path='current-user', \
@@ -36,6 +40,92 @@ class UserView(viewsets.ViewSet, generics.CreateAPIView):
             serializer = UserSerializer(u)
             return Response(serializer.data, status=status.HTTP_200_OK)
     
+    def _get_or_create_firebase_mapping(self, user):
+        fb_user_local = FireBaseUser.objects.filter(user=user).first()
+        
+        if fb_user_local:
+            return fb_user_local
+
+        firebase_uid = str(user.id)
+        
+        try:
+            auth.create_user(
+                uid=firebase_uid,
+                email=user.email,
+                display_name=user.username,
+                disabled=False
+            )
+        except (UidAlreadyExistsError, EmailAlreadyExistsError):
+            pass
+        except Exception as e:
+            raise e
+
+        fb_user_local, created = FireBaseUser.objects.get_or_create(
+            user=user,
+            defaults={'firebase_uid': firebase_uid}
+        )
+        
+        return fb_user_local
+    
+    @action(methods=['get'], url_path='firebase-token', \
+            detail=False, permission_classes=[permissions.IsAuthenticated])
+    def get_firebase_uid(self, request):
+        user = request.user
+        try:
+            fb_user_local = self._get_or_create_firebase_mapping(user)
+            custom_token = auth.create_custom_token(str(user.id)).decode('utf-8')
+            return Response({
+                "firebase_uid": fb_user_local.firebase_uid,
+                "firebase_token": custom_token
+            }, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"detail": f"Error linking Firebase: {str(e)}"}, status=status.HTTP_502_BAD_GATEWAY)
+    
+    @action(methods=['post'], url_path='chat-room', \
+            detail=False, permission_classes=[permissions.IsAuthenticated])
+    def create_chat_room(self, request):
+        current_user = request.user
+        target_username = request.data.get('target_username', None)
+
+        if not target_username:
+            return Response({"detail": "target_username is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            target_user = User.objects.get(username=target_username, is_active=True)
+        except User.DoesNotExist:
+            return Response({"detail": "Target user not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        try:
+            current_user_firebase = self._get_or_create_firebase_mapping(current_user)
+            target_user_firebase = self._get_or_create_firebase_mapping(target_user)
+        except Exception as e:
+            return Response({"detail": f"Error linking Firebase: {str(e)}"}, status=status.HTTP_502_BAD_GATEWAY)
+        
+        room_id = f"room_{min(current_user_firebase.firebase_uid, target_user_firebase.firebase_uid)}_{max(current_user_firebase.firebase_uid, target_user_firebase.firebase_uid)}"
+        
+        updates = {}
+        current_uid = current_user_firebase.firebase_uid
+        target_uid = target_user_firebase.firebase_uid
+        
+        updates[f'chats/{room_id}/members/{current_uid}'] = True
+        updates[f'chats/{room_id}/members/{target_uid}'] = True
+
+        server_timestamp = {'.sv': 'timestamp'}
+
+        updates[f'user_chats/{current_uid}/{room_id}/partner_id'] = target_uid
+        updates[f'user_chats/{current_uid}/{room_id}/timestamp'] = server_timestamp
+        
+        updates[f'user_chats/{target_uid}/{room_id}/partner_id'] = current_uid
+        updates[f'user_chats/{target_uid}/{room_id}/timestamp'] = server_timestamp
+        
+        db.reference().update(updates)
+
+        return Response({
+            "room_id": room_id, 
+            "members": [current_user.username, target_user.username]
+            },status=status.HTTP_200_OK
+        )
+
 class StatisticUserView(viewsets.ViewSet):
     permission_classes = [perms.IsNotStudent]
 
@@ -93,9 +183,9 @@ class StatisticUserView(viewsets.ViewSet):
             .values(
                 'period',
                 'price_at_purchase',
-                user_id=F('transaction__user__id'),
-                user_username=F('transaction__user__username'),
-                user_email=F('transaction__user__email')
+                'transaction__user__id',
+                'transaction__user__username',
+                'transaction__user__email'
             )
             .order_by('period')
         )
@@ -112,12 +202,12 @@ class StatisticUserView(viewsets.ViewSet):
                 }
             grouped_results[period]['revenue'] += item['price_at_purchase']
             
-            user_id = item['user_id']
+            user_id = item['transaction__user__id']
             if user_id not in grouped_results[period]['students']:
                 grouped_results[period]['students'][user_id] = {
                     'id': user_id,
-                    'username': item['user_username'],
-                    'email': item['user_email']
+                    'username': item['transaction__user__username'],
+                    'email': item['transaction__user__email']
                 }
 
         formatted_chart_data = []

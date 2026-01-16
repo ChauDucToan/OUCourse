@@ -1,7 +1,6 @@
 from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action, authentication_classes,permission_classes
 from rest_framework.response import Response
-from django.db import transaction
 
 from .serializers import AuthenticationModelSerializer, SocialLoginInputSerializer, TokenSenderSerializer, TokenCreatorSerializer
 from .models import AuthenticationModel
@@ -41,7 +40,6 @@ class AuthViewSet(viewsets.GenericViewSet):
             
         return Response(result, status=status.HTTP_200_OK)
 
-
     @action(detail=False, methods=['get'], url_path='url')
     @authentication_classes([])
     @permission_classes([permissions.AllowAny])
@@ -60,7 +58,7 @@ class AuthViewSet(viewsets.GenericViewSet):
             return Response({"error": "Lỗi hệ thống", "details": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=False, methods=['get'], url_path='callback', serializer_class=SocialLoginInputSerializer)
-    def login(self, request):
+    def callback(self, request):
         data = request.query_params.dict()
 
         input_serializer = SocialLoginInputSerializer(data=data)
@@ -90,9 +88,9 @@ class AuthViewSet(viewsets.GenericViewSet):
             
             db_serializer = AuthenticationModelSerializer(data=save_data)
             db_serializer.is_valid(raise_exception=True)
-            with transaction.atomic():
-                auth_instance = db_serializer.save()
-                oauth_token = create_oauth_token(auth_instance.user)
+
+            auth_instance = db_serializer.save()
+            oauth_token = create_oauth_token(auth_instance.user)
 
             return Response({
                 "status": "success",

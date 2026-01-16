@@ -66,3 +66,10 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
         user.save()
         return user
+    
+class ChatRoomSerializer(serializers.Serializer):
+    target_username = serializers.CharField()
+    
+    class Meta:
+        models = User
+        fields = ['target_username']

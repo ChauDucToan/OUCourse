@@ -29,3 +29,15 @@ class User(AbstractUser):
         return f"{self.username}-({self.role})"
     
     objects = CustomUserManager()
+
+class FireBaseUser(models.Model):
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name='firebase_user'
+    )
+
+    firebase_uid = models.CharField(max_length=255, unique=True, null=False)
+
+    def __str__(self):
+        return f"FirebaseUser: {self.user.username} - {self.firebase_uid}"

@@ -17,6 +17,8 @@ import pymysql
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
+import firebase_admin
+from firebase_admin import credentials
 
 pymysql.install_as_MySQLdb()
 
@@ -71,6 +73,14 @@ cloudinary.config(
 )
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+# Firebase initialization
+DB_URL = os.getenv("FIREBASE_DB_URL")
+if not firebase_admin._apps:
+    cred = credentials.Certificate(os.path.join(BASE_DIR, 'services', 'secret', 'firebase.json'))
+    firebase_admin.initialize_app(cred, {
+        'databaseURL': DB_URL
+    })
 
 # Application definition
 
