@@ -39,7 +39,8 @@ class ZaloPayProvider(PaymentProviders):
         self.key2 = os.getenv("ZLP_MERCHANT_KEY2")
         self.endpoint = os.getenv("ZLP_MERCHANT_ENDPOINT")
         self.gateway_endpoint = os.getenv("ZLP_MERCHANT_GATEWAY_ENDPOINT")
-        self.redirect_url = os.getenv("ZLP_REDIRECT_URL") + "?provider=zalopay"
+        self.redirect_url = os.getenv("ZLP_REDIRECT_URL")
+        self.callback_url = os.getenv("ZLP_CALLBACK_URL")
 
     def _get_mac(self, data, key):
         mac = hmac.new(
@@ -69,11 +70,12 @@ class ZaloPayProvider(PaymentProviders):
             "app_trans_id": order_code,
             "app_time": int(datetime.now().timestamp() * 1000),
             "expire_duration_seconds": 900,
-            "description": f"Giao dịch {order_code} thanh toán đơn hàng trên OUCourse",
             "amount": int(amount),
-            "bank_code": "",
-            "embed_data": embed_data_str,
+            "description": f"Giao dịch {order_code} thanh toán đơn hàng trên OUCourse",
+            "callback_url": self.callback_url,
             "item": json.dumps(self.items),
+            "embed_data": embed_data_str,
+            "bank_code": "",
         }
 
         data = "|".join([
@@ -126,7 +128,7 @@ class ZaloPayProvider(PaymentProviders):
 
         data_json = json.loads(data_str)
         order_code = data_json["app_trans_id"]
-        zalo_trans_id = data_json["zalo_trans_id"]
+        zalo_trans_id = data_json["zp_trans_id"]
 
         try:
             transaction = Transaction.objects.get(order_code=order_code)

@@ -64,6 +64,15 @@ class AuthenticationModelSerializer(serializers.ModelSerializer):
         if validated_data.get('refresh_token'):
             defaults_data['refresh_token'] = validated_data.get('refresh_token')
 
+        if validated_data.get('access_token'):
+            defaults_data['access_token'] = validated_data.get('access_token')
+
+        if validated_data.get('refresh_token'):
+            defaults_data['refresh_token'] = validated_data.get('refresh_token')
+
+        if validated_data.get('expires_at'):
+            defaults_data['expires_at'] = validated_data.get('expires_at')
+
         auth_instance, created = AuthenticationModel.objects.update_or_create(
             provider=provider,
             uid=uid,
@@ -152,6 +161,7 @@ class TokenSenderSerializer(serializers.Serializer):
 
         data = f"{username}|{client_id}"
         expected_mac = self._get_mac(data, internal_client_id)
+        print(received_mac, expected_mac)
         if client_id != internal_client_id:
             raise serializers.ValidationError("Invalid client ID.")
         

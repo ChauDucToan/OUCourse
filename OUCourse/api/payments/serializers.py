@@ -36,7 +36,25 @@ class TransactionSerializer(serializers.ModelSerializer):
     def validate_items(self, value):
         if isinstance(value, list) and len(value) == 0:
             raise serializers.ValidationError("Transaction must have at least one item.")
+        
+        for item in value:
+            course_id = item.get('courses')
+
+            course = TransactionDetail.objects.select_related('transaction').filter(
+                courses_id=course_id,
+                transaction__user=self.context['request'].user
+            ).first()
+
+            if course:
+                raise serializers.ValidationError(f"User has already been purchased the course with id {course_id}.")
+            
         return value
+    
+    def validate_currency(self, value):
+        allowed_currencies = ['vnd', 'usd']
+        if value.lower() not in allowed_currencies:
+            raise serializers.ValidationError(f"Currency must be one of {allowed_currencies}.")
+        return value.lower()
 
     class Meta:
         model = Transaction

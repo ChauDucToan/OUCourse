@@ -4,11 +4,12 @@ from rest_framework.decorators import action
 from api.payments import serializers, models
 from services.payments.PaymentProviders import PaymentFactory
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
+from rest_framework.authentication import SessionAuthentication
 # Create your views here.
 
 class TransactionViewSet(viewsets.ViewSet, generics.CreateAPIView, generics.ListAPIView):
     serializer_class = serializers.TransactionSerializer
-    authentication_classes = [OAuth2Authentication]
+    authentication_classes = [OAuth2Authentication, SessionAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
@@ -71,7 +72,7 @@ class PaymentWebhookView(viewsets.ViewSet):
 
         django_response = provider.process_webhook(request)
 
-        return django_response
+        return Response(django_response, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['post'], url_path='stripe')
     def stripe_webhook(self, request):
