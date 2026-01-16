@@ -1,8 +1,8 @@
-from rest_framework import viewsets, generics, permissions, status
+from rest_framework import viewsets, generics, permissions, status, parsers
 from .. import perms
 from django.contrib.contenttypes.models import ContentType
-from ..comments.serializers import EmotionSerializer, CommentSerializer
-from ..comments.models import Emotion
+from api.comments.serializers import EmotionSerializer, CommentSerializer
+from api.comments.models import Emotion
 from . import serializers, paginators, models
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -10,6 +10,7 @@ from rest_framework.response import Response
 # Create your views here.
 class LessonView(viewsets.ViewSet, generics.RetrieveUpdateDestroyAPIView
                  , generics.CreateAPIView):
+    parser_classes = [parsers.MultiPartParser, parsers.FormParser]
     pagination_class = paginators.LessonPaginator
     serializer_class = serializers.LessonDetailSerializer
 
@@ -21,11 +22,6 @@ class LessonView(viewsets.ViewSet, generics.RetrieveUpdateDestroyAPIView
             queryset = queryset.filter(course_id=course_id)
         
         return queryset
-
-    def perform_create(self, serializer):
-        course_id = self.request.query_params.get('course_id')
-        course = models.Course.objects.get(pk=course_id)
-        serializer.save(course=course)
 
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
@@ -67,18 +63,24 @@ class LessonView(viewsets.ViewSet, generics.RetrieveUpdateDestroyAPIView
         except Emotion.DoesNotExist:
             return Response({"detail": "Reaction not found"}, status=status.HTTP_404_NOT_FOUND)
     
-    @action(methods=['get', 'patch'], url_path='progress', detail=True)
+    @action(methods=['get', 'patch'], url_path='progress', detail=True, 
+            serializer_class=serializers.ProgressLessonSerializer, 
+            permission_classes=[permissions.IsAuthenticated])
     def get_progress(self, request, pk):
         lesson = self.get_object()
+        student = request.user
+
         progress, created = models.LessonProgress.objects.get_or_create(
-            student=request.user,
+            student=student,
             lesson=lesson
         )
+
         if request.method.__eq__('PATCH'):
             s = serializers.ProgressLessonSerializer(progress, data=request.data, partial=True)
             s.is_valid(raise_exception=True)
             s.save()
             return Response(s.data, status=status.HTTP_200_OK)
+        
         return Response(serializers.ProgressLessonSerializer(progress).data, status=status.HTTP_200_OK)
     
     @action(methods=['get'], url_path='tags', detail=True)

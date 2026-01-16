@@ -14,7 +14,7 @@ class LessonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Lesson
-        fields = ['id', 'subject', 'video', 'video_url', 'image']
+        fields = ['id', 'subject', 'video', 'video_url', 'image', 'course']
         extra_kwargs = {
             'image': {'required': False},
         }
@@ -61,4 +61,5 @@ class LessonDetailSerializer(LessonSerializer):
 class ProgressLessonSerializer(serializers.ModelSerializer):
     class Meta:
         model = LessonProgress
-        fields = ['id', 'status', 'student', 'lesson']
+        fields = ['status', 'student', 'lesson']
+        read_only_fields = ['student', 'lesson']

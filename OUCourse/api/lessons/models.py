@@ -1,5 +1,6 @@
 from django.db import models
 from ..models import BaseModel
+from api.courses.models import Course
 from ckeditor.fields import RichTextField
 from cloudinary.models import CloudinaryField
 
@@ -16,7 +17,7 @@ class Lesson(BaseModel):
     image = CloudinaryField(null=True)
     video = models.URLField(null=True, blank=True)
     course = models.ForeignKey(
-        'courses.Course',
+        Course,
         on_delete=models.CASCADE
     )
     tags = models.ManyToManyField(
@@ -55,7 +56,7 @@ class LessonProgress(BaseModel):
     lesson = models.ForeignKey(
         Lesson,
         on_delete=models.CASCADE,
-        related_name="progresses",
+        related_name="progress",
     )
 
     class Meta:
