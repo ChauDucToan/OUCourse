@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import axiosClient from "../api/axiosClient";
 import { endpoints } from "../utils/Apis";
+import { errorConsole } from "../utils/errorUtils";
 
 export const useEnrollCourse = () => {
   const [enrolledCourses, setEnrolledCourses] = useState([]);
@@ -18,9 +19,8 @@ export const useEnrollCourse = () => {
       setEnrolledCourses(results);
       return results;
     } catch (error) {
-      console.error("Fetch enrolled courses error:", error);
       setEnrolledCoursesError(error.message);
-      throw error;
+      errorConsole(error, "Fetch EnrollCourses");
     } finally {
       setLoadingEnrolledCourses(false);
     }

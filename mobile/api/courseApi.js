@@ -1,4 +1,5 @@
 import { endpoints } from "../utils/Apis";
+import { errorConsole } from "../utils/errorUtils";
 import axiosClient from "./axiosClient";
 
 async function fetchCourse() {
@@ -6,7 +7,7 @@ async function fetchCourse() {
     const result = await axiosClient.get(endpoints.courses);
     return result ? result : null;
   } catch (error) {
-    console.error(error);
+    errorConsole(error, "fetchCourse");
   }
 }
 

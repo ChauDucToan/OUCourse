@@ -10,6 +10,7 @@ import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../../utils/Apis";
 import { ActivityIndicator } from "react-native";
 import { useColors } from "../../hooks/useColors";
+import { errorConsole } from "../../utils/errorUtils";
 
 const CourseCard = ({ course, onDelete, theme, navigation }) => (
   <View
@@ -98,8 +99,7 @@ const InstructorCourses = () => {
       setInstructorCourse((prev) => prev.filter((c) => c.id !== courseId));
       alert("Xóa khóa học thành công!");
     } catch (error) {
-      console.error(error);
-      alert("Có lỗi khi xóa khóa học");
+      errorConsole(error, "InstructorCourses:handleDelete");
     }
   };
   const nav = useNavigation();

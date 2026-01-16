@@ -13,6 +13,7 @@ import { Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useCategories } from "../../hooks/useCategories";
 import { useColors } from "../../hooks/useColors";
+import { errorConsole } from "../../utils/errorUtils";
 
 const CourseEditor = () => {
   const { theme } = useColors();
@@ -89,7 +90,7 @@ const CourseEditor = () => {
         nav.goBack();
       }
     } catch (error) {
-      console.error("Error object:", error);
+      errorConsole(error, "CourseEditor:createCourse");
 
       if (error.response) {
         console.log("Status:", error.response.status);

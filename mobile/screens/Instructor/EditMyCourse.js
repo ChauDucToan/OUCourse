@@ -8,6 +8,7 @@ import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../../utils/Apis";
 import TextCustom from "../../components/TextCustom";
 import { pickImage, pickVideo } from "../../utils/imageUtils";
+import { errorConsole } from "../../utils/errorUtils";
 
 const EditMyCourse = () => {
   const route = useRoute();
@@ -46,7 +47,7 @@ const EditMyCourse = () => {
       });
       navigation.goBack();
     } catch (error) {
-      console.error("Update failed:", error);
+      errorConsole(error, "Instructor:handleUpdateCourse");
     } finally {
       setLoading(false);
     }

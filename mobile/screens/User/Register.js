@@ -12,6 +12,7 @@ import FormAuth from "../../components/FormAuth";
 import { Alert } from "react-native";
 import { getMimeType, pickImage } from "../../utils/imageUtils";
 import { useColors } from "../../hooks/useColors";
+import { errorConsole } from "../../utils/errorUtils";
 
 const Register = () => {
   const jsonData = require("../../mock/data.config.register.json");
@@ -71,8 +72,8 @@ const Register = () => {
           nav.navigate("Login");
         }
         console.log("DANG KY THANH CONG");
-      } catch (ex) {
-        console.error(ex);
+      } catch (error) {
+        errorConsole(error, "Register:register");
       } finally {
         setLoading(false);
       }

@@ -19,6 +19,9 @@ import { Alert, Linking } from "react-native";
 import PaymentSelectionModal from "../../components/ModalPayment";
 import { useColors } from "../../hooks/useColors";
 import { useCourses } from "../../hooks/useCourses";
+import { WebView } from "react-native-webview";
+import { View, Modal } from "react-native";
+import { errorConsole } from "../../utils/errorUtils";
 
 const CourseDetailedScreen = () => {
   const route = useRoute();
@@ -40,7 +43,7 @@ const CourseDetailedScreen = () => {
 
         setCourse(res.data);
       } catch (error) {
-        console.error(error);
+        errorConsole(error, "CourseDetailedScreen:loadData");
       }
     };
     if (id) loadData();
@@ -61,8 +64,8 @@ const CourseDetailedScreen = () => {
           Alert.alert("Đăng ký thành công");
           refreshCourses();
           nav.goBack();
-        } catch (err) {
-          Alert.alert("Có lỗi khi ghi danh");
+        } catch (error) {
+          errorConsole(error, "CourseDetailedScreen:handleDeepLink");
         }
       }
     };
@@ -131,19 +134,7 @@ const CourseDetailedScreen = () => {
         Alert.alert("Thanh toán thất bại");
       }
     } catch (error) {
-      if (error.response) {
-        console.log("Status:", error.response.status);
-        console.log("Data lỗi:", error.response.data); // <-- Quan trọng: Server sẽ báo lý do tại đây
-        console.log("Headers:", error.response.headers);
-      } else {
-        console.error("Lỗi khác:", error.message);
-      }
-      Alert.alert(
-        "Có lỗi xảy ra",
-        JSON.stringify(error.response?.data) || "Lỗi không xác định",
-      );
-      console.error(error);
-      Alert.alert("Có lỗi xảy ra khi thanh toán");
+      errorConsole(error, "CourseDetailedScreen:handlePayment");
     } finally {
       setLoading(false);
       setModalVisible(false);
@@ -170,6 +161,26 @@ const CourseDetailedScreen = () => {
               <Text style={{ marginTop: 10 }}>Quét mã QR để thanh toán</Text>
             </View>
           )}*/}
+          <Modal visible={isLoginVisible} animationType="slide">
+            <View className="flex-1 pt-10 bg-white">
+              <TouchableOpacity
+                onPress={() => setIsLoginVisible(false)}
+                className="p-4 items-end"
+              >
+                <TextCustom.TextMuted text="Đóng" />
+              </TouchableOpacity>
+
+              <WebView
+                source={{ uri: authUrl }}
+                userAgent="Mozilla/5.0 (Linux; Android 10; Android SDK built for x86) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36"
+                onShouldStartLoadWithRequest={stunAndGetCode}
+                startInLoadingState={true}
+                renderLoading={() => (
+                  <ActivityIndicator size="large" className="mt-10" />
+                )}
+              />
+            </View>
+          </Modal>
           <ImageBackground
             source={
               course.image

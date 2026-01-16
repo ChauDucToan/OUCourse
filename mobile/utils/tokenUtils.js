@@ -1,4 +1,5 @@
 import { deleteItemAsync, getItemAsync, setItemAsync } from "expo-secure-store";
+import { errorConsole } from "./errorUtils";
 
 const TOKEN_KEY = "TOKEN";
 
@@ -10,7 +11,7 @@ export const saveTokens = async (accessToken, refreshToken) => {
     });
     await setItemAsync(TOKEN_KEY, keys);
   } catch (error) {
-    console.error("save token failed: ", error.message);
+    errorConsole(error, "saveTokens");
   }
 };
 
@@ -19,7 +20,7 @@ export const getTokens = async () => {
     const jsonData = await getItemAsync(TOKEN_KEY);
     return jsonData ? JSON.parse(jsonData) : null;
   } catch (error) {
-    console.error("get token failed: ", error.message);
+    errorConsole(error, "getTokens");
     return null;
   }
 };
@@ -29,6 +30,6 @@ export const removeTokens = async () => {
     await deleteItemAsync(TOKEN_KEY);
     console.log("Remove successs!");
   } catch (error) {
-    console.error("Remove token failed: ", error.message);
+    errorConsole(error, "removeTokens");
   }
 };

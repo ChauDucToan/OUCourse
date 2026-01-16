@@ -17,6 +17,7 @@ import { ImageBackground } from "react-native";
 import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../../utils/Apis";
 import { useColors } from "../../hooks/useColors";
+import { errorConsole } from "../../utils/errorUtils";
 
 const LessonsRoute = ({ lessons, theme }) => {
   const nav = useNavigation();
@@ -129,7 +130,7 @@ export const LessonScreen = () => {
         const results = res?.data?.results ?? [];
         setLessons(results);
       } catch (error) {
-        console.error(error);
+        errorConsole(error, "Lesson:loadData");
       }
     };
 

@@ -1,4 +1,4 @@
-import { Pressable, View, Modal, Alert } from "react-native";
+import { Pressable, View, Modal } from "react-native";
 import { ActivityIndicator, HelperText, IconButton } from "react-native-paper";
 import TextCustom from "../../components/TextCustom";
 import AuthLayout from "../../components/AuthLayout";
@@ -13,10 +13,7 @@ import { WebView } from "react-native-webview";
 import { saveTokens } from "../../utils/tokenUtils";
 import { useUser } from "../../hooks/useUser";
 import { useColors } from "../../hooks/useColors";
-import { useEffect } from "react";
-import { CLIENT_ID } from "@env";
-import { HmacSHA256 } from "crypto-js";
-import Hex from "crypto-js/enc-hex";
+import { errorConsole } from "../../utils/errorUtils";
 const Login = () => {
   const jsonData = require("../../mock/data.config.register.json");
   const jsonStyle = require("../../mock/data.styles.json");
@@ -29,7 +26,6 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [isLoginVisible, setIsLoginVisible] = useState(false);
   const [authUrl, setAuthUrl] = useState(null);
-  const [requestRedirectUri, setRequestRedirectUri] = useState("");
 
   const nav = useNavigation();
   const [, dispatch] = useUser();
@@ -51,8 +47,8 @@ const Login = () => {
         let userRes = await axiosClient.get(endpoints["current_user"]);
         dispatch({ type: "login", payload: userRes.data });
         nav.reset({ index: 0, routes: [{ name: "Home" }] });
-      } catch (ex) {
-        console.error("Login ", ex.message);
+      } catch (error) {
+        errorConsole(error, "Login:login");
       } finally {
         setLoading(false);
       }
@@ -74,8 +70,8 @@ const Login = () => {
         setAuthUrl(res.data.auth_url);
         setIsLoginVisible(true);
       }
-    } catch (ex) {
-      console.error("Lỗi Google Auth:", ex);
+    } catch (error) {
+      errorConsole(error, "Login:loginGoogle");
     }
   };
 
@@ -123,7 +119,7 @@ const Login = () => {
         }
       }
     } catch (error) {
-      console.error("From Code to token failed", error);
+      errorConsole(error, "Login:fromCodeToTokens");
     }
   };
 

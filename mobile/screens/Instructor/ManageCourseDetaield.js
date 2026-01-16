@@ -7,6 +7,7 @@ import TextCustom from "../../components/TextCustom";
 import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../../utils/Apis";
 import { formatCurrency } from "../../utils/formatCurrency";
+import { errorConsole } from "../../utils/errorUtils";
 
 const StudentsTab = ({ theme }) => {
   const [students, setStudents] = useState([]);
@@ -17,7 +18,7 @@ const StudentsTab = ({ theme }) => {
         const res = await axiosClient.get(endpoints.user_view);
         setStudents(res?.data?.results ?? []);
       } catch (error) {
-        console.error(error);
+        errorConsole(error, "ManageCourseDetaield:loadData");
       }
     };
     loadData();
@@ -63,7 +64,7 @@ const LessonsTab = ({ courseId, theme }) => {
         const res = await axiosClient.get(endpoints.lessons(courseId));
         setLessons(res?.data?.results ?? []);
       } catch (error) {
-        console.error(error);
+        errorConsole(error, "ManageCourseDetaield:loadData");
       }
     };
     loadData();

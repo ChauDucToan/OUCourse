@@ -8,6 +8,7 @@ import { useCategories } from "../../hooks/useCategories";
 import { useColors } from "../../hooks/useColors";
 import { useCourses } from "../../hooks/useCourses";
 import { useUser } from "../../hooks/useUser";
+import { errorConsole } from "../../utils/errorUtils";
 
 const Account = ({ navigation }) => {
   const jsonAccountData = require("../../mock/data.config.account.json");
@@ -20,7 +21,7 @@ const Account = ({ navigation }) => {
       await AsyncStorage.removeItem("token");
       dispatch({ type: "logout" });
     } catch (error) {
-      console.error("Lỗi đăng xuất:", error);
+      errorConsole(error, "Account:handlelogout");
     }
   };
   return (

@@ -16,6 +16,7 @@ import { endpoints } from "../../utils/Apis";
 import { getMimeType, pickImage } from "../../utils/imageUtils";
 import { useUser } from "../../hooks/useUser";
 import { useColors } from "../../hooks/useColors";
+import { errorConsole } from "../../utils/errorUtils";
 const InfoRow = ({
   subject,
   text,
@@ -126,7 +127,7 @@ const AccountDetailedScreen = () => {
         setSelectedAvatar(null);
       }
     } catch (error) {
-      console.error(error);
+      errorConsole(error, "AccountDetailedScreen:handleEditSave");
     } finally {
       setLoading(false);
     }

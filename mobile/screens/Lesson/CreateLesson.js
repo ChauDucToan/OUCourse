@@ -9,6 +9,7 @@ import { getMimeType, pickImage, pickVideo } from "../../utils/imageUtils";
 import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../../utils/Apis";
 import { useColors } from "../../hooks/useColors";
+import { errorConsole } from "../../utils/errorUtils";
 
 const CreateLesson = () => {
   const { theme } = useColors();
@@ -61,8 +62,7 @@ const CreateLesson = () => {
         nav.goBack();
       }
     } catch (error) {
-      console.error("CreateLesson error:", error);
-      alert("Có lỗi khi tạo bài học");
+      errorConsole(error, "CreateLesson:handleCreateLesson");
     }
   };
   const createLesson = async () => {

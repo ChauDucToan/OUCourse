@@ -4,6 +4,7 @@ import { endpoints } from "../utils/Apis";
 import { CLIENT_ID, CLIENT_SECRET } from "@env";
 
 import CryptoJS from "crypto-js";
+import { errorConsole } from "../utils/errorUtils";
 
 const authAxios = axios.create({
   baseURL: endpoints.baseUrl,
@@ -30,8 +31,7 @@ export const authApi = {
 
       return res;
     } catch (error) {
-      console.error("login error");
-      throw error;
+      errorConsole(error, "authApi:login");
     }
   },
   refresh: async (refreshToken) => {
@@ -49,8 +49,7 @@ export const authApi = {
       await saveTokens(newAccessToken, newRefreshToken);
       return res;
     } catch (error) {
-      console.error("login error: ", error.message);
-      throw error;
+      errorConsole(error, "authApi:refresh");
     }
   },
 };
