@@ -17,7 +17,6 @@ axiosClient.interceptors.request.use(
   async (config) => {
     const tokens = await getTokens();
     if (tokens && tokens.access_token) {
-      console.info("Gui Access_token", tokens.access_token);
       config.headers.Authorization = `Bearer ${tokens.access_token}`;
     }
     return config;

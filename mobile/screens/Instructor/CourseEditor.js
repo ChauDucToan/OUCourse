@@ -20,7 +20,7 @@ const CourseEditor = () => {
   const { theme } = useColors();
   const nav = useNavigation();
   const { categories } = useCategories();
-  const { ensureInstructorCourses } = useCourses();
+  const { addNewCourse } = useCourses();
   const [selectedCategory, setSelectedCategory] = useState("");
 
   const [hour, setHour] = useState(0);
@@ -89,7 +89,8 @@ const CourseEditor = () => {
 
       if (res.status === 201) {
         Alert.alert("Thành công", "Tạo khóa học thành công!");
-        ensureInstructorCourses();
+        const course = res.data;
+        addNewCourse(course);
         nav.goBack();
       }
     } catch (error) {

@@ -2,7 +2,6 @@ import { View, Text, FlatList } from "react-native";
 import { Button } from "react-native-paper";
 import HeaderCustom from "../../components/Header";
 import { useNavigation } from "@react-navigation/native";
-import { formatCurrency } from "../../utils/formatCurrency";
 import { useEffect } from "react";
 import { useState } from "react";
 import { useCourses } from "../../hooks/useCourses";
@@ -11,6 +10,7 @@ import { endpoints } from "../../utils/Apis";
 import { ActivityIndicator } from "react-native";
 import { useColors } from "../../hooks/useColors";
 import { errorConsole } from "../../utils/errorUtils";
+import { formatCurrency } from "../../utils/formatNumber";
 
 const CourseCard = ({ course, onDelete, theme, navigation }) => (
   <View
@@ -39,7 +39,7 @@ const CourseCard = ({ course, onDelete, theme, navigation }) => (
         }}
         onPress={() =>
           navigation.navigate("MangeCourseDetailed", {
-            courseId: course.id,
+            course: course,
             theme: theme,
           })
         }

@@ -21,6 +21,19 @@ export const CoursesProvider = ({ children }) => {
   const [enrollCourses, setEnrollCourses] = useState([]);
   const [loadingEnrollCourses, setLoadingEnrollCourses] = useState(false);
 
+  const addNewCourse = useCallback((newCourseData) => {
+    setInstructorCourse((prev) => [newCourseData, ...prev]);
+    setCourses((prev) => {
+      if (prev.length > 0) {
+        return [newCourseData, ...prev];
+      }
+      return prev;
+    });
+
+    if (coursesRef.current) {
+      coursesRef.current = { data: [], timestamp: 0 };
+    }
+  }, []);
   const ensureHomeCourses = useCallback(async (status = "") => {
     const now = Date.now();
     if (
@@ -93,6 +106,8 @@ export const CoursesProvider = ({ children }) => {
         enrollCourses,
         loadingEnrollCourses,
         setEnrollCourses,
+
+        addNewCourse,
       }}
     >
       {children}

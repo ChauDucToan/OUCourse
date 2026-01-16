@@ -19,19 +19,22 @@ import { Alert, Linking } from "react-native";
 import PaymentSelectionModal from "../../components/ModalPayment";
 import { useColors } from "../../hooks/useColors";
 import { useCourses } from "../../hooks/useCourses";
-// import { WebView } from "react-native-webview";
-// import { Modal } from "react-native";
+import { WebView } from "react-native-webview";
+import { Modal } from "react-native";
 import { errorConsole } from "../../utils/errorUtils";
+import TextCustom from "../../components/TextCustom";
 
 const CourseDetailedScreen = () => {
   const route = useRoute();
   const [course, setCourse] = useState();
   const [isLoading, setLoading] = useState(false);
-  const { refreshCourses } = useCourses();
   const { theme } = useColors();
   const { id } = route.params;
   const { width } = Dimensions.get("window");
   const [modalVisible, setModalVisible] = useState(false);
+  const [webVisible, setWebVisible] = useState(false);
+  // const [isPayment, setIsPayment] = useState(false);
+  const [paymentUrl, setPaymentUrl] = useState("");
   const nav = useNavigation();
   useEffect(() => {
     const loadData = async () => {
@@ -47,32 +50,6 @@ const CourseDetailedScreen = () => {
     if (id) loadData();
   }, [id]);
 
-  useEffect(() => {
-    const handleDeepLink = async (event) => {
-      const url = event.url;
-      if (url.includes("payment-success")) {
-        try {
-          const formData = new FormData();
-          formData.append("status", "ENROLLED");
-
-          await axiosClient.post(endpoints.enrollCourse(course.id), formData, {
-            headers: { "Content-Type": "multipart/form-data" },
-          });
-
-          Alert.alert("Đăng ký thành công");
-          refreshCourses();
-          nav.goBack();
-        } catch (error) {
-          errorConsole(error, "CourseDetailedScreen:handleDeepLink");
-        }
-      }
-    };
-
-    Linking.addEventListener("url", handleDeepLink);
-    return () => {
-      Linking.removeAllListeners("url");
-    };
-  }, [course, refreshCourses]);
   if (!course) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -85,32 +62,30 @@ const CourseDetailedScreen = () => {
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("vi-VN").format(amount) + " đ";
   };
-
-  const handleEnroll = async (course) => {
-    if (Number(course.price) === 0) {
-      setModalVisible(false);
+  const processEnroll = async (courseId) => {
+    try {
       const formData = new FormData();
       formData.append("status", "ENROLLED");
 
-      await axiosClient.post(endpoints.enrollCourse(course.id), formData, {
+      await axiosClient.post(endpoints.enrollCourse(courseId), formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
       alert("Đăng ký thành công");
+    } catch (error) {
+      errorConsole(error, "CourseDetailedScreen:processEnroll");
+    }
+  };
+  const handleEnroll = async (course) => {
+    if (Number(course.price) === 0) {
+      setModalVisible(false);
+      processEnroll(course.id);
       nav.goBack();
       return;
     }
     setModalVisible(true);
   };
 
-  const openLink = async (url) => {
-    const supported = await Linking.canOpenURL(url);
-    if (supported) {
-      await Linking.openURL(url);
-    } else {
-      alert("Lỗi", "Không thể mở ứng dụng thanh toán: " + url);
-    }
-  };
   const handlePayment = async (method) => {
     try {
       setLoading(true);
@@ -118,16 +93,16 @@ const CourseDetailedScreen = () => {
       const paymentPayload = {
         currency: "vnd",
         provider: method.id,
-        items: [{ courses: course.id }],
+        items: [{ course: course.id }],
       };
-      console.log(paymentPayload);
       const paymentRes = await axiosClient.post(
         endpoints.payment,
         paymentPayload,
       );
-      console.log(paymentRes.data.payment_url);
       if (paymentRes.data && paymentRes.data.payment_url) {
-        await openLink(paymentRes.data.payment_url);
+        setPaymentUrl(paymentRes.data.payment_url);
+        setWebVisible(true);
+        console.log("MO WEB");
       } else {
         alert("Thanh toán thất bại");
       }
@@ -137,6 +112,18 @@ const CourseDetailedScreen = () => {
       setLoading(false);
       setModalVisible(false);
     }
+  };
+  const stunAndGetStatus = (request) => {
+    const { url } = request;
+    if (url.includes("/api/payments/confirm/") || url.includes("status=1")) {
+      setWebVisible(false);
+
+      processEnroll(course.id);
+      nav.goBack();
+      return false;
+    }
+
+    return true;
   };
   return (
     <View
@@ -245,6 +232,28 @@ const CourseDetailedScreen = () => {
               onClose={() => setModalVisible(false)}
               onSelect={(method) => handlePayment(method)}
             />
+
+            <Modal visible={webVisible} animationType="slide">
+              <View className="flex-1 pt-10 bg-white">
+                <TouchableOpacity
+                  onPress={() => setWebVisible(false)}
+                  className="p-4 items-end"
+                >
+                  <TextCustom.TextMuted text="Đóng" />
+                </TouchableOpacity>
+
+                <WebView
+                  source={{ uri: paymentUrl }}
+                  userAgent="Mozilla/5.0 (Linux; Android 10; Android SDK built for x86) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36"
+                  onShouldStartLoadWithRequest={stunAndGetStatus}
+                  startInLoadingState={true}
+                  renderLoading={() => (
+                    <ActivityIndicator size="large" className="mt-10" />
+                  )}
+                />
+              </View>
+            </Modal>
+
             <TouchableOpacity
               style={{
                 backgroundColor: isLoading
