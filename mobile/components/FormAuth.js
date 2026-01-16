@@ -14,14 +14,12 @@ const FormAuth = ({ item, theme, value, onChangeText }) => {
 
   return (
     <TextInput
-      key={item.field}
       value={value}
       onChangeText={onChangeText}
       label={item.title}
       secureTextEntry={isPasswordField ? !isVisible : false}
       activeOutlineColor={theme.colors.slate[500]}
       placeholderTextColor={theme.colors.slate[600]}
-      textColor={theme.colors.slate[400]}
       theme={{
         colors: {
           onSurfaceVariant: theme.colors.slate[600],

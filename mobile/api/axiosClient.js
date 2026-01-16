@@ -2,6 +2,7 @@ import axios from "axios";
 import { getTokens, removeTokens, saveTokens } from "../utils/tokenUtils";
 import { authApi } from "./authApi";
 import { endpoints } from "../utils/Apis";
+import { errorConsole } from "../utils/errorUtils";
 
 const axiosClient = axios.create({
   baseURL: endpoints.baseUrl,
@@ -16,7 +17,6 @@ axiosClient.interceptors.request.use(
   async (config) => {
     const tokens = await getTokens();
     if (tokens && tokens.access_token) {
-      console.info("Gui Access_token", tokens.access_token);
       config.headers.Authorization = `Bearer ${tokens.access_token}`;
     }
     return config;
@@ -46,8 +46,9 @@ axiosClient.interceptors.response.use(
         originRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return axiosClient(originRequest);
       } catch (error) {
-        console.error("Interceptors-respone: ", error.message);
         await removeTokens();
+
+        errorConsole(error, "axiosclient.interceptor");
         return Promise.reject(error);
       }
     }

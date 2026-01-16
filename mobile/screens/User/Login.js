@@ -1,40 +1,35 @@
-import * as WebBrowser from "expo-web-browser";
-WebBrowser.maybeCompleteAuthSession();
-import { Pressable, View } from "react-native";
-import {
-  ActivityIndicator,
-  HelperText,
-  IconButton,
-  TextInput,
-} from "react-native-paper";
-import { MyUserContext } from "../../utils/contexts/MyContext";
+import { Pressable, View, Modal } from "react-native";
+import { ActivityIndicator, HelperText, IconButton } from "react-native-paper";
 import TextCustom from "../../components/TextCustom";
 import AuthLayout from "../../components/AuthLayout";
-import * as Linking from "expo-linking";
 import { useState } from "react";
 import { authApi } from "../../api/authApi";
 import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../../utils/Apis";
 import { useNavigation } from "@react-navigation/native";
-import { useContext } from "react";
 import * as AuthSession from "expo-auth-session";
-import { MyColorContext } from "../../utils/contexts/MyColorContext";
 import FormAuth from "../../components/FormAuth";
+import { WebView } from "react-native-webview";
+import { saveTokens } from "../../utils/tokenUtils";
+import { useUser } from "../../hooks/useUser";
+import { useColors } from "../../hooks/useColors";
+import { errorConsole } from "../../utils/errorUtils";
 
 const Login = () => {
   const jsonData = require("../../mock/data.config.register.json");
   const jsonStyle = require("../../mock/data.styles.json");
-  const { theme } = useContext(MyColorContext);
+  const { theme } = useColors();
   const fieldsRender = jsonData.info.filter(
     (item) => item.field === "username" || item.field === "password",
   );
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState({ username: "", password: "" });
   const [err, setErr] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPass, setShowConfirmPass] = useState(false);
-  const navigation = useNavigation();
-  const [, dispatch] = useContext(MyUserContext);
+  const [isLoginVisible, setIsLoginVisible] = useState(false);
+  const [authUrl, setAuthUrl] = useState(null);
+
+  const nav = useNavigation();
+  const [, dispatch] = useUser();
 
   const validate = () => {
     if (!user.password || !user.username) {
@@ -46,67 +41,88 @@ const Login = () => {
   };
 
   const login = async () => {
-    if (validate() === true) {
+    if (validate()) {
       setLoading(true);
       try {
         await authApi.login(user);
         let userRes = await axiosClient.get(endpoints["current_user"]);
-        dispatch({
-          type: "login",
-          payload: userRes.data,
-        });
-        navigation.reset({
-          index: 0,
-          routes: [{ name: "Home" }],
-        });
-      } catch (ex) {
-        console.error("Login ", ex.message);
+        dispatch({ type: "login", payload: userRes.data });
+        alert("Đăng nhập thành công!");
+        nav.reset({ index: 0, routes: [{ name: "Home" }] });
+      } catch (error) {
+        errorConsole(error, "Login:login");
       } finally {
         setLoading(false);
       }
     }
   };
+
   const loginGoogle = async () => {
     try {
-      // Redirect URI về app
       const redirectUri = AuthSession.makeRedirectUri({
         scheme: "oucourse",
         path: "oauthredirect",
       });
-      console.log("redirectUri =", redirectUri);
       const params = new URLSearchParams();
       params.append("auth_type", "google");
       params.append("redirect_uri", redirectUri);
 
-      const res = await axiosClient.get(endpoints.googleAuth, { params });
+      const res = await axiosClient.get(endpoints["googleAuth"], { params });
+      if (res.data?.auth_url) {
+        setAuthUrl(res.data.auth_url);
+        setIsLoginVisible(true);
+      }
+    } catch (error) {
+      errorConsole(error, "Login:loginGoogle");
+    }
+  };
 
-      const authUrl = res.data?.auth_url;
-      console.log(authUrl);
-      if (!authUrl) throw new Error("Missing auth_url from backend");
+  const stunAndGetCode = (request) => {
+    const { url } = request;
+    if (url.includes("code=") && url.includes(endpoints["googleCallback"])) {
+      const regex = /[?&]code=([^&#]*)/;
+      const match = regex.exec(url);
+      if (match && match[1]) {
+        const code = decodeURIComponent(match[1]);
+        setIsLoginVisible(false);
+        fromCodeToTokens(code);
+        return false;
+      }
+    }
+    return true;
+  };
 
-      // Mở phiên đăcng nhập + chờ redirect về app
-      const result = await WebBrowser.openAuthSessionAsync(
-        authUrl,
-        redirectUri,
+  const fromCodeToTokens = async (code) => {
+    try {
+      const res = await axiosClient.get(
+        endpoints["googleCallback"],
+        {
+          params: {
+            code: code,
+            auth_type: "google",
+          },
+        },
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
       );
-      if (result.type !== "success" || !result.url) return;
-
-      // Parse callback: oucourse://... ?code=...&state=...
-      const parsed = Linking.parse(result.url);
-      const code = parsed.queryParams?.code;
-      const state = parsed.queryParams?.state;
-
-      if (!code || !state) throw new Error("Missing code/state in callback");
-
-      // Gọi backend đổi code -> token/session
-      console.log("Gọi loginRes");
-      const loginRes = await axiosClient.get(endpoints.googleCallback, {
-        code,
-        state,
-        redirect_uri: redirectUri,
-      });
-    } catch (ex) {
-      console.error("Lỗi Google Auth:", ex);
+      if (res.status === 200) {
+        const responeData = res.data;
+        if (responeData.status === "success" && responeData.tokens) {
+          await saveTokens(
+            responeData.tokens.access_token,
+            responeData.tokens.refresh_token,
+          );
+          let userRes = await axiosClient.get(endpoints["current_user"]);
+          dispatch({ type: "login", payload: userRes.data });
+          alert("Đăng nhập thành công!");
+          nav.reset({ index: 0, routes: [{ name: "Home" }] });
+        }
+      }
+    } catch (error) {
+      errorConsole(error, "Login:fromCodeToTokens");
     }
   };
 
@@ -117,13 +133,35 @@ const Login = () => {
           key={item.field}
           item={item}
           theme={theme}
-          value={user[item.field]}
+          value={user[item.field] || ""}
           onChangeText={(t) => setUser({ ...user, [item.field]: t })}
         />
       ))}
       <HelperText type="error" visible={err}>
         Mật khẩu KHÔNG khớp!
       </HelperText>
+
+      <Modal visible={isLoginVisible} animationType="slide">
+        <View className="flex-1 pt-10 bg-white">
+          <Pressable
+            onPress={() => setIsLoginVisible(false)}
+            className="p-4 items-end"
+          >
+            <TextCustom.TextMuted text="Đóng" />
+          </Pressable>
+
+          <WebView
+            source={{ uri: authUrl }}
+            userAgent="Mozilla/5.0 (Linux; Android 10; Android SDK built for x86) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36"
+            onShouldStartLoadWithRequest={stunAndGetCode}
+            startInLoadingState={true}
+            renderLoading={() => (
+              <ActivityIndicator size="large" className="mt-10" />
+            )}
+          />
+        </View>
+      </Modal>
+
       <View className="flex mb-2 flex-row-reverse gap-5 mt-3">
         <Pressable
           onPress={login}
@@ -138,16 +176,14 @@ const Login = () => {
             />
           ) : (
             <TextCustom.TextNoFocus
-              style={{
-                color: theme.colors.slate[200],
-              }}
+              style={{ color: theme.colors.slate[200] }}
               text="ĐĂNG NHẬP"
             />
           )}
         </Pressable>
 
         <Pressable
-          onPress={() => navigation.navigate("Register")}
+          onPress={() => nav.navigate("Register")}
           className={jsonStyle["pressable-no-focus"]}
         >
           <TextCustom.TextFocus
@@ -156,24 +192,8 @@ const Login = () => {
           />
         </Pressable>
       </View>
-      <View className="flex-row items-center my-6">
-        <View
-          className="flex-1 h-[1px]"
-          style={{
-            backgroundColor: theme.colors.slate[200],
-          }}
-        />
-        <TextCustom.TextFocus
-          text=" Hoặc đăng nhập bằng "
-          style={{ fontSize: 12, color: theme.colors.slate[400] }}
-        />
-        <View
-          className="flex-1 h-[1px]"
-          style={{
-            backgroundColor: theme.colors.slate[200],
-          }}
-        />
-      </View>
+
+      {/* Nút Google */}
       <View className="flex-row justify-center gap-4">
         <IconButton
           icon="google"

@@ -7,37 +7,20 @@ import HeaderCustom from "../../components/Header";
 import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../../utils/Apis";
 import TextCustom from "../../components/TextCustom";
+import { pickImage, pickVideo } from "../../utils/imageUtils";
+import { errorConsole } from "../../utils/errorUtils";
+import { useCourses } from "../../hooks/useCourses";
 
 const EditMyCourse = () => {
   const route = useRoute();
-  const navigation = useNavigation();
+  const nav = useNavigation();
   const { course, theme } = route.params;
-
+  const { ensureInstructorCourses } = useCourses();
   const [subject, setSubject] = useState(course.subject);
   const [price, setPrice] = useState(String(course.price));
   const [image, setImage] = useState(null);
   const [video, setVideo] = useState(null);
   const [loading, setLoading] = useState(false);
-
-  const pickImage = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== "granted") return alert("Permissions denied!");
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 1,
-    });
-    if (!result.canceled) setImage(result.assets[0]);
-  };
-
-  const pickVideo = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== "granted") return alert("Permissions denied!");
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Videos,
-      quality: 1,
-    });
-    if (!result.canceled) setVideo(result.assets[0]);
-  };
 
   const handleUpdateCourse = async () => {
     try {
@@ -60,12 +43,20 @@ const EditMyCourse = () => {
         });
       }
 
-      await axiosClient.patch(endpoints.courseDetails(course.id), formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      navigation.goBack();
+      const res = await axiosClient.patch(
+        endpoints.courseDetails(course.id),
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        },
+      );
+      if (res.status === 200) {
+        alert("Thành công", "Tạo khóa học thành công!");
+        ensureInstructorCourses();
+        nav.goBack();
+      }
     } catch (error) {
-      console.error("Update failed:", error);
+      errorConsole(error, "Instructor:handleUpdateCourse");
     } finally {
       setLoading(false);
     }
@@ -97,11 +88,23 @@ const EditMyCourse = () => {
           keyboardType="numeric"
         />
 
-        <TouchableOpacity className="border p-2 rounded-md" onPress={pickImage}>
+        <TouchableOpacity
+          className="border p-2 rounded-md"
+          onPress={async () => {
+            const img = await pickImage();
+            if (img) setImage(img);
+          }}
+        >
           <Button>{image ? "Đã chọn ảnh" : "Chọn ảnh khóa học"}</Button>
         </TouchableOpacity>
 
-        <TouchableOpacity className="border p-2 rounded-md" onPress={pickVideo}>
+        <TouchableOpacity
+          className="border p-2 rounded-md"
+          onPress={async () => {
+            const video = await pickVideo();
+            if (video) setVideo(video);
+          }}
+        >
           <Button>{video ? "Đã chọn video" : "Chọn video khóa học"}</Button>
         </TouchableOpacity>
 

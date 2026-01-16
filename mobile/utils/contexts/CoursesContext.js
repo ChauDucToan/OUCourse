@@ -8,65 +8,87 @@ import { endpoints } from "../Apis";
 export const CourseContext = createContext(null);
 
 export const CoursesProvider = ({ children }) => {
+  const [coursesError, setCoursesError] = useState(null);
+
   const [courses, setCourses] = useState([]);
   const [loadingCourses, setLoadingCourses] = useState(false);
-  const [coursesError, setCoursesError] = useState(null);
-  const lastFetchdAtRef = useRef(0);
-  const coursesRef = useRef([]);
+  const coursesRef = useRef({ data: [], timestamp: 0 });
 
   const [instructorCourse, setInstructorCourse] = useState([]);
   const [loadingInstructorCourses, setLoadingInstructorCourses] =
     useState(false);
-  const [instructorCoursesError, setInstructorCoursesError] = useState(null);
 
-  const ensureInstructorCourse = useCallback(async () => {
+  const [enrollCourses, setEnrollCourses] = useState([]);
+  const [loadingEnrollCourses, setLoadingEnrollCourses] = useState(false);
+
+  const addNewCourse = useCallback((newCourseData) => {
+    setInstructorCourse((prev) => [newCourseData, ...prev]);
+    setCourses((prev) => {
+      if (prev.length > 0) {
+        return [newCourseData, ...prev];
+      }
+      return prev;
+    });
+
+    if (coursesRef.current) {
+      coursesRef.current = { data: [], timestamp: 0 };
+    }
+  }, []);
+  const ensureHomeCourses = useCallback(async (status = "") => {
+    const now = Date.now();
+    if (
+      coursesRef.current.data.length > 0 &&
+      now - coursesRef.current.timestamp < 300000
+    ) {
+      setCourses(coursesRef.current.data);
+      return coursesRef.current.data;
+    }
+
+    setLoadingCourses(true);
+    try {
+      const res = await axiosClient.get(endpoints["courses"]);
+      const results = res?.data?.results ?? [];
+      setCourses(results);
+      coursesRef.current = { data: results, timestamp: now };
+      return results;
+    } catch (error) {
+      setCoursesError(error.message);
+      setCourses([]);
+      throw error;
+    } finally {
+      setLoadingCourses(false);
+    }
+  }, []);
+
+  const ensureInstructorCourses = useCallback(async () => {
     setLoadingInstructorCourses(true);
-    setInstructorCoursesError(null);
     try {
       const res = await axiosClient.get(endpoints.instructorCourse);
-      const results = res?.data?.results ?? [];
+      const results = res.data.results ?? [];
       setInstructorCourse(results);
       return results;
     } catch (error) {
-      console.error("Fetch instructorCourse error:", error);
-
-      setInstructorCoursesError(error.message);
+      console.error("Ensure InstructorCourses error: ", error);
       throw error;
     } finally {
       setLoadingInstructorCourses(false);
     }
   }, []);
 
-  const updateCourse = (newCourses) => {
-    setCourses(newCourses);
-    coursesRef.current = newCourses;
-  };
-  const ensureCourses = useCallback(async () => {
-    const now = Date.now();
-    if (coursesRef.current.length > 0 && now - lastFetchdAtRef.current < 300000)
-      return coursesRef.current;
-
-    setLoadingCourses(true);
-    setCoursesError(null);
+  const ensureEnrollCourses = useCallback(async () => {
+    setLoadingEnrollCourses(true);
     try {
-      const res = await axiosClient.get(endpoints.courses);
+      const res = await axiosClient.get(`${endpoints.courses}?status=ENROLLED`);
       const results = res?.data?.results ?? [];
-      updateCourse(results);
-      lastFetchdAtRef.current = now;
+      setEnrollCourses(results);
       return results;
     } catch (error) {
-      setCoursesError(error.message);
-      updateCourse([]);
+      console.error("Lỗi fetchEnrolledCourses:", error);
       throw error;
     } finally {
-      setLoadingCourses(false);
+      setLoadingEnrollCourses(false);
     }
   }, []);
-  const refreshCourses = useCallback(async () => {
-    lastFetchdAtRef.current = 0;
-    return ensureCourses();
-  }, [ensureCourses]);
-
   return (
     <CourseContext.Provider
       value={{
@@ -77,7 +99,6 @@ export const CoursesProvider = ({ children }) => {
         ensureCourses,
         refreshCourses,
         instructorCourse,
-        ensureInstructorCourse,
         loadingInstructorCourses,
         instructorCoursesError,
       }}

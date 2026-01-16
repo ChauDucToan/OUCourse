@@ -1,56 +1,43 @@
 import AuthLayout from "../../components/AuthLayout";
-import { Image, Text, TouchableOpacity, Pressable } from "react-native";
-import { List, TextInput } from "react-native-paper";
-import * as ImagePicker from "expo-image-picker";
+import { Image, Text, TouchableOpacity } from "react-native";
+import { List } from "react-native-paper";
 
 import TextCustom from "../../components/TextCustom";
 import { ActivityIndicator } from "react-native";
-import { MyColorContext } from "../../utils/contexts/MyColorContext";
 
 import { registerApi } from "../../api/registerApi";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import FormAuth from "../../components/FormAuth";
 import { Alert } from "react-native";
-import { getMimeType } from "../../utils/imageUtils";
+import { getMimeType, pickImage } from "../../utils/imageUtils";
+import { useColors } from "../../hooks/useColors";
+import { errorConsole } from "../../utils/errorUtils";
 
 const Register = () => {
   const jsonData = require("../../mock/data.config.register.json");
   const fieldsRender = jsonData.info;
-  const { theme } = useContext(MyColorContext);
+  const { theme } = useColors();
   const [err, setErr] = useState(false);
   const [user, setUser] = useState({});
 
   const [loading, setLoading] = useState(false);
   const nav = useNavigation();
 
-  const pickImage = async () => {
-    let { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (status !== "granted") {
-      alert("Permissions denied!");
-    } else {
-      const result = await ImagePicker.launchImageLibraryAsync();
-      if (!result.canceled) {
-        setUser({ ...user, avatar: result.assets[0] });
-      }
-    }
-  };
-
   const validate = () => {
     console.info(user);
     if (!user.username) {
       setErr(true);
-      Alert("Chưa có tài khoản!");
+      Alert.alert("Chưa có tài khoản!");
       return false;
     }
     if (user.password !== user.confirm) {
       setErr(true);
-      Alert("Mật khẩu khác với mật khẩu xác nhận!");
+      Alert.alert("Mật khẩu khác với mật khẩu xác nhận!");
       return false;
     }
     if (!user.password) {
-      Alert("Chưa nhập mật khẩu");
+      Alert.alert("Chưa nhập mật khẩu");
 
       setErr(true);
       return false;
@@ -65,7 +52,6 @@ const Register = () => {
       setLoading(true);
 
       try {
-        console.log("DAY");
         let form = new FormData();
         for (let key in user)
           if (key !== "confirm") {
@@ -77,16 +63,14 @@ const Register = () => {
               });
             } else form.append(key, user[key]);
           }
-        console.info(user);
-        console.log(form);
         const res = await registerApi.register(form);
-        console.log(res.status);
+
         if (res.status === 201) {
+          alert("Đăng ký thành công!");
           nav.navigate("Login");
         }
-        console.log("DANG KY THANH CONG");
-      } catch (ex) {
-        console.error(ex);
+      } catch (error) {
+        errorConsole(error, "Register:register");
       } finally {
         setLoading(false);
       }
@@ -99,13 +83,16 @@ const Register = () => {
           key={item.field}
           item={item}
           theme={theme}
-          value={user[item.field]}
+          value={user[item.field] || ""}
           onChangeText={(t) => setUser({ ...user, [item.field]: t })}
         />
       ))}
       <TouchableOpacity
         className="border-2 p-2  rounded-md mt-2 border-slate-500"
-        onPress={pickImage}
+        onPress={async () => {
+          const img = await pickImage();
+          if (img) setUser({ ...user, avatar: img });
+        }}
       >
         <TextCustom.TextMuted
           style={{ color: theme.colors.slate[400] }}
