@@ -41,7 +41,7 @@ class TransactionSerializer(serializers.ModelSerializer):
             course_id = item.get('course')
 
             course = TransactionDetail.objects.select_related('transaction').filter(
-                courses_id=course_id,
+                course_id=course_id,
                 transaction__user=self.context['request'].user
             ).first()
 

@@ -2,12 +2,12 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional
 from api.payments.models import Transaction
 from datetime import datetime
+from rest_framework.response import Response
 import hmac
 import hashlib
 import stripe
 import os
 import json
-from django.http import HttpResponse
 import requests
 import time
 
@@ -20,7 +20,7 @@ class PaymentProviders(ABC):
         pass
 
     @abstractmethod
-    def process_webhook(self, request) -> HttpResponse:
+    def process_webhook(self, request) -> Response:
         pass
 
     @abstractmethod
@@ -108,12 +108,12 @@ class ZaloPayProvider(PaymentProviders):
         except Exception as e:
             return {'error': str(e)}
 
-    def process_webhook(self, request) -> HttpResponse:
+    def process_webhook(self, request) -> Response:
         try:
             body_unicode = request.body.decode('utf-8')
             request_data = json.loads(body_unicode)
         except json.JSONDecodeError:
-            return HttpResponse(json.dumps({"return_code": 0, "return_message": "Invalid JSON"}), content_type="application/json")
+            return Response({"return_code": 0, "return_message": "Invalid JSON"}, content_type="application/json")
         
         data_str = request_data.get("data")
         req_mac = request_data.get("mac")
@@ -137,9 +137,9 @@ class ZaloPayProvider(PaymentProviders):
                 transaction.provider_transaction_id = str(zalo_trans_id)
                 transaction.save()
 
-            return {"status": "success", "order_code": order_code}
+            return Response({"status": "success", "order_code": order_code})
         except Transaction.DoesNotExist:
-            return {"status": "failed", "message": "Transaction not found"}
+            return Response({"status": "failed", "message": "Transaction not found"})
 
 
     def check_status(self, transaction_obj) -> str:
@@ -272,7 +272,7 @@ class StripeProvider(PaymentProviders):
             "session_id": checkout_session.id
         }
     
-    def process_webhook(self, request) -> HttpResponse:
+    def process_webhook(self, request) -> Response:
         payload = request.body
         event = None
         sig_header = request.headers.get('stripe-signature')
@@ -284,7 +284,7 @@ class StripeProvider(PaymentProviders):
                 )
             except self.stripe.error.SignatureVerificationError as e:
                 print('Webhook signature verification failed.' + str(e))
-                return HttpResponse(status=400)
+                return Response(status=400)
 
         if event.type == 'checkout.session.completed':
             session = event.data.object
@@ -300,7 +300,7 @@ class StripeProvider(PaymentProviders):
         else:
             print('Unhandled event type {}'.format(event.type))
 
-        return HttpResponse(status=200)
+        return Response(status=200)
     
     def check_status(self, transaction_obj) -> str:
         try:

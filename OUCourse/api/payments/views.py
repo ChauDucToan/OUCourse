@@ -24,10 +24,10 @@ class TransactionViewSet(viewsets.ViewSet, generics.CreateAPIView, generics.List
         items_for_provider = []
         for detail in transaction.items.all():
             items_for_provider.append({
-                'name': detail.courses.subject,
+                'name': detail.course.subject,
                 'amount': float(detail.price_at_purchase),
                 'quantity': 1,
-                'description': f"{detail.courses.description[:50]}..." if detail.courses.description else "",
+                'description': f"{detail.course.description[:50]}..." if detail.course.description else "",
             })
 
         provider_name = request.data.get('provider')
@@ -72,7 +72,7 @@ class PaymentWebhookView(viewsets.ViewSet):
 
         django_response = provider.process_webhook(request)
 
-        return Response(django_response, status=status.HTTP_200_OK)
+        return django_response
 
     @action(detail=False, methods=['post'], url_path='stripe')
     def stripe_webhook(self, request):
