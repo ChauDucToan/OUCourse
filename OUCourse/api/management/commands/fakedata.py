@@ -160,7 +160,7 @@ COURSE_TEMPLATES = [
         "category_keywords": ["Nhập môn", "Khoa học máy tính", "Python"],
         "video": VIDEO_URLS["intro_cs_python"],
         "duration": 900,  # phút (tùy bạn quy ước)
-        "price": Decimal("0"),
+        "price": Decimal("149000"),
         "description": "<p>Khóa nền tảng giúp bạn làm quen tư duy CS, Python, và cách giải quyết bài toán bằng lập trình.</p>",
     },
     {
@@ -184,7 +184,7 @@ COURSE_TEMPLATES = [
         "category_keywords": ["Nhập môn", "Tư duy lập trình", "Khoa học máy tính"],
         "video": VIDEO_URLS["cs50"],
         "duration": 1000,
-        "price": Decimal("0"),
+        "price": Decimal("599000"),
         "description": "<p>Khóa nhập môn cực nổi tiếng: C, thuật toán, web cơ bản và tư duy problem solving.</p>",
     },
     {
@@ -256,7 +256,7 @@ COURSE_TEMPLATES = [
         "category_keywords": ["An toàn", "Security", "OWASP"],
         "video": VIDEO_URLS["cyber_cert"],
         "duration": 600,
-        "price": Decimal("0"),
+        "price": Decimal("149000"),
         "description": "<p>Nền tảng an toàn thông tin: threat model, hardening, best practices và nhận diện rủi ro.</p>",
     },
     {
@@ -479,7 +479,7 @@ class Command(BaseCommand):
             for course in selected_courses:
                 transaction_details = TransactionDetail.objects.create(
                     transaction=transaction,
-                    courses=course,
+                    course=course,
                     price_at_purchase=course.price
                 )
 
