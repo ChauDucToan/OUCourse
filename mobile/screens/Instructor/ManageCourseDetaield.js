@@ -9,9 +9,10 @@ import { endpoints } from "../../utils/Apis";
 import { formatCurrency, roundFloat } from "../../utils/formatNumber";
 import { errorConsole } from "../../utils/errorUtils";
 import { ActivityIndicator } from "react-native-paper";
-import { relativeTimeRounding } from "moment/moment";
+import { useMemo } from "react";
 
 const CardStudent = ({ studentName, studentEmail, theme }) => {
+  console.log("THONG TIN DAU", studentName, studentEmail);
   return (
     <View
       style={{
@@ -21,13 +22,27 @@ const CardStudent = ({ studentName, studentEmail, theme }) => {
     >
       <TextCustom.TextFocus
         text={studentName}
-        style={{ color: theme.colors.slate[400] }}
+        style={{ color: theme.colors.slate[700] }}
       />
       <TextCustom.TextMuted text={studentEmail} />
     </View>
   );
 };
 const StudentsTab = ({ theme, totalStudent, chartData }) => {
+  const uniqueStudents = useMemo(() => {
+    const allStudents = [];
+    const seenIds = new Set();
+    chartData.forEach((period) => {
+      period?.students.forEach((student) => {
+        if (student && !seenIds.has(student.id)) {
+          seenIds.add(student.id);
+          allStudents.push(student);
+        }
+      });
+    });
+
+    return allStudents;
+  }, [chartData]);
   return (
     <View
       style={{ flex: 1, backgroundColor: theme.colors.gray[100], padding: 10 }}
@@ -43,15 +58,14 @@ const StudentsTab = ({ theme, totalStudent, chartData }) => {
             text={`Khóa học này có ${totalStudent} học sinh`}
             style={{ color: theme.colors.slate[800] }}
           />
-          {chartData?.map((student) => {
-            return (
-              <CardStudent
-                studentName={student.username}
-                studentEmail={student.email}
-                theme={theme}
-              />
-            );
-          })}
+          {uniqueStudents.map((student, index) => (
+            <CardStudent
+              key={`${student.id}_${index}`}
+              studentName={student.username}
+              studentEmail={student.email}
+              theme={theme}
+            />
+          ))}
         </View>
       )}
     </View>
@@ -150,7 +164,6 @@ const ManageCourseDetailed = () => {
         const res = await axiosClient.get(endpoints["courseStats"](course.id));
         if (res.status === 200) {
           setCourseStats(res.data);
-          console.log(res.data);
         }
       } catch (error) {
         errorConsole(error, "MangeCourseDetailed:getCourseStats");
@@ -168,7 +181,6 @@ const ManageCourseDetailed = () => {
         });
         if (res.status === 200) {
           setRevenue(res.data);
-          console.log(res.data);
         }
       } catch (error) {
         errorConsole(error, "ManageCourseDetailed:getRevenue");

@@ -117,7 +117,6 @@ const CourseDetailedScreen = () => {
     const { url } = request;
     if (url.includes("/api/payments/confirm/") || url.includes("status=1")) {
       setWebVisible(false);
-
       processEnroll(course.id);
       nav.goBack();
       return false;
