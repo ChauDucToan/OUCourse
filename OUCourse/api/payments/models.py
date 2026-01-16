@@ -1,13 +1,14 @@
 from django.db import models
 from ..models import BaseModel
+from api.courses.models import Course
 import uuid
 
 # Create your models here.
 class Transaction(BaseModel):
     class statuses(models.IntegerChoices):
-        PENDING = 1,
-        COMPLETED = 2,
-        FAILED = 3,
+        PENDING = 1
+        COMPLETED = 2
+        FAILED = 3
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
@@ -37,8 +38,8 @@ class TransactionDetail(BaseModel):
         related_name='items'
     )
     
-    courses = models.ForeignKey(
-        'courses.Course',
+    course = models.ForeignKey(
+        Course,
         on_delete=models.SET_NULL,
         null=True,
     )
@@ -46,7 +47,7 @@ class TransactionDetail(BaseModel):
     price_at_purchase = models.DecimalField(max_digits=10, decimal_places=2)
 
     class Meta:
-        unique_together = ('transaction', 'courses')
+        unique_together = ('transaction', 'course')
         
     def __str__(self):
         return f"{self.transaction.order_code} - {self.course_name_snapshot}"

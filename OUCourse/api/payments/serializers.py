@@ -2,11 +2,11 @@ from rest_framework import serializers
 from .models import Transaction, TransactionDetail
 
 class TransactionDetailSerializer(serializers.ModelSerializer):
-    course_name = serializers.CharField(source='courses.subject', read_only=True)
+    course_name = serializers.CharField(source='course.subject', read_only=True)
 
     class Meta:
         model = TransactionDetail
-        fields = ['id', 'courses', 'course_name', 'price_at_purchase']
+        fields = ['id', 'course', 'course_name', 'price_at_purchase']
 
         read_only_fields = ['price_at_purchase']
 
@@ -19,12 +19,12 @@ class TransactionSerializer(serializers.ModelSerializer):
 
         total_amount = 0
         for item_data in items_data:
-            course = item_data['courses']
+            course = item_data['course']
             price = float(course.price)
 
             detail = TransactionDetail.objects.create(
                 transaction=transaction,
-                courses=course,
+                course=course,
                 price_at_purchase=price,
             )
             total_amount += price
@@ -38,7 +38,7 @@ class TransactionSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Transaction must have at least one item.")
         
         for item in value:
-            course_id = item.get('courses')
+            course_id = item.get('course')
 
             course = TransactionDetail.objects.select_related('transaction').filter(
                 courses_id=course_id,

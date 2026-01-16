@@ -3,7 +3,8 @@ from .. import perms
 from . import serializers, paginators, models
 from api.lessons.serializers import LessonSerializer
 from django.contrib.auth import get_user_model
-from django.db.models import Q
+from api.lessons.models import LessonProgress
+from django.db.models import Q, Count
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.filters import OrderingFilter
@@ -116,3 +117,28 @@ class CourseView(viewsets.ModelViewSet):
         serializer.save(course=course, student=student)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    @action(methods=['get'], permission_classes=[perms.IsInstructor], detail=True,
+            url_path='stats', serializer_class=serializers.CourseStatsSerializer)
+    def stats(self, request, pk=None):
+        course = self.get_object()
+
+        lessons = course.lesson_set.filter(active=True)
+
+        total_students = models.ManageCourse.objects.filter(course=course).count()
+
+        lesson_id = request.query_params.get('lesson_id')
+        if lesson_id:
+            lessons = lessons.filter(id=lesson_id)
+        
+        data = lessons.annotate(
+            completed_count=Count(
+                'progress', 
+                filter=Q(progress__status=LessonProgress.Status.COMPLETED)
+            )
+        ).values('id', 'subject', 'completed_count').order_by('order')
+
+        return Response({
+            "total_students": total_students,
+            "details": data
+        }, status=status.HTTP_200_OK)

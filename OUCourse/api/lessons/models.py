@@ -56,7 +56,7 @@ class LessonProgress(BaseModel):
     lesson = models.ForeignKey(
         Lesson,
         on_delete=models.CASCADE,
-        related_name="progresses",
+        related_name="progress",
     )
 
     class Meta:

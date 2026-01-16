@@ -68,3 +68,20 @@ class ManageCourseSerializer(serializers.ModelSerializer):
             status=status
         )
         return manage_course
+    
+class LessonStatsSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField()
+    subject = serializers.CharField()
+    completed_count = serializers.IntegerField()
+
+    class Meta:
+        model = Course
+        fields = ['id', 'subject', 'completed_count']
+    
+class CourseStatsSerializer(serializers.ModelSerializer):
+    total_students = serializers.IntegerField()
+    details = LessonStatsSerializer(many=True)
+
+    class Meta:
+        model = Course
+        fields = ['total_students', 'details']
