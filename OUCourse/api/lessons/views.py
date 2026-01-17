@@ -118,7 +118,7 @@ class LessonView(viewsets.ViewSet, generics.RetrieveUpdateDestroyAPIView
 
             return Response(CommentSerializer(c).data, status=status.HTTP_201_CREATED)
 
-        comments = self.get_object().comment_set.select_related('user').filter(active=True)
+        comments = self.get_object().comment_set.select_related('user').filter(active=True).order_by('-created_at')
 
         page = self.paginate_queryset(comments)
         if page is not None:

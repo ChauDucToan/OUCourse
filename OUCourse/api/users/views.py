@@ -16,7 +16,7 @@ from api.payments.models import TransactionDetail, Transaction
 class UserView(viewsets.ViewSet, generics.CreateAPIView):
     queryset = User.objects.filter(is_active=True)
     serializer_class = UserSerializer
-    parser_classes = [parsers.MultiPartParser, parsers.FormParser, parsers.JSONParser]
+    parser_classes = [parsers.MultiPartParser, parsers.FormParser]
     permission_classes = [permissions.AllowAny]
 
     def get_serializer_class(self):
@@ -82,7 +82,8 @@ class UserView(viewsets.ViewSet, generics.CreateAPIView):
             return Response({"detail": f"Error linking Firebase: {str(e)}"}, status=status.HTTP_502_BAD_GATEWAY)
     
     @action(methods=['post'], url_path='chat-room', \
-            detail=False, permission_classes=[permissions.IsAuthenticated])
+            detail=False, permission_classes=[permissions.IsAuthenticated],
+            parser_classes=[parsers.JSONParser])
     def create_chat_room(self, request):
         current_user = request.user
         target_username = request.data.get('target_username', None)
@@ -93,6 +94,7 @@ class UserView(viewsets.ViewSet, generics.CreateAPIView):
         try:
             target_user = User.objects.get(username=target_username, is_active=True)
         except User.DoesNotExist:
+            print("Target user not found")
             return Response({"detail": "Target user not found"}, status=status.HTTP_404_NOT_FOUND)
         
         try:

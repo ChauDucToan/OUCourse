@@ -26,6 +26,9 @@ class UserAdmin(ModelAdmin):
         }),
         ('Thông tin cá nhân', {
             'fields': (('first_name', 'last_name'), ('avatar', 'avatar_view'))
+        }),
+        ('Is Active', {
+            'fields': ('is_active',)
         })
     )
 

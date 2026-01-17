@@ -40,7 +40,7 @@ class CourseView(viewsets.ModelViewSet):
 
         q = self.request.query_params.get('q')
         if q:
-            query = query.filter(subject__icontains=q)
+            query = query.filter(subject__icontains=q).order_by('subject')
 
         instructor_name = self.request.query_params.get('instructor')
         if instructor_name:

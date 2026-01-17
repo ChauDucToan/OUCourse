@@ -5,8 +5,8 @@ from django.contrib.auth.password_validation import validate_password
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'first_name', 'last_name', 'email', 'role', 'avatar', 'password']
-        read_only_fields = ['username', 'role']
+        fields = ['username', 'first_name', 'last_name', 'email', 'role', 'avatar', 'password', 'is_active']
+        read_only_fields = ['username', 'role', 'is_active']
 
         extra_kwargs = {
             'password': {'write_only': True, 'required': False}
@@ -34,12 +34,12 @@ class UserSerializer(serializers.ModelSerializer):
     
 
 class UserCreateSerializer(serializers.ModelSerializer):
-    avatar = serializers.ImageField(required=False)
+    avatar = serializers.ImageField(required=True)
     
     class Meta:
         model = User
         fields = ['username', 'first_name', 'last_name', 'email', 'role', 'avatar', 'password']
-        ref_name = None # Only show UserSerializer in docs
+        ref_name = None
 
         extra_kwargs = {
             'password': {'write_only': True}
