@@ -2,7 +2,6 @@ import { useRoute, useNavigation } from "@react-navigation/native";
 import { View, TouchableOpacity } from "react-native";
 import { Button, TextInput } from "react-native-paper";
 import { useState } from "react";
-import * as ImagePicker from "expo-image-picker";
 import HeaderCustom from "../../components/Header";
 import axiosClient from "../../api/axiosClient";
 import { endpoints } from "../../utils/Apis";

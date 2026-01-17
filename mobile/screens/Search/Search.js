@@ -8,71 +8,96 @@ import { useNavigation } from "@react-navigation/native";
 import HeaderCustom from "../../components/Header";
 import { ImageBackground } from "react-native";
 import { useMemo } from "react";
-import { HomeCategories } from "../../components/HomeComponents/HomeCategories";
 import { ScrollView } from "react-native";
 import { Icon } from "react-native-paper";
 import { useCourses } from "../../hooks/useCourses";
 import { useColors } from "../../hooks/useColors";
 import { ActivityIndicator } from "react-native";
+import { endpoints } from "../../utils/Apis";
+import axiosClient from "../../api/axiosClient";
+import { errorConsole } from "../../utils/errorUtils";
 
 const Search = () => {
   const nav = useNavigation();
-  const [keyword, setKeyword] = useState("");
   const { theme } = useColors();
-  const { courses, ensureHomeCourses, loadingCourses } = useCourses();
+  const [courses, setCourses] = useState([]);
+  const [keyword, setKeyword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [nextPage, setNextPage] = useState(null);
+
+  const loadCourses = async (pageNum, reset = false) => {
+    if (loading) return;
+    if (pageNum > 1 && !nextPage && !reset) return;
+    setLoading(true);
+    try {
+      let url = `${endpoints["courses"]}?page=${pageNum}`;
+      if (keyword.trim()) {
+        url += `&q=${keyword.trim()}`;
+      }
+      if (sortOption) {
+        let ordering = "";
+        switch (sortOption) {
+          case "name_asc":
+            ordering = "subject";
+            break;
+          case "price_asc":
+            ordering = "price";
+            break;
+          case "price_desc":
+            ordering = "-price";
+            break;
+        }
+        if (ordering) url += `&ordering=${ordering}`;
+      }
+      const res = await axiosClient.get(url);
+      const results = res.data.results || [];
+      setNextPage(res.data.next);
+
+      if (reset || pageNum === 1) {
+        setCourses(results);
+      } else {
+        setCourses((prev) => [...prev, ...results]);
+      }
+    } catch (error) {
+      errorConsole(error, "fetch");
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPage(1);
+      loadCourses(1, true);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [keyword, sortOption]);
+
+  const handleLoadMore = () => {
+    if (nextPage && !loading) {
+      const newPage = page + 1;
+      setPage(newPage);
+      loadCourses(newPage);
+    }
+  };
 
   const [count, setCount] = useState(20);
   const [sortOption, setSortOption] = useState(null);
 
-  useEffect(() => {
-    ensureHomeCourses();
-  }, [ensureHomeCourses]);
-
-  const loadMore = () => {
-    if (count < coursesFilter.length) {
-      setCount((prev) => prev + 20);
-    }
-  };
-  const coursesFilter = useMemo(() => {
-    let result = courses.filter((c) => c.status !== "ENROLLED");
-    const q = keyword.trim().toLowerCase();
-    if (q) {
-      result = result.filter(
-        (course) =>
-          (course.subject ?? "").toLowerCase().includes(q) ||
-          (course.instructor ?? "").toLowerCase().includes(q),
-      );
-    }
-    result = [...result];
-    switch (sortOption) {
-      case "name_asc":
-        result.sort((a, b) => (a.subject ?? "").localeCompare(b.subject ?? ""));
-        break;
-      case "price_asc":
-        result.sort((a, b) => (a.price || 0) - (b.price || 0));
-        break;
-      case "price_desc":
-        result.sort((a, b) => (b.price || 0) - (a.price || 0));
-        break;
-      default:
-        break;
-    }
-
-    return result;
-  }, [courses, keyword, sortOption]);
   const SortChip = ({ label, value, icon, theme }) => {
     const isActive = sortOption === value;
     return (
       <TouchableOpacity
         onPress={() => setSortOption(isActive ? null : value)}
-        className={`flex-row items-center px-3 py-2 rounded-full mr-2 border`}
+        className={`flex-row items-center px-3 py-2 rounded-full mr-2 border-2`}
         style={{
           backgroundColor: isActive
-            ? theme.colors.slate[800]
-            : theme.colors.gray[50],
+            ? theme.colors.slate[700]
+            : theme.colors.gray[100],
           borderColor: isActive
-            ? theme.colors.slate[800]
-            : theme.colors.slate[200],
+            ? theme.colors.slate[300]
+            : theme.colors.slate[500],
         }}
       >
         <Text
@@ -109,17 +134,17 @@ const Search = () => {
         }}
       >
         <TextInput
-          className=" text-base border  rounded-2xl p-3 "
+          className=" text-base border-2 mb-4  rounded-2xl p-3 "
           style={{
             backgroundColor: theme.colors.gray[50],
-            borderColor: theme.colors.slate[200],
+            borderColor: theme.colors.slate[500],
+            color: theme.colors.slate[400],
           }}
+          textColor={theme.colors.slate[600]}
           placeholderTextColor={theme.colors.slate[400]}
           placeholder="Nhập từ khóa..."
           value={keyword}
-          onChangeText={(text) => {
-            (setKeyword(text), setCount(20));
-          }}
+          onChangeText={setKeyword}
         />
       </View>
 
@@ -128,10 +153,8 @@ const Search = () => {
           backgroundColor: theme.colors.gray[50],
           borderColor: theme.colors.gray[200],
         }}
-      >
-        <HomeCategories sizeIcon={0} theme={theme} />
-      </View>
-      <View className="px-2 pb-2">
+      ></View>
+      <View className="px-3">
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <SortChip
             label="Tên A-Z"
@@ -153,7 +176,7 @@ const Search = () => {
           />
         </ScrollView>
       </View>
-      {loadingCourses ? (
+      {loading && page === 1 ? (
         <ActivityIndicator size="large" color={theme.colors.primary} />
       ) : (
         <View
@@ -163,13 +186,13 @@ const Search = () => {
           }}
         >
           <FlatList
-            data={coursesFilter.slice(0, count)}
+            data={courses}
             keyExtractor={(item) => item.id}
-            className="p-2 "
+            className="p-2"
             contentContainerStyle={{
               paddingBottom: 30,
             }}
-            onEndReached={loadMore}
+            onEndReached={handleLoadMore}
             onEndReachedThreshold={0.6}
             renderItem={({ item }) => (
               <TouchableOpacity
@@ -188,7 +211,10 @@ const Search = () => {
                         ? { uri: item.image }
                         : require("../../assets/banner_1.png")
                     }
-                    className="pt-8 pb-8 pl-4 mx-3 rounded-xl overflow-hidden mt-3"
+                    style={{
+                      borderColor: theme.colors.slate[500],
+                    }}
+                    className="pt-8 pb-8 pl-4 border-2 mx-3 rounded-xl overflow-hidden mt-3"
                   >
                     <View className="absolute inset-0  bg-black/40" />
                     <View className="p-2">
@@ -203,6 +229,11 @@ const Search = () => {
                 </View>
               </TouchableOpacity>
             )}
+            ListFooterComponent={
+              loading && page > 1 ? (
+                <ActivityIndicator color={theme.colors.primary} />
+              ) : null
+            }
             ListEmptyComponent={
               keyword.length > 0 ? (
                 <Text

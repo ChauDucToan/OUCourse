@@ -20,6 +20,7 @@ const FormAuth = ({ item, theme, value, onChangeText }) => {
       secureTextEntry={isPasswordField ? !isVisible : false}
       activeOutlineColor={theme.colors.slate[500]}
       placeholderTextColor={theme.colors.slate[600]}
+      textColor={theme.colors.slate[600]}
       theme={{
         colors: {
           onSurfaceVariant: theme.colors.slate[600],

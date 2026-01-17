@@ -14,10 +14,7 @@ const imageBanner = {
 const Banner = ({ navigation, text, subText, item }) => {
   const { width } = Dimensions.get("window");
   return (
-    <TouchableOpacity
-      delayPressIn={0.5}
-      onPress={() => navigation.navigate("CourseDetail", { courseId: "123" })}
-    >
+    <TouchableOpacity delayPressIn={0.5}>
       <ImageBackground
         source={imageBanner[item.id]}
         style={{ width: width }}

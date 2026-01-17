@@ -96,11 +96,18 @@ export const CoursesProvider = ({ children }) => {
         setCourses,
         loadingCourses,
         coursesError,
-        ensureCourses,
-        refreshCourses,
+        ensureHomeCourses,
+
         instructorCourse,
         loadingInstructorCourses,
-        instructorCoursesError,
+        ensureInstructorCourses,
+
+        ensureEnrollCourses,
+        enrollCourses,
+        loadingEnrollCourses,
+        setEnrollCourses,
+
+        addNewCourse,
       }}
     >
       {children}

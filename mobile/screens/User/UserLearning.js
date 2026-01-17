@@ -42,7 +42,9 @@ const UserLearning = () => {
   if (!user) {
     return (
       <View className="flex-1 justify-center items-center">
-        <Text>Vui lòng đăng nhập để xem khóa học.</Text>
+        <Text style={{ color: theme.colors.slate[500] }}>
+          Vui lòng đăng nhập để xem khóa học.
+        </Text>
       </View>
     );
   }
@@ -72,10 +74,9 @@ const UserLearning = () => {
                 }
               >
                 <View
-                  className="flex-row p-2 items-center border-b"
+                  className="flex-row p-2 items-center "
                   style={{
-                    backgroundColor: theme.colors.slate[200],
-                    borderColor: theme.colors.gray[700],
+                    backgroundColor: theme.colors.slate[300],
                   }}
                 >
                   <View className="mb-2 ml-2">
@@ -88,18 +89,20 @@ const UserLearning = () => {
                       }
                     />
                   </View>
-                  <View className="justify-end border-b flex-1 m-2 ">
+                  <View
+                    className="justify-end border-b flex-1 m-2 "
+                    style={{ borderColor: theme.colors.slate[800] }}
+                  >
                     <TextCustom.TextMuted
                       text={item.category}
                       style={{
                         color: theme.colors.slate[500],
-                        borderColor: theme.colors.gray[200],
                       }}
                     />
                     <View className="item-start">
                       <TextCustom.TextSection
                         className="text-base  "
-                        style={{ color: theme.colors.slate[500] }}
+                        style={{ color: theme.colors.slate[600] }}
                         text={item.subject}
                       />
                     </View>

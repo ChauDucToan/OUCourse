@@ -13,6 +13,10 @@ import { useCourses } from "../../hooks/useCourses";
 import { ActivityIndicator } from "react-native";
 import { useColors } from "../../hooks/useColors";
 import { useUser } from "../../hooks/useUser";
+import { errorConsole } from "../../utils/errorUtils";
+import axiosClient from "../../api/axiosClient";
+import { endpoints } from "../../utils/Apis";
+import { useState } from "react";
 
 const HEADER_MAX_HEIGHT = 140;
 const HEADER_MIN_HEIGHT = 80;
@@ -20,10 +24,11 @@ const HEADER_MIN_HEIGHT = 80;
 const HomeScreen = () => {
   const { theme } = useColors();
   const scrollY = useRef(new Animated.Value(0)).current;
-  const { courses, ensureHomeCourses, loadingCourses } = useCourses();
+  const [courses, setCourses] = useState([]);
+  const [loadingCourses, setLoadingCourses] = useState(false);
   const [user] = useUser();
   const courseFree = useMemo(
-    () => courses.filter((c) => (c?.price ?? 0) <= 0),
+    () => courses.filter((c) => (c?.price ?? 0) <= 500000),
     [courses],
   );
 
@@ -33,8 +38,20 @@ const HomeScreen = () => {
   );
 
   useEffect(() => {
-    ensureHomeCourses();
-  }, [ensureHomeCourses]);
+    const loadData = async () => {
+      setLoadingCourses(true);
+      try {
+        const res = await axiosClient.get(endpoints["courses"]);
+        setCourses(res.data.results);
+      } catch (error) {
+        errorConsole(error, "Load Data Home Courses");
+      } finally {
+        setLoadingCourses(false);
+      }
+    };
+    loadData();
+    console.log("HOME: ", courses);
+  }, []);
 
   const headerTitleOpacity = scrollY.interpolate({
     inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
@@ -47,7 +64,6 @@ const HomeScreen = () => {
     outputRange: [0, 0],
     extrapolate: "clamp",
   });
-  console.log(user);
   const render = () => {
     return (
       <View
@@ -118,7 +134,7 @@ const HomeScreen = () => {
         }}
       >
         <TextCustom.TextSection
-          style={{ color: theme.colors.black }}
+          style={{ color: theme.colors.slate[500] }}
           className="mt-8"
           text="OUCourse"
         />

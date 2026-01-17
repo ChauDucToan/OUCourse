@@ -1,4 +1,10 @@
-import { View, ScrollView, Text, Pressable } from "react-native";
+import {
+  View,
+  ScrollView,
+  Text,
+  Pressable,
+  TouchableOpacity,
+} from "react-native";
 import { Avatar, Button, List } from "react-native-paper";
 import ListItem from "../../components/ListItem";
 
@@ -9,19 +15,22 @@ import { useColors } from "../../hooks/useColors";
 import { useCourses } from "../../hooks/useCourses";
 import { useUser } from "../../hooks/useUser";
 import { errorConsole } from "../../utils/errorUtils";
+import { removeTokens } from "../../utils/tokenUtils";
+import { useState } from "react";
 
 const Account = ({ navigation }) => {
   const jsonAccountData = require("../../mock/data.config.account.json");
   const [user, dispatch] = useUser();
   const { theme } = useColors();
-  const { setCategories } = useCategories();
-  const { setCourses } = useCourses();
+  const [loading, setLoading] = useState(false);
   const handleLogout = async () => {
     try {
-      await AsyncStorage.removeItem("token");
+      setLoading(true);
+      removeTokens();
       dispatch({ type: "logout" });
     } catch (error) {
       errorConsole(error, "Account:handlelogout");
+      setLoading(false);
     }
   };
   return (
@@ -117,6 +126,8 @@ const Account = ({ navigation }) => {
             mode="outlined"
             textColor={theme.colors.danger}
             className="rounded-xl  "
+            loading={loading}
+            disabled={loading}
             style={{
               backgroundColor: theme.colors.gray[100],
               borderColor: theme.colors.danger,
@@ -133,7 +144,7 @@ const Account = ({ navigation }) => {
         </View>
       ) : (
         <View className="p-4 mt-2 mb-8">
-          <Pressable
+          <TouchableOpacity
             onPress={() => navigation.navigate("Login")}
             className="flex-row items-center justify-center p-3 border  rounded-xl shadow-sm mt-4"
             style={{
@@ -151,7 +162,7 @@ const Account = ({ navigation }) => {
             >
               Đăng nhập
             </Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
       )}
 
