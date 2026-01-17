@@ -13,6 +13,7 @@ import { Alert } from "react-native";
 import { getMimeType, pickImage } from "../../utils/imageUtils";
 import { useColors } from "../../hooks/useColors";
 import { errorConsole } from "../../utils/errorUtils";
+import { Picker } from "@react-native-picker/picker";
 
 const Register = () => {
   const jsonData = require("../../mock/data.config.register.json");
@@ -20,7 +21,7 @@ const Register = () => {
   const { theme } = useColors();
   const [err, setErr] = useState(false);
   const [user, setUser] = useState({});
-
+  const [selectRole, setSelectRole] = useState("STUDENT");
   const [loading, setLoading] = useState(false);
   const nav = useNavigation();
 
@@ -63,10 +64,13 @@ const Register = () => {
               });
             } else form.append(key, user[key]);
           }
+        form.append("role", selectRole);
+        console.log("ROLLE", selectRole);
         const res = await registerApi.register(form);
 
         if (res.status === 201) {
           alert("Đăng ký thành công!");
+          console.log("FORM ", form);
           nav.navigate("Login");
         }
       } catch (error) {
@@ -87,6 +91,19 @@ const Register = () => {
           onChangeText={(t) => setUser({ ...user, [item.field]: t })}
         />
       ))}
+      <Picker
+        selectedValue={selectRole}
+        onValueChange={(itemValue) => setSelectRole(itemValue)}
+        style={{
+          backgroundColor: theme.colors.slate[400],
+          color: theme.textMuted,
+          marginTop: 4,
+          marginBottom: 4,
+        }}
+      >
+        <Picker.Item key="INSTRUCTOR" label="Giảng Viên" value="INSTRUCTOR" />
+        <Picker.Item key="STUDENT" label="Học sinh" value="STUDENT" />
+      </Picker>
       <TouchableOpacity
         className="border-2 p-2  rounded-md mt-2 border-slate-500"
         onPress={async () => {

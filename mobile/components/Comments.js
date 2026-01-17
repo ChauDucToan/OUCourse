@@ -11,7 +11,6 @@ import { errorConsole } from "../utils/errorUtils";
 import TextCustom from "./TextCustom";
 import CommentItem from "./CommentItem";
 import { endpoints } from "../utils/Apis";
-import { ScrollView } from "react-native";
 
 const Comments = ({ lessonId, theme, user }) => {
   const [comments, setComments] = useState([]);
@@ -124,7 +123,26 @@ const Comments = ({ lessonId, theme, user }) => {
         <ActivityIndicator size="small" color={theme.colors.primary} />
       ) : (
         <View className="pb-3">
-          {Array.isArray(comments) && comments.length > 0 ? (
+          <FlatList
+            data={comments}
+            className="mb-4 gap-3"
+            horizontal
+            pagingEnabled
+            decelerationRate="fast"
+            snapToAlignment="center"
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <CommentItem
+                key={item.id}
+                comment={item}
+                user={user}
+                theme={theme}
+                onDelete={handleDeleteComment}
+              />
+            )}
+          ></FlatList>
+          {/* {Array.isArray(comments) && comments.length > 0 ? (
             comments.map((c) => (
               <CommentItem
                 key={c.id}
@@ -139,7 +157,7 @@ const Comments = ({ lessonId, theme, user }) => {
               text="Chưa có bình luận nào."
               className="text-center italic"
             />
-          )}
+          )}*/}
         </View>
       )}
     </View>

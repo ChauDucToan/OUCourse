@@ -23,17 +23,18 @@ import { WebView } from "react-native-webview";
 import { Modal } from "react-native";
 import { errorConsole } from "../../utils/errorUtils";
 import TextCustom from "../../components/TextCustom";
+import { useUser } from "../../hooks/useUser";
 
 const CourseDetailedScreen = () => {
   const route = useRoute();
   const [course, setCourse] = useState();
+  const [user] = useUser();
   const [isLoading, setLoading] = useState(false);
   const { theme } = useColors();
   const { id } = route.params;
   const { width } = Dimensions.get("window");
   const [modalVisible, setModalVisible] = useState(false);
   const [webVisible, setWebVisible] = useState(false);
-  // const [isPayment, setIsPayment] = useState(false);
   const [paymentUrl, setPaymentUrl] = useState("");
   const nav = useNavigation();
   useEffect(() => {
@@ -77,6 +78,10 @@ const CourseDetailedScreen = () => {
     }
   };
   const handleEnroll = async (course) => {
+    if (user.email === "") {
+      alert("Phải thêm email trước khi thanh toán!");
+      return;
+    }
     if (Number(course.price) === 0) {
       setModalVisible(false);
       processEnroll(course.id);

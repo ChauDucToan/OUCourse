@@ -182,7 +182,7 @@ const CourseEditor = () => {
               marginBottom: 4,
             }}
           >
-            <Picker.Item label="Chọn danh mục" value="" />
+            <Picker.Item label="" value="" />
             {categories?.map((item) => (
               <Picker.Item
                 key={item.id?.toString() ?? item.value}
