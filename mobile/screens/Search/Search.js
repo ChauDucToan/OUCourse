@@ -8,7 +8,6 @@ import { useNavigation } from "@react-navigation/native";
 import HeaderCustom from "../../components/Header";
 import { ImageBackground } from "react-native";
 import { useMemo } from "react";
-import { HomeCategories } from "../../components/HomeComponents/HomeCategories";
 import { ScrollView } from "react-native";
 import { Icon } from "react-native-paper";
 import { useCourses } from "../../hooks/useCourses";
@@ -113,7 +112,9 @@ const Search = () => {
           style={{
             backgroundColor: theme.colors.gray[50],
             borderColor: theme.colors.slate[500],
+            color: theme.colors.slate[400],
           }}
+          textColor={theme.colors.slate[600]}
           placeholderTextColor={theme.colors.slate[400]}
           placeholder="Nhập từ khóa..."
           value={keyword}
